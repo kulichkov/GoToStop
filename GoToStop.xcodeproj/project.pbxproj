@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		696689862D0DF31000B0F045 /* GoToStopAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 696689802D0DF31000B0F045 /* GoToStopAPI.framework */; };
 		696689872D0DF31000B0F045 /* GoToStopAPI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 696689802D0DF31000B0F045 /* GoToStopAPI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		696689AA2D0E0A3E00B0F045 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 696689A92D0E0A3D00B0F045 /* WidgetKit.framework */; };
+		696689AC2D0E0A3E00B0F045 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 696689AB2D0E0A3E00B0F045 /* SwiftUI.framework */; };
+		696689BD2D0E0A3F00B0F045 /* GoToStopWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 696689A72D0E0A3D00B0F045 /* GoToStopWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -18,6 +21,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 6966897F2D0DF31000B0F045;
 			remoteInfo = GoToStopAPI;
+		};
+		696689BB2D0E0A3F00B0F045 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 696689362D0DE91700B0F045 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 696689A62D0E0A3D00B0F045;
+			remoteInfo = GoToStopWidgetExtension;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -33,11 +43,25 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		696689BE2D0E0A3F00B0F045 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				696689BD2D0E0A3F00B0F045 /* GoToStopWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		6966893E2D0DE91700B0F045 /* GoToStop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GoToStop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		696689802D0DF31000B0F045 /* GoToStopAPI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GoToStopAPI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		696689A72D0E0A3D00B0F045 /* GoToStopWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = GoToStopWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		696689A92D0E0A3D00B0F045 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		696689AB2D0E0A3E00B0F045 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -47,6 +71,13 @@
 				GoToStopAPI.h,
 			);
 			target = 6966897F2D0DF31000B0F045 /* GoToStopAPI */;
+		};
+		696689C12D0E0A3F00B0F045 /* Exceptions for "GoToStopWidget" folder in "GoToStopWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 696689A62D0E0A3D00B0F045 /* GoToStopWidgetExtension */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -62,6 +93,14 @@
 				696689882D0DF31000B0F045 /* Exceptions for "GoToStopAPI" folder in "GoToStopAPI" target */,
 			);
 			path = GoToStopAPI;
+			sourceTree = "<group>";
+		};
+		696689AD2D0E0A3E00B0F045 /* GoToStopWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				696689C12D0E0A3F00B0F045 /* Exceptions for "GoToStopWidget" folder in "GoToStopWidgetExtension" target */,
+			);
+			path = GoToStopWidget;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -82,6 +121,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		696689A42D0E0A3D00B0F045 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				696689AC2D0E0A3E00B0F045 /* SwiftUI.framework in Frameworks */,
+				696689AA2D0E0A3E00B0F045 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -90,6 +138,8 @@
 			children = (
 				696689402D0DE91700B0F045 /* GoToStop */,
 				696689812D0DF31000B0F045 /* GoToStopAPI */,
+				696689AD2D0E0A3E00B0F045 /* GoToStopWidget */,
+				696689A82D0E0A3D00B0F045 /* Frameworks */,
 				6966893F2D0DE91700B0F045 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -99,8 +149,18 @@
 			children = (
 				6966893E2D0DE91700B0F045 /* GoToStop.app */,
 				696689802D0DF31000B0F045 /* GoToStopAPI.framework */,
+				696689A72D0E0A3D00B0F045 /* GoToStopWidgetExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		696689A82D0E0A3D00B0F045 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				696689A92D0E0A3D00B0F045 /* WidgetKit.framework */,
+				696689AB2D0E0A3E00B0F045 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -124,11 +184,13 @@
 				6966893B2D0DE91700B0F045 /* Frameworks */,
 				6966893C2D0DE91700B0F045 /* Resources */,
 				696689732D0DEF5C00B0F045 /* Embed Frameworks */,
+				696689BE2D0E0A3F00B0F045 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				696689852D0DF31000B0F045 /* PBXTargetDependency */,
+				696689BC2D0E0A3F00B0F045 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				696689402D0DE91700B0F045 /* GoToStop */,
@@ -163,6 +225,28 @@
 			productReference = 696689802D0DF31000B0F045 /* GoToStopAPI.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		696689A62D0E0A3D00B0F045 /* GoToStopWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 696689C22D0E0A3F00B0F045 /* Build configuration list for PBXNativeTarget "GoToStopWidgetExtension" */;
+			buildPhases = (
+				696689A32D0E0A3D00B0F045 /* Sources */,
+				696689A42D0E0A3D00B0F045 /* Frameworks */,
+				696689A52D0E0A3D00B0F045 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				696689AD2D0E0A3E00B0F045 /* GoToStopWidget */,
+			);
+			name = GoToStopWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = GoToStopWidgetExtension;
+			productReference = 696689A72D0E0A3D00B0F045 /* GoToStopWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -179,6 +263,9 @@
 					6966897F2D0DF31000B0F045 = {
 						CreatedOnToolsVersion = 16.2;
 						LastSwiftMigration = 1620;
+					};
+					696689A62D0E0A3D00B0F045 = {
+						CreatedOnToolsVersion = 16.2;
 					};
 				};
 			};
@@ -198,6 +285,7 @@
 			targets = (
 				6966893D2D0DE91700B0F045 /* GoToStop */,
 				6966897F2D0DF31000B0F045 /* GoToStopAPI */,
+				696689A62D0E0A3D00B0F045 /* GoToStopWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -211,6 +299,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		6966897E2D0DF31000B0F045 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		696689A52D0E0A3D00B0F045 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -234,6 +329,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		696689A32D0E0A3D00B0F045 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -241,6 +343,11 @@
 			isa = PBXTargetDependency;
 			target = 6966897F2D0DF31000B0F045 /* GoToStopAPI */;
 			targetProxy = 696689842D0DF31000B0F045 /* PBXContainerItemProxy */;
+		};
+		696689BC2D0E0A3F00B0F045 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 696689A62D0E0A3D00B0F045 /* GoToStopWidgetExtension */;
+			targetProxy = 696689BB2D0E0A3F00B0F045 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -497,6 +604,60 @@
 			};
 			name = Release;
 		};
+		696689BF2D0E0A3F00B0F045 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = PY3Q8L7FLF;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GoToStopWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = GoToStopWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = kulichkov.GoToStop.GoToStopWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		696689C02D0E0A3F00B0F045 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = PY3Q8L7FLF;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GoToStopWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = GoToStopWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = kulichkov.GoToStop.GoToStopWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -523,6 +684,15 @@
 			buildConfigurations = (
 				6966898A2D0DF31000B0F045 /* Debug */,
 				6966898B2D0DF31000B0F045 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		696689C22D0E0A3F00B0F045 /* Build configuration list for PBXNativeTarget "GoToStopWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				696689BF2D0E0A3F00B0F045 /* Debug */,
+				696689C02D0E0A3F00B0F045 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

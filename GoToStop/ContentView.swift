@@ -27,7 +27,14 @@ struct ContentView: View {
                 .imageScale(.large)
                 .foregroundStyle(.tint)
             Text(apiKeyInfo)
+            if let testSucceeded = viewModel.testSucceeded {
+                Circle()
+                    .fill(testSucceeded ? Color.green : Color.red)
+                    .frame(width: 20, height: 20)
+            }
             Spacer().frame(height: 50)
+            Button("Get departures") { viewModel.getDepartures() }
+            Spacer().frame(height: 150)
             TextField("Enter RMV API key", text: $text)
             Button("Set API key") { viewModel.setApiKey(text) }
         }

@@ -6,9 +6,49 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		696689862D0DF31000B0F045 /* GoToStopAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 696689802D0DF31000B0F045 /* GoToStopAPI.framework */; };
+		696689872D0DF31000B0F045 /* GoToStopAPI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 696689802D0DF31000B0F045 /* GoToStopAPI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		696689842D0DF31000B0F045 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 696689362D0DE91700B0F045 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6966897F2D0DF31000B0F045;
+			remoteInfo = GoToStopAPI;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		696689732D0DEF5C00B0F045 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				696689872D0DF31000B0F045 /* GoToStopAPI.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		6966893E2D0DE91700B0F045 /* GoToStop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GoToStop.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		696689802D0DF31000B0F045 /* GoToStopAPI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GoToStopAPI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		696689882D0DF31000B0F045 /* Exceptions for "GoToStopAPI" folder in "GoToStopAPI" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			publicHeaders = (
+				GoToStopAPI.h,
+			);
+			target = 6966897F2D0DF31000B0F045 /* GoToStopAPI */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		696689402D0DE91700B0F045 /* GoToStop */ = {
@@ -16,10 +56,26 @@
 			path = GoToStop;
 			sourceTree = "<group>";
 		};
+		696689812D0DF31000B0F045 /* GoToStopAPI */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				696689882D0DF31000B0F045 /* Exceptions for "GoToStopAPI" folder in "GoToStopAPI" target */,
+			);
+			path = GoToStopAPI;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		6966893B2D0DE91700B0F045 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				696689862D0DF31000B0F045 /* GoToStopAPI.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6966897D2D0DF31000B0F045 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -33,6 +89,7 @@
 			isa = PBXGroup;
 			children = (
 				696689402D0DE91700B0F045 /* GoToStop */,
+				696689812D0DF31000B0F045 /* GoToStopAPI */,
 				6966893F2D0DE91700B0F045 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,11 +98,22 @@
 			isa = PBXGroup;
 			children = (
 				6966893E2D0DE91700B0F045 /* GoToStop.app */,
+				696689802D0DF31000B0F045 /* GoToStopAPI.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		6966897B2D0DF31000B0F045 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
 		6966893D2D0DE91700B0F045 /* GoToStop */ = {
@@ -55,10 +123,12 @@
 				6966893A2D0DE91700B0F045 /* Sources */,
 				6966893B2D0DE91700B0F045 /* Frameworks */,
 				6966893C2D0DE91700B0F045 /* Resources */,
+				696689732D0DEF5C00B0F045 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				696689852D0DF31000B0F045 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				696689402D0DE91700B0F045 /* GoToStop */,
@@ -69,6 +139,29 @@
 			productName = GoToStop;
 			productReference = 6966893E2D0DE91700B0F045 /* GoToStop.app */;
 			productType = "com.apple.product-type.application";
+		};
+		6966897F2D0DF31000B0F045 /* GoToStopAPI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 696689892D0DF31000B0F045 /* Build configuration list for PBXNativeTarget "GoToStopAPI" */;
+			buildPhases = (
+				6966897B2D0DF31000B0F045 /* Headers */,
+				6966897C2D0DF31000B0F045 /* Sources */,
+				6966897D2D0DF31000B0F045 /* Frameworks */,
+				6966897E2D0DF31000B0F045 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				696689812D0DF31000B0F045 /* GoToStopAPI */,
+			);
+			name = GoToStopAPI;
+			packageProductDependencies = (
+			);
+			productName = GoToStopAPI;
+			productReference = 696689802D0DF31000B0F045 /* GoToStopAPI.framework */;
+			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
 
@@ -82,6 +175,10 @@
 				TargetAttributes = {
 					6966893D2D0DE91700B0F045 = {
 						CreatedOnToolsVersion = 16.2;
+					};
+					6966897F2D0DF31000B0F045 = {
+						CreatedOnToolsVersion = 16.2;
+						LastSwiftMigration = 1620;
 					};
 				};
 			};
@@ -100,12 +197,20 @@
 			projectRoot = "";
 			targets = (
 				6966893D2D0DE91700B0F045 /* GoToStop */,
+				6966897F2D0DF31000B0F045 /* GoToStopAPI */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		6966893C2D0DE91700B0F045 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6966897E2D0DF31000B0F045 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -122,7 +227,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		6966897C2D0DF31000B0F045 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		696689852D0DF31000B0F045 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6966897F2D0DF31000B0F045 /* GoToStopAPI */;
+			targetProxy = 696689842D0DF31000B0F045 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		6966894A2D0DE91800B0F045 /* Debug */ = {
@@ -302,6 +422,79 @@
 			};
 			name = Release;
 		};
+		6966898A2D0DF31000B0F045 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = PY3Q8L7FLF;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = de.kulichkov.GoToStopAPI;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		6966898B2D0DF31000B0F045 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = PY3Q8L7FLF;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = de.kulichkov.GoToStopAPI;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -319,6 +512,15 @@
 			buildConfigurations = (
 				6966894D2D0DE91800B0F045 /* Debug */,
 				6966894E2D0DE91800B0F045 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		696689892D0DF31000B0F045 /* Build configuration list for PBXNativeTarget "GoToStopAPI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6966898A2D0DF31000B0F045 /* Debug */,
+				6966898B2D0DF31000B0F045 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

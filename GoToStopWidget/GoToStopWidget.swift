@@ -7,28 +7,56 @@
 
 import WidgetKit
 import SwiftUI
+import GoToStopAPI
 
-struct Provider: AppIntentTimelineProvider {
-    func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), configuration: ConfigurationAppIntent())
-    }
-
-    func snapshot(for configuration: ConfigurationAppIntent, in context: Context) async -> SimpleEntry {
-        SimpleEntry(date: Date(), configuration: configuration)
+struct Provider: TimelineProvider {
+    private var viewModel = WidgetViewModel()
+    
+    func getSnapshot(in context: Context, completion: @escaping @Sendable (GoToStopEntry) -> Void) {
+        let snapshot = GoToStopEntry(
+            date: Date(),
+            data: .preview
+        )
+        completion(snapshot)
     }
     
-    func timeline(for configuration: ConfigurationAppIntent, in context: Context) async -> Timeline<SimpleEntry> {
-        var entries: [SimpleEntry] = []
-
+    func getTimeline(in context: Context, completion: @escaping @Sendable (Timeline<GoToStopEntry>) -> Void) {
         // Generate a timeline consisting of five entries an hour apart, starting from the current date.
-        let currentDate = Date()
-        for hourOffset in 0 ..< 5 {
-            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let entry = SimpleEntry(date: entryDate, configuration: configuration)
-            entries.append(entry)
+//        let currentDate = Date()
+//        for hourOffset in 0 ..< 5 {
+//            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
+//            let entry = SimpleEntry(date: entryDate, configuration: configuration, nextTramTime: entryDate.addingTimeInterval(5 * 60))
+//            entries.append(entry)
+//        }
+//        return Timeline(entries: entries, policy: .atEnd)
+        
+        Task {
+            do {
+                let widgetData = try await viewModel.getWidgetData()
+                let entry = GoToStopEntry(
+                    date: .now,
+                    data: widgetData
+                )
+                let timeline = Timeline(entries: [entry], policy: .after(.now.addingTimeInterval(5 * 60)))
+                completion(timeline)
+            } catch {
+                debugPrint(error)
+            }
         }
-
-        return Timeline(entries: entries, policy: .atEnd)
+    }
+    
+    private let dateFormatter = DateFormatter()
+    
+    func placeholder(in context: Context) -> GoToStopEntry {
+        GoToStopEntry(
+            date: Date(),
+            data: WidgetData(
+                name: "-",
+                from: "-",
+                to: "-",
+                times: []
+            )
+        )
     }
 
 //    func relevances() async -> WidgetRelevances<ConfigurationAppIntent> {
@@ -36,22 +64,43 @@ struct Provider: AppIntentTimelineProvider {
 //    }
 }
 
-struct SimpleEntry: TimelineEntry {
+struct GoToStopEntry: TimelineEntry {
     let date: Date
-    let configuration: ConfigurationAppIntent
+    
+    let data: WidgetData
 }
 
 struct GoToStopWidgetEntryView : View {
     var entry: Provider.Entry
 
     var body: some View {
-        VStack {
-            Text("Time:")
-            Text(entry.date, style: .time)
-
-            Text("Favorite Emoji:")
-            Text(entry.configuration.favoriteEmoji)
+        VStack(alignment: .leading) {
+            Text(entry.data.name)
+            HStack(alignment: .firstTextBaseline) {
+                Text("Time:")
+                Text(entry.date, style: .time)
+                Spacer()
+            }
+            HStack(alignment: .firstTextBaseline) {
+                Text("From:")
+                Text(entry.data.from)
+                    .truncationMode(.head)
+                Spacer()
+            }
+            HStack(alignment: .firstTextBaseline) {
+                Text("To:")
+                Text(entry.data.to)
+                    .truncationMode(.head)
+                Spacer()
+            }
+            
+            ForEach(entry.data.times.indices.prefix(4), id: \.self) { index in
+                Text(entry.data.times[index])
+            }
+            Spacer()
         }
+        .font(.caption)
+        .lineLimit(1)
     }
 }
 
@@ -59,30 +108,34 @@ struct GoToStopWidget: Widget {
     let kind: String = "GoToStopWidget"
 
     var body: some WidgetConfiguration {
-        AppIntentConfiguration(kind: kind, intent: ConfigurationAppIntent.self, provider: Provider()) { entry in
+        StaticConfiguration(kind: kind, provider: Provider()) { entry in
             GoToStopWidgetEntryView(entry: entry)
                 .containerBackground(.fill.tertiary, for: .widget)
         }
     }
 }
 
-extension ConfigurationAppIntent {
-    fileprivate static var smiley: ConfigurationAppIntent {
-        let intent = ConfigurationAppIntent()
-        intent.favoriteEmoji = "😀"
-        return intent
-    }
-    
-    fileprivate static var starEyes: ConfigurationAppIntent {
-        let intent = ConfigurationAppIntent()
-        intent.favoriteEmoji = "🤩"
-        return intent
-    }
-}
-
 #Preview(as: .systemSmall) {
     GoToStopWidget()
 } timeline: {
-    SimpleEntry(date: .now, configuration: .smiley)
-    SimpleEntry(date: .now, configuration: .starEyes)
+    GoToStopEntry(
+        date: .now,
+        data: .preview
+    )
+    GoToStopEntry(
+        date: .now.addingTimeInterval(160),
+        data: .preview
+    )
+}
+
+extension WidgetData {
+    static let preview = WidgetData(
+        name: "Tram 17",
+        from: "Stop 1 Stop 1 Stop 1 Stop 1 Stop 1 Stop 1",
+        to: "Stop 2 Stop 2 Stop 2 Stop 2 Stop 2 Stop 2",
+        times: [
+            "11:11:11",
+            "22:22:22",
+        ]
+    )
 }

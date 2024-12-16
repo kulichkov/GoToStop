@@ -9,12 +9,14 @@ import Foundation
 import GoToStopAPI
 
 final class MainViewModel: ObservableObject {
+    private let userDefaults: UserDefaults?
     private let userDefaultsApiKey = "apiKey"
     @Published var testSucceeded: Bool?
     @Published var apiKey: String?
         
     init() {
-        self.apiKey = UserDefaults.standard.string(forKey: userDefaultsApiKey)
+        self.userDefaults = UserDefaults(suiteName: "group.kulichkov.GoToStop")
+        self.apiKey = userDefaults?.string(forKey: userDefaultsApiKey)
         NetworkManager.shared.apiKey = apiKey
     }
     
@@ -32,9 +34,8 @@ final class MainViewModel: ObservableObject {
     }
     
     func setApiKey(_ apiKey: String?) {
-        UserDefaults.standard.set(apiKey, forKey: userDefaultsApiKey)
+        userDefaults?.set(apiKey, forKey: userDefaultsApiKey)
         self.apiKey = apiKey
         NetworkManager.shared.apiKey = apiKey
     }
-
 }

@@ -16,12 +16,6 @@ struct WidgetData {
 }
 
 final class WidgetViewModel: ObservableObject {
-    private let userDefaults: UserDefaults?
-        
-    init() {
-        self.userDefaults = UserDefaults(suiteName: "group.kulichkov.GoToStop")
-        NetworkManager.shared.apiKey = userDefaults?.string(forKey: "apiKey")
-    }
     
     @MainActor
     func getWidgetData() async throws -> WidgetData {

@@ -16,7 +16,7 @@ struct LocationName: Decodable {
 }
 
 // { "StopLocation": { .... } }
-public struct StopLocation: Decodable {
+public struct StopLocation: Codable {
     let altId: [String]? // [ "de:06412:1974" ]
     let timezoneOffset: Int? // 60
     let id: String? // "A=1@O=F Kuhwaldstraße@X=8640584@Y=50116885@U=80@L=3001974@B=1@p=1734544410@"

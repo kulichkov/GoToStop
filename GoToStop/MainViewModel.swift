@@ -12,23 +12,12 @@ final class MainViewModel: ObservableObject {
     @Published
     private(set) var testSucceeded: Bool?
     @Published
-    private(set) var apiKey: String?
+    private(set) var apiKey = Settings.shared.apiKey
     @Published
     private(set) var stopText = ""
     
     @Published
     var newApiKeyText = ""
-
-
-    private let userDefaults: UserDefaults?
-    private let userDefaultsApiKey = "apiKey"
-        
-    init() {
-        self.userDefaults = UserDefaults(suiteName: "group.kulichkov.GoToStop")
-        let apiKey = userDefaults?.string(forKey: userDefaultsApiKey)
-        self.apiKey = apiKey
-        NetworkManager.shared.apiKey = apiKey
-    }
     
 //    func getDepartures() {
 //        Task { @MainActor in
@@ -58,9 +47,8 @@ final class MainViewModel: ObservableObject {
     
     func setApiKey() {
         let newApiKey = newApiKeyText
-        userDefaults?.set(newApiKey, forKey: userDefaultsApiKey)
+        Settings.shared.apiKey = newApiKey
         self.apiKey = newApiKey
-        NetworkManager.shared.apiKey = newApiKey
     }
 
 }

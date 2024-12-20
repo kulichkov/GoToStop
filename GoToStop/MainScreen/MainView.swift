@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  MainView.swift
 //  GoToStop
 //
 //  Created by Mikhail Kulichkov on 14.12.24.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct MainView: View {
     @StateObject
     var viewModel = MainViewModel()
     
@@ -34,5 +34,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    MainView()
 }

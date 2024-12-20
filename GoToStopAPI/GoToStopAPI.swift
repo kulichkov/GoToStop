@@ -22,14 +22,14 @@ final public class NetworkManager {
     
     /// Can be used to perform a pattern matching of a user input and to retrieve
     /// a list of possible matches in the journey planner database. Possible matches might be stops/stations.
-    /// - Parameter name: A search query.
+    /// - Parameter input: A search query.
     /// - Returns: The result is a list of possible matches (locations) where the user might pick one entry
     /// to ask for a departure board of this stop/station.
     public func getStopLocations(
-        name: String
+        input: String
     ) async throws -> [StopLocation] {
         var queryItems: [URLQueryItem] = []
-        queryItems.append(URLQueryItem(name: "name", value: name))
+        queryItems.append(URLQueryItem(name: "input", value: input))
 
         var urlComponents = URLComponents(string: baseUrl + "/location.name")
         urlComponents?.queryItems = queryItems
@@ -97,6 +97,7 @@ private extension NetworkManager {
 
         let (data, response) = try await URLSession.shared.data(for: request)
         debugPrint(response)
+        debugPrint(String(data: data, encoding: .utf8) ?? "No Data")
         
         return try JSONDecoder().decode(T.self, from: data)
     }

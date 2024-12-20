@@ -25,8 +25,9 @@ final class WidgetViewModel: ObservableObject {
     
     @MainActor
     func getWidgetData() async throws -> WidgetData {
-        let departures = try await NetworkManager.shared.getDepartures()
-        return mapDepartures(departures)
+//        let departures = try await NetworkManager.shared.getDepartures()
+//        return mapDepartures(departures)
+        return mapDepartures([])
     }
     
     private func mapDepartures(_ departures: [Departure]) -> WidgetData {

@@ -9,22 +9,45 @@ import Foundation
 import GoToStopAPI
 
 final class MainViewModel: ObservableObject {
+    @Published
+    private(set) var testSucceeded: Bool?
+    @Published
+    private(set) var apiKey: String?
+    @Published
+    private(set) var stopText = ""
+    
+    @Published
+    var newApiKeyText = ""
+
+
     private let userDefaults: UserDefaults?
     private let userDefaultsApiKey = "apiKey"
-    @Published var testSucceeded: Bool?
-    @Published var apiKey: String?
         
     init() {
         self.userDefaults = UserDefaults(suiteName: "group.kulichkov.GoToStop")
-        self.apiKey = userDefaults?.string(forKey: userDefaultsApiKey)
+        let apiKey = userDefaults?.string(forKey: userDefaultsApiKey)
+        self.apiKey = apiKey
         NetworkManager.shared.apiKey = apiKey
     }
     
-    func getDepartures() {
+//    func getDepartures() {
+//        Task { @MainActor in
+//            do {
+//                let departures = try await NetworkManager.shared.getDepartures(stopId: <#String#>)
+//                debugPrint(departures)
+//                testSucceeded = true
+//            } catch {
+//                debugPrint(error)
+//                testSucceeded = false
+//            }
+//        }
+//    }
+
+    func getStops() {
         Task { @MainActor in
             do {
-                let departures = try await NetworkManager.shared.getDepartures()
-                debugPrint(departures)
+                let stops = try await NetworkManager.shared.getStopLocations(input: "Kuhwaldstrasse")
+                debugPrint(stops)
                 testSucceeded = true
             } catch {
                 debugPrint(error)
@@ -33,9 +56,11 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    func setApiKey(_ apiKey: String?) {
-        userDefaults?.set(apiKey, forKey: userDefaultsApiKey)
-        self.apiKey = apiKey
-        NetworkManager.shared.apiKey = apiKey
+    func setApiKey() {
+        let newApiKey = newApiKeyText
+        userDefaults?.set(newApiKey, forKey: userDefaultsApiKey)
+        self.apiKey = newApiKey
+        NetworkManager.shared.apiKey = newApiKey
     }
+
 }

@@ -44,13 +44,18 @@ enum StopLocationOrCoordLocation: Decodable {
     case coordLocation(CoordLocation)
     case stopLocation(StopLocation)
     
+    enum CodingKeys: String, CodingKey {
+        case coordLocation = "CoordLocation"
+        case stopLocation = "StopLocation"
+    }
+    
     init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
+        let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        if let coordLocation = try? container.decode(CoordLocation.self) {
-            self = .coordLocation(coordLocation)
-        } else if let stopLocation = try? container.decode(StopLocation.self) {
+        if let stopLocation = try? container.decodeIfPresent(StopLocation.self, forKey: .stopLocation) {
             self = .stopLocation(stopLocation)
+        } else if let coordLocation = try? container.decodeIfPresent(CoordLocation.self, forKey: .coordLocation) {
+            self = .coordLocation(coordLocation)
         } else {
             throw DecodingError.typeMismatch(
                 StopLocationOrCoordLocation.self,

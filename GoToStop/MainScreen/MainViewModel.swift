@@ -7,17 +7,17 @@
 
 import Foundation
 import GoToStopAPI
+import Combine
 
 final class MainViewModel: ObservableObject {
-    @Published
-    private(set) var testSucceeded: Bool?
-    @Published
-    private(set) var apiKey = Settings.shared.apiKey
-    @Published
-    private(set) var stopText = ""
+    @Published private(set) var testSucceeded: Bool?
+    @Published private(set) var apiKey = Settings.shared.apiKey
+    @Published private(set) var selectedStop = ""
+    @Published var isSelectingStop = false
     
-    @Published
-    var newApiKeyText = ""
+    @Published var newApiKeyText = ""
+    
+    private var binding = Set<AnyCancellable>()
     
 //    func getDepartures() {
 //        Task { @MainActor in
@@ -31,7 +31,19 @@ final class MainViewModel: ObservableObject {
 //            }
 //        }
 //    }
+    init() {
+        refresh()
+        bind()
+    }
 
+    func refresh() {
+        if let name = Settings.shared.stopLocation?.name {
+            selectedStop = "Stop: " + name
+        } else {
+            selectedStop = "Select stop"
+        }
+    }
+    
     func getStops() {
         Task { @MainActor in
             do {
@@ -51,4 +63,9 @@ final class MainViewModel: ObservableObject {
         self.apiKey = newApiKey
     }
 
+    private func bind() {
+        $isSelectingStop
+            .sink { [weak self] _ in self?.refresh() }
+            .store(in: &binding)
+    }
 }

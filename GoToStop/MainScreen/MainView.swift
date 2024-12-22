@@ -8,8 +8,7 @@
 import SwiftUI
 
 struct MainView: View {
-    @StateObject
-    var viewModel = MainViewModel()
+    @StateObject var viewModel = MainViewModel()
     
     var body: some View {
         VStack {
@@ -20,7 +19,7 @@ struct MainView: View {
                     .frame(width: 20, height: 20)
             }
             Spacer().frame(height: 50)
-            Button("Get stops") { viewModel.getStops() }
+            Button(viewModel.selectedStop) { viewModel.isSelectingStop = true }
             Spacer().frame(height: 150)
             TextField(
                 viewModel.apiKey ?? "Enter RMV API key",
@@ -30,9 +29,15 @@ struct MainView: View {
         }
         .multilineTextAlignment(.center)
         .padding()
+        .sheet(
+            isPresented: $viewModel.isSelectingStop,
+            onDismiss: { viewModel.isSelectingStop = false }
+        ) {
+            SelectStopView(viewModel: SelectStopViewModel(), isPresented: $viewModel.isSelectingStop)
+        }
     }
 }
 
-#Preview {
-    MainView()
-}
+//#Preview {
+//    MainView()
+//}

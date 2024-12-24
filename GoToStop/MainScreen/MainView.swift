@@ -25,7 +25,7 @@ struct MainView: View {
                 viewModel.apiKey ?? "Enter RMV API key",
                 text: $viewModel.newApiKeyText
             )
-            Button("Set API key") {  }
+            Button("Set API key") { viewModel.setApiKey() }
         }
         .multilineTextAlignment(.center)
         .padding()

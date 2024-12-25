@@ -12,15 +12,13 @@ struct MainView: View {
     
     var body: some View {
         VStack {
-            
-            if let testSucceeded = viewModel.testSucceeded {
-                Circle()
-                    .fill(testSucceeded ? Color.green : Color.red)
-                    .frame(width: 20, height: 20)
-            }
             Spacer().frame(height: 50)
             Button(viewModel.selectedStop) { viewModel.isSelectingStop = true }
-            Spacer().frame(height: 150)
+            Spacer().frame(height: 50)
+            Button("Select trips") { viewModel.isSelectingTrips = true }
+                .disabled(!viewModel.isStopSelected)
+            
+            Spacer(minLength: 16)
             TextField(
                 viewModel.apiKey ?? "Enter RMV API key",
                 text: $viewModel.newApiKeyText
@@ -34,6 +32,12 @@ struct MainView: View {
             onDismiss: { viewModel.isSelectingStop = false }
         ) {
             SelectStopView(viewModel: SelectStopViewModel(), isPresented: $viewModel.isSelectingStop)
+        }
+        .sheet(
+            isPresented: $viewModel.isSelectingTrips,
+            onDismiss: { viewModel.isSelectingTrips = false }
+        ) {
+            SelectTripsView(viewModel: SelectTripsViewModel(), isPresented: $viewModel.isSelectingTrips)
         }
     }
 }

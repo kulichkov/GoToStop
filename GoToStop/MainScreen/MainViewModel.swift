@@ -13,24 +13,13 @@ final class MainViewModel: ObservableObject {
     @Published private(set) var testSucceeded: Bool?
     @Published private(set) var apiKey = Settings.shared.apiKey
     @Published private(set) var selectedStop = ""
+    @Published private(set) var isStopSelected = false
     @Published var isSelectingStop = false
-    
+    @Published var isSelectingTrips = false
     @Published var newApiKeyText = ""
     
     private var binding = Set<AnyCancellable>()
     
-//    func getDepartures() {
-//        Task { @MainActor in
-//            do {
-//                let departures = try await NetworkManager.shared.getDepartures(stopId: <#String#>)
-//                debugPrint(departures)
-//                testSucceeded = true
-//            } catch {
-//                debugPrint(error)
-//                testSucceeded = false
-//            }
-//        }
-//    }
     init() {
         refresh()
         bind()
@@ -39,8 +28,10 @@ final class MainViewModel: ObservableObject {
     func refresh() {
         if let name = Settings.shared.stopLocation?.name {
             selectedStop = "Stop: " + name
+            isStopSelected = true
         } else {
             selectedStop = "Select stop"
+            isStopSelected = false
         }
     }
     
@@ -65,6 +56,7 @@ final class MainViewModel: ObservableObject {
 
     private func bind() {
         $isSelectingStop
+            .filter { $0 == false }
             .sink { [weak self] _ in self?.refresh() }
             .store(in: &binding)
     }

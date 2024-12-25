@@ -13,40 +13,41 @@ struct SelectStopView: View {
     @Binding var isPresented: Bool
     
     var body: some View {
-        VStack {
-            TextField("Search for a stop...", text: $viewModel.searchQuery)
-                .textFieldStyle(.roundedBorder)
-                .overlay {
-                    if !viewModel.searchQuery.isEmpty {
-                        HStack {
-                            Spacer()
-                            Button(action: {
-                                viewModel.searchQuery = ""
-                            }) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .foregroundColor(.gray)
-                                    .padding(.trailing, 8)
+        NavigationView {
+            VStack {
+                TextField("Search for a stop...", text: $viewModel.searchQuery)
+                    .textFieldStyle(.roundedBorder)
+                    .overlay {
+                        if !viewModel.searchQuery.isEmpty {
+                            HStack {
+                                Spacer()
+                                Button(action: {
+                                    viewModel.searchQuery = ""
+                                }) {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .foregroundColor(.gray)
+                                        .padding(.trailing, 8)
+                                }
                             }
                         }
                     }
+                    .padding()
+                
+                List(viewModel.stopItems) { item in
+                    HStack {
+                        Text(item.name)
+                        Spacer()
+                    }
+                    .foregroundColor(viewModel.selectedItem == item ? .blue : .primary)
+                    .listRowBackground(viewModel.selectedItem == item ? Color.blue.opacity(0.2) : nil)
+                    .contentShape(.rect)
+                    .onTapGesture { viewModel.selectedItem = item }
                 }
-                .padding()
-            
-
-            List(viewModel.stopItems) { item in
-                HStack {
-                    Text(item.name)
-                    Spacer()
-                }
-                .foregroundColor(viewModel.selectedItem == item ? .blue : .primary)
-                .listRowBackground(viewModel.selectedItem == item ? Color.blue.opacity(0.2) : nil)
-                .contentShape(.rect)
-                .onTapGesture {
-                    viewModel.selectedItem = item
-                    isPresented = false
-                }
+                .listStyle(.insetGrouped)
             }
-            .listStyle(.insetGrouped)
+            .navigationTitle("Select stop")
+            .toolbar { Button("Done") { isPresented = false }
+            }
         }
     }
 }

@@ -11,22 +11,38 @@ struct MainView: View {
     @StateObject var viewModel = MainViewModel()
     
     var body: some View {
-        VStack {
-            Spacer().frame(height: 50)
-            Button(viewModel.selectedStop) { viewModel.isSelectingStop = true }
-            Spacer().frame(height: 50)
-            Button("Select trips") { viewModel.isSelectingTrips = true }
-                .disabled(!viewModel.isStopSelected)
-            
-            Spacer(minLength: 16)
-            TextField(
-                viewModel.apiKey ?? "Enter RMV API key",
-                text: $viewModel.newApiKeyText
-            )
-            Button("Set API key") { viewModel.setApiKey() }
+        ScrollView {
+            VStack {
+                Spacer().frame(height: 50)
+                Button(viewModel.selectedStop) { viewModel.isSelectingStop = true }
+                Spacer().frame(height: 50)
+                Text(viewModel.selectedTrips.isEmpty ? "No selected trips:" : "Selected trips:")
+                
+                ForEach(viewModel.selectedTrips) { trip in
+                    HStack {
+                        Text(trip.name)
+                            .multilineTextAlignment(.leading)
+                        Spacer(minLength: 16)
+                        Text(trip.direction)
+                            .multilineTextAlignment(.trailing)
+                    }
+                    .font(.caption)
+                }
+                
+                Spacer().frame(height: 16)
+                Button("Select trips") { viewModel.isSelectingTrips = true }
+                    .disabled(!viewModel.isStopSelected)
+                
+                Spacer(minLength: 100)
+                TextField(
+                    viewModel.apiKey ?? "Enter RMV API key",
+                    text: $viewModel.newApiKeyText
+                )
+                Button("Set API key") { viewModel.setApiKey() }
+            }
+            .multilineTextAlignment(.center)
+            .padding()
         }
-        .multilineTextAlignment(.center)
-        .padding()
         .sheet(
             isPresented: $viewModel.isSelectingStop,
             onDismiss: { viewModel.isSelectingStop = false }

@@ -33,6 +33,26 @@ struct MainView: View {
                 Button("Select trips") { viewModel.isSelectingTrips = true }
                     .disabled(!viewModel.isStopSelected)
                 
+                Spacer().frame(height: 32)
+                HStack {
+                    Text("Departure board:")
+                    Spacer()
+                    Button("Refresh") { viewModel.getSchedule() }
+                }
+                ForEach(viewModel.scheduleItems) { departure in
+                    HStack {
+                        Text(departure.name)
+                            .multilineTextAlignment(.leading)
+                        Spacer(minLength: 16)
+                        Text(departure.direction)
+                            .multilineTextAlignment(.leading)
+                        Spacer(minLength: 16)
+                        Text(departure.minutesTillDeparture)
+                            .multilineTextAlignment(.trailing)
+                    }
+                    .font(.caption)
+                }
+                
                 Spacer(minLength: 100)
                 TextField(
                     viewModel.apiKey ?? "Enter RMV API key",

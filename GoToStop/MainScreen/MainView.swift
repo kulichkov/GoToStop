@@ -15,9 +15,9 @@ struct MainView: View {
             VStack {
                 Spacer().frame(height: 50)
                 Button(viewModel.selectedStop) { viewModel.isSelectingStop = true }
-                Spacer().frame(height: 50)
+                Spacer().frame(height: 16)
                 Text(viewModel.selectedTrips.isEmpty ? "No selected trips:" : "Selected trips:")
-                
+                Spacer().frame(height: 16)
                 ForEach(viewModel.selectedTrips) { trip in
                     HStack {
                         Text(trip.name)

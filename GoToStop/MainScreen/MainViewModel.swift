@@ -42,8 +42,11 @@ final class MainViewModel: ObservableObject {
     }
 
     func refresh() {
-        if let name = Settings.shared.stopLocation?.name {
-            selectedStop = "Stop: " + name
+        if let stopName = Settings.shared.stopLocation?.name {
+            if !selectedStop.isEmpty, selectedStop != stopName {
+                Settings.shared.trips = []
+            }
+            selectedStop = stopName
             isStopSelected = true
         } else {
             selectedStop = "Select stop"

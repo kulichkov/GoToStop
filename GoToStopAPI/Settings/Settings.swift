@@ -9,6 +9,7 @@ public class Settings {
     private enum Key: String {
         case apiKey = "apiKey"
         case stopLocation = "stopLocation"
+        case trips = "trips"
     }
     
     public static let shared = Settings()
@@ -22,6 +23,10 @@ public class Settings {
     
     public lazy var stopLocation: StopLocation? = getObject(for: .stopLocation) {
         didSet { setObject(stopLocation, for: .stopLocation) }
+    }
+    
+    public lazy var trips: [Trip] = getObjects(for: .trips) {
+        didSet { setObjects(trips, for: .trips) }
     }
     
     private lazy var userDefaults = UserDefaults(suiteName: suiteName)
@@ -47,6 +52,31 @@ public class Settings {
         }
         do {
             let data = try JSONEncoder().encode(object)
+            userDefaults?.set(data, forKey: key.rawValue)
+        } catch {
+            debugPrint("Error saving object: \(error)")
+        }
+    }
+    
+    private func getObjects<T: Decodable>(for key: Settings.Key) -> [T] {
+        guard let data = userDefaults?.data(forKey: key.rawValue)
+        else { return [] }
+        
+        do {
+            return try JSONDecoder().decode([T].self, from: data)
+        } catch {
+            debugPrint("Error: \(error)")
+            return []
+        }
+    }
+    
+    private func setObjects<T: Encodable>(_ objects: [T], for key: Settings.Key) {
+        guard !objects.isEmpty else {
+            userDefaults?.set([], forKey: key.rawValue)
+            return
+        }
+        do {
+            let data = try JSONEncoder().encode(objects)
             userDefaults?.set(data, forKey: key.rawValue)
         } catch {
             debugPrint("Error saving object: \(error)")

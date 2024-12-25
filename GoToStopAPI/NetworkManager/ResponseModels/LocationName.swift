@@ -68,3 +68,25 @@ enum StopLocationOrCoordLocation: Decodable {
     }
 }
 
+
+public struct Trip: Codable {
+    public let name: String
+    public let direction: String
+    public let category: String
+    public let line: String
+    public let directionId: String
+    
+    public init(
+        name: String,
+        direction: String,
+        category: String,
+        line: String,
+        directionId: String
+    ) {
+        self.name = name
+        self.direction = direction
+        self.category = category
+        self.line = line
+        self.directionId = directionId
+    }
+}

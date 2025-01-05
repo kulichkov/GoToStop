@@ -77,6 +77,29 @@ final public class NetworkManager {
         return departureBoard.departures
     }
 
+    public func getDepartures(
+        stopId: String,
+        departureLines: [DepartureLine]
+    ) async throws -> [Departure] {
+        try await withThrowingTaskGroup(of: [Departure].self) { [weak self] group -> [Departure] in
+            for line in departureLines {
+                group.addTask {
+                    try await self?.getDepartures(
+                        stopId: stopId,
+                        directionId: line.directionId,
+                        lines: line.id
+                    ) ?? []
+                }
+            }
+            
+            var collectedDepartures: [Departure] = []
+            for try await departures in group {
+                collectedDepartures.append(contentsOf: departures)
+            }
+            
+            return collectedDepartures
+        }
+    }
 }
 
 private extension NetworkManager {

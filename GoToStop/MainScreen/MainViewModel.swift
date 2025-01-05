@@ -57,6 +57,18 @@ final class MainViewModel: ObservableObject {
         }
     }
     
+    private lazy var serverDateTimeFormatter: DateFormatter = {
+        var dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        return dateFormatter
+    }()
+    
+    private lazy var shortTimeFormatter: DateFormatter = {
+        var dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "HH:mm"
+        return dateFormatter
+    }()
+    
     private var binding = Set<AnyCancellable>()
     
     init() {
@@ -87,39 +99,28 @@ final class MainViewModel: ObservableObject {
         else { return }
         
         fetchingScheduleTask = Task { @MainActor in
-            let fetchedDepartures = await withTaskGroup(of: [Departure].self) { group -> [Departure] in
-                for trip in savedTrips {
-                    group.addTask {
-                        do {
-                            return try await NetworkManager.shared.getDepartures(
-                                stopId: stopId,
-                                directionId: trip.directionId,
-                                lines: trip.line
-                            )
-                        } catch {
-                            debugPrint(error)
-                            return []
-                        }
-                    }
-                }
-                
-                var collectedDepartures: [Departure] = []
-                for await departures in group {
-                    collectedDepartures.append(contentsOf: departures)
-                }
-                
-                return collectedDepartures
+            let fetchedDepartures: [Departure]
+            do {
+                fetchedDepartures = try await NetworkManager.shared.getDepartures(
+                    stopId: stopId,
+                    departureLines: savedTrips.map { DepartureLine(id: $0.line, directionId: $0.directionId) }
+                )
+            } catch {
+                fetchedDepartures = []
+                debugPrint(error)
             }
-            
+    
             scheduleItems = fetchedDepartures
+                .filter { $0.reachable == true }
                 .sorted(using: SortDescriptor(\.rtTime))
-                .map { ScheduleItem(
+                .map { [weak self] in ScheduleItem(
                     name: $0.name ?? "",
                     direction: $0.direction ?? "",
-                    minutesTillDeparture: $0.rtTime ?? ""
+                    minutesTillDeparture: self?.getShortTimeAndMinutes(
+                        date: $0.rtDate ?? $0.date,
+                        time: $0.rtTime ?? $0.time
+                    ) ?? ""
                 ) }
-            
-            
         }
     }
     
@@ -129,17 +130,20 @@ final class MainViewModel: ObservableObject {
         self.apiKey = newApiKey
     }
 
+    private func getShortTimeAndMinutes(date: String?, time: String?) -> String? {
+        guard let date, let time, let date = serverDateTimeFormatter.date(from: "\(date) \(time)")
+        else { return nil }
+        
+        let minutesLeft = Int((date.timeIntervalSinceNow/60).rounded(.up))
+        let shortDate = shortTimeFormatter.string(from: date)
+        return "\(shortDate) (\(minutesLeft) min)"
+    }
+    
     private func bind() {
         $isSelectingStop
             .merge(with: $isSelectingTrips)
             .filter { $0 == false }
             .sink { [weak self] _ in self?.refresh() }
-            .store(in: &binding)
-        
-        $scheduleItems
-            .sink { [weak self] items in
-                debugPrint(items)
-            }
             .store(in: &binding)
     }
 }

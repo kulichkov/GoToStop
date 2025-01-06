@@ -44,7 +44,7 @@ final class SelectTripsViewModel: ObservableObject {
             name: $0.trip.name,
             direction: $0.trip.direction,
             category: $0.trip.category,
-            line: $0.trip.line,
+            lineId: $0.trip.line,
             directionId: $0.trip.directionId
         ) }
     }

@@ -45,7 +45,7 @@ final class WidgetViewModel: ObservableObject {
         do {
             fetchedDepartures = try await NetworkManager.shared.getDepartures(
                 stopId: stopId,
-                departureLines: trips.map { DepartureLine(id: $0.line, directionId: $0.directionId) }
+                departureLines: trips.map { DepartureLine(id: $0.lineId, directionId: $0.directionId) }
             )
         } catch {
             fetchedDepartures = []

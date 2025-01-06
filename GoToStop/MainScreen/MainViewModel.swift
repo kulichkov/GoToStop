@@ -104,7 +104,7 @@ final class MainViewModel: ObservableObject {
             do {
                 fetchedDepartures = try await NetworkManager.shared.getDepartures(
                     stopId: stopId,
-                    departureLines: savedTrips.map { DepartureLine(id: $0.line, directionId: $0.directionId) }
+                    departureLines: savedTrips.map { DepartureLine(id: $0.lineId, directionId: $0.directionId) }
                 )
             } catch {
                 fetchedDepartures = []

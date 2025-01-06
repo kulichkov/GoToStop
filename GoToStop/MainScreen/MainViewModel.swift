@@ -19,7 +19,8 @@ struct ScheduleItem: Identifiable {
     let id = UUID()
     let name: String
     let direction: String
-    let minutesTillDeparture: String
+    let departureTime: Date
+    let minutesTillDeparture: Int
 }
 
 final class MainViewModel: ObservableObject {
@@ -113,14 +114,12 @@ final class MainViewModel: ObservableObject {
             scheduleItems = fetchedDepartures
                 .filter { $0.reachable == true }
                 .sorted(using: SortDescriptor(\.rtTime))
-                .map { [weak self] in ScheduleItem(
-                    name: $0.name ?? "",
-                    direction: $0.direction ?? "",
-                    minutesTillDeparture: self?.getShortTimeAndMinutes(
-                        date: $0.rtDate ?? $0.date,
-                        time: $0.rtTime ?? $0.time
-                    ) ?? ""
-                ) }
+                .compactMap { [weak self] in
+                    ScheduleItem(
+                        $0,
+                        serverDateTimeFormatter: self?.serverDateTimeFormatter
+                    )
+                }
         }
     }
     
@@ -130,20 +129,30 @@ final class MainViewModel: ObservableObject {
         self.apiKey = newApiKey
     }
 
-    private func getShortTimeAndMinutes(date: String?, time: String?) -> String? {
-        guard let date, let time, let date = serverDateTimeFormatter.date(from: "\(date) \(time)")
-        else { return nil }
-        
-        let minutesLeft = Int((date.timeIntervalSinceNow/60).rounded(.up))
-        let shortDate = shortTimeFormatter.string(from: date)
-        return "\(shortDate) (\(minutesLeft) min)"
-    }
-    
     private func bind() {
         $isSelectingStop
             .merge(with: $isSelectingTrips)
             .filter { $0 == false }
             .sink { [weak self] _ in self?.refresh() }
             .store(in: &binding)
+    }
+}
+
+private extension ScheduleItem {
+    init?(_ departure: Departure, serverDateTimeFormatter: DateFormatter?) {
+        guard
+            let name = departure.name,
+            let direction = departure.direction,
+            let date = departure.rtDate ?? departure.date,
+            let time = departure.rtTime ?? departure.time,
+            let time = serverDateTimeFormatter?.date(from: "\(date) \(time)")
+        else { return nil }
+        let minutesLeft = Int((time.timeIntervalSinceNow/60).rounded(.up))
+        self.init(
+            name: name,
+            direction: direction,
+            departureTime: time,
+            minutesTillDeparture: minutesLeft
+        )
     }
 }

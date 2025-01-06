@@ -51,10 +51,8 @@ struct Provider: TimelineProvider {
         GoToStopEntry(
             date: Date(),
             data: WidgetData(
-                name: "-",
-                from: "-",
-                to: "-",
-                times: []
+                stop: "-",
+                items: []
             )
         )
     }
@@ -75,28 +73,16 @@ struct GoToStopWidgetEntryView : View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            Text(entry.data.name)
-            HStack(alignment: .firstTextBaseline) {
-                Text("Time:")
-                Text(entry.date, style: .time)
-                Spacer()
-            }
-            HStack(alignment: .firstTextBaseline) {
-                Text("From:")
-                Text(entry.data.from)
-                    .truncationMode(.head)
-                Spacer()
-            }
-            HStack(alignment: .firstTextBaseline) {
-                Text("To:")
-                Text(entry.data.to)
-                    .truncationMode(.head)
-                Spacer()
+            Text(entry.data.stop)
+            ForEach(entry.data.items.indices.prefix(4), id: \.self) { index in
+                HStack {
+                    Text(entry.data.items[index].name)
+                    Text(entry.data.items[index].direction)
+                    Spacer()
+                    Text(entry.data.items[index].departureTime.formatted(date: .omitted, time: .shortened))
+                }
             }
             
-            ForEach(entry.data.times.indices.prefix(4), id: \.self) { index in
-                Text(entry.data.times[index])
-            }
             Spacer()
         }
         .font(.caption)
@@ -112,6 +98,7 @@ struct GoToStopWidget: Widget {
             GoToStopWidgetEntryView(entry: entry)
                 .containerBackground(.fill.tertiary, for: .widget)
         }
+        .supportedFamilies([.systemMedium])
     }
 }
 
@@ -130,12 +117,13 @@ struct GoToStopWidget: Widget {
 
 extension WidgetData {
     static let preview = WidgetData(
-        name: "Tram 17",
-        from: "Stop 1 Stop 1 Stop 1 Stop 1 Stop 1 Stop 1",
-        to: "Stop 2 Stop 2 Stop 2 Stop 2 Stop 2 Stop 2",
-        times: [
-            "11:11:11",
-            "22:22:22",
-        ]
-    )
+        stop: "Kuhwaldstr.",
+        items: [
+            .init(
+                name: "Tram 17",
+                direction: "Somewhere",
+                departureTime: .now,
+                minutesTillDeparture: .zero
+            )
+        ])
 }

@@ -8,11 +8,6 @@
 import Foundation
 import GoToStopAPI
 
-struct WidgetData {
-    let stop: String
-    let items: [ScheduleItem]
-}
-
 struct ScheduleItem: Identifiable {
     let id = UUID()
     let name: String
@@ -21,7 +16,7 @@ struct ScheduleItem: Identifiable {
     let realTime: Date?
 }
 
-final class WidgetViewModel: ObservableObject {
+final class GoToStopWidgetViewModel: ObservableObject {
     private lazy var serverDateTimeFormatter: DateFormatter = {
         var dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
@@ -29,7 +24,7 @@ final class WidgetViewModel: ObservableObject {
     }()
     
     @MainActor
-    func getWidgetData() async throws -> WidgetData {
+    func getWidgetData() async throws -> GoToStopWidgetData {
         let stopName = Settings.shared.stopLocation?.name ?? ""
         let scheduledItems = await getSchedule()
         return .init(stop: stopName, items: scheduledItems)

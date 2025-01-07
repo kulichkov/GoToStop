@@ -8,21 +8,7 @@
 import Foundation
 import GoToStopAPI
 
-struct ScheduleItem: Identifiable {
-    let id = UUID()
-    let name: String
-    let direction: String
-    let scheduledTime: Date?
-    let realTime: Date?
-}
-
 final class GoToStopWidgetViewModel: ObservableObject {
-    private lazy var serverDateTimeFormatter: DateFormatter = {
-        var dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        return dateFormatter
-    }()
-    
     @MainActor
     func getWidgetData() async throws -> GoToStopWidgetData {
         let stopName = Settings.shared.stopLocation?.name ?? ""
@@ -40,7 +26,9 @@ final class GoToStopWidgetViewModel: ObservableObject {
         do {
             fetchedDepartures = try await NetworkManager.shared.getDepartures(
                 stopId: stopId,
-                departureLines: trips.map { DepartureLineRequest(id: $0.lineId, directionId: $0.directionId) }
+                departureLines: trips.map {
+                    DepartureLineRequest(id: $0.lineId, directionId: $0.directionId)
+                }
             )
         } catch {
             fetchedDepartures = []

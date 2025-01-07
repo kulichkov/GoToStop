@@ -7,6 +7,14 @@
 
 import Foundation
 
+struct ScheduleItem: Identifiable {
+    let id = UUID()
+    let name: String
+    let direction: String
+    let scheduledTime: Date?
+    let realTime: Date?
+}
+
 struct GoToStopWidgetData {
     let stop: String
     let items: [ScheduleItem]

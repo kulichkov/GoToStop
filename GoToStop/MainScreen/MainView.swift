@@ -47,8 +47,10 @@ struct MainView: View {
                         Text(departure.direction)
                             .multilineTextAlignment(.leading)
                         Spacer(minLength: 16)
-                        Text(departure.departureTime.formatted(date: .omitted, time: .shortened))
-                            .multilineTextAlignment(.trailing)
+                        if let departureTime = departure.realTime ?? departure.scheduledTime {
+                            Text(departureTime.formatted(date: .omitted, time: .shortened))
+                                .multilineTextAlignment(.trailing)
+                        }
                     }
                     .font(.caption)
                 }

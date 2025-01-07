@@ -75,8 +75,7 @@ final class SelectStopViewModel: ObservableObject {
                 let stopsFetched = try await NetworkManager.shared.getStopLocations(input: input)
                 debugPrint("Fetched stops:", stopsFetched.map(\.name))
                 for stop in stopsFetched {
-                    guard let name = stop.name else { continue }
-                    let item = StopLocationItem(name: name)
+                    let item = StopLocationItem(name: stop.name)
                     stops[item.id] = stop
                     items.append(item)
                 }

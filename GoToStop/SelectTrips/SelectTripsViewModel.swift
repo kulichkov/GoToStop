@@ -11,10 +11,18 @@ import GoToStopAPI
 struct TripItem: Identifiable, Hashable {
     struct Trip: Hashable {
         let category: String
-        let line: String
+        let lineId: String
         let name: String
         let direction: String
         let directionId: String
+        
+        init(_ departure: Departure) {
+            self.category = departure.category
+            self.lineId = departure.lineId
+            self.name = departure.name
+            self.direction = departure.direction
+            self.directionId = departure.directionId
+        }
     }
     
     let id = UUID()
@@ -44,7 +52,7 @@ final class SelectTripsViewModel: ObservableObject {
             name: $0.trip.name,
             direction: $0.trip.direction,
             category: $0.trip.category,
-            lineId: $0.trip.line,
+            lineId: $0.trip.lineId,
             directionId: $0.trip.directionId
         ) }
     }
@@ -52,38 +60,17 @@ final class SelectTripsViewModel: ObservableObject {
     private func getTrips() {
         Task { @MainActor in
             do {
-                guard
-                    let stop = Settings.shared.stopLocation,
-                    let stopId = stop.id,
-                    let locationId = stop.locationId
-                else {
-                    return
-                }
+                guard let stop = Settings.shared.stopLocation
+                else { return }
                 
-                let departures = try await NetworkManager.shared.getDepartures(stopId: stopId)
-                let stopDepartures = departures.filter { $0.stopid?.contains(locationId) ?? false }
+                let departures = try await NetworkManager.shared.getDepartures(stopId: stop.locationId)
+                let stopDepartures = departures.filter { $0.stopId.contains(stop.locationId) }
                 
-                let values: [TripItem.Trip] = stopDepartures.compactMap {
-                    guard
-                        let product = $0.product?.first,
-                        let line = product.line,
-                        let name = $0.name,
-                        let category = product.catOut,
-                        let direction = $0.direction,
-                        let directionId = $0.directionId
-                    else { return nil }
-                    return TripItem.Trip(
-                        category: category,
-                        line: line,
-                        name: name,
-                        direction: direction,
-                        directionId: directionId
-                    )
-                }
+                let values: [TripItem.Trip] = stopDepartures.map(TripItem.Trip.init)
                 
                 let sortDescriptors: [SortDescriptor<TripItem>] = [
                     SortDescriptor(\.trip.category),
-                    SortDescriptor(\.trip.line, order: .forward),
+                    SortDescriptor(\.trip.name, order: .forward),
                     SortDescriptor(\.trip.direction, order: .forward)
                 ]
                 
@@ -98,14 +85,5 @@ final class SelectTripsViewModel: ObservableObject {
         }
     }
     
-}
-
-private extension StopLocation {
-    var locationId: String? {
-        id?
-            .split(separator: "@")
-            .first { $0.hasPrefix("L=") }
-            .map(String.init)
-    }
 }
 

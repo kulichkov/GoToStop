@@ -17,8 +17,8 @@ struct ScheduleItem: Identifiable {
     let id = UUID()
     let name: String
     let direction: String
-    let departureTime: Date
-    let minutesTillDeparture: Int
+    let scheduledTime: Date?
+    let realTime: Date?
 }
 
 final class WidgetViewModel: ObservableObject {
@@ -36,7 +36,7 @@ final class WidgetViewModel: ObservableObject {
     }
     
     private func getSchedule() async -> [ScheduleItem] {
-        guard let stopId = Settings.shared.stopLocation?.id
+        guard let stopId = Settings.shared.stopLocation?.locationId
         else { return [] }
         
         let trips = Settings.shared.trips
@@ -45,7 +45,7 @@ final class WidgetViewModel: ObservableObject {
         do {
             fetchedDepartures = try await NetworkManager.shared.getDepartures(
                 stopId: stopId,
-                departureLines: trips.map { DepartureLine(id: $0.lineId, directionId: $0.directionId) }
+                departureLines: trips.map { DepartureLineRequest(id: $0.lineId, directionId: $0.directionId) }
             )
         } catch {
             fetchedDepartures = []
@@ -53,32 +53,18 @@ final class WidgetViewModel: ObservableObject {
         }
         
         return fetchedDepartures
-            .filter { $0.reachable == true }
-            .sorted(using: SortDescriptor(\.rtTime))
-            .compactMap { [weak self] in
-                ScheduleItem(
-                    $0,
-                    serverDateTimeFormatter: self?.serverDateTimeFormatter
-                )
-            }
+            .sorted(using: SortDescriptor(\.scheduledTime))
+            .compactMap(ScheduleItem.init)
     }
 }
 
 private extension ScheduleItem {
-    init?(_ departure: Departure, serverDateTimeFormatter: DateFormatter?) {
-        guard
-            let name = departure.name,
-            let direction = departure.direction,
-            let date = departure.rtDate ?? departure.date,
-            let time = departure.rtTime ?? departure.time,
-            let time = serverDateTimeFormatter?.date(from: "\(date) \(time)")
-        else { return nil }
-        let minutesLeft = Int((time.timeIntervalSinceNow/60).rounded(.up))
+    init?(_ departure: Departure) {
         self.init(
-            name: name,
-            direction: direction,
-            departureTime: time,
-            minutesTillDeparture: minutesLeft
+            name: departure.name,
+            direction: departure.direction,
+            scheduledTime: departure.scheduledTime,
+            realTime: departure.realTime
         )
     }
 }

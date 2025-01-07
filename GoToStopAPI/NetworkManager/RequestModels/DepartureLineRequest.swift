@@ -1,11 +1,11 @@
 //
-//  DepartureLine.swift
+//  DepartureLineRequest.swift
 //  GoToStopAPI
 //
 //  Created by Mikhail Kulichkov on 25.12.24.
 //
 
-public struct DepartureLine {
+public struct DepartureLineRequest {
     public let id: String
     public let directionId: String
     

@@ -32,12 +32,12 @@ final public class NetworkManager {
 
         var urlComponents = URLComponents(string: baseUrl + "/location.name")
         urlComponents?.queryItems = queryItems
-        let stopsAndCoordinates: LocationName = try await sendDataRequest(urlComponents)
+        let stopsAndCoordinates: LocationNameResponse = try await sendDataRequest(urlComponents)
         return stopsAndCoordinates.locations
             .compactMap { location in
                 switch location {
                 case .coordLocation: nil
-                case let .stopLocation(stopLocation): stopLocation
+                case let .stopLocation(response): StopLocation(response)
                 }
             }
     }
@@ -73,13 +73,13 @@ final public class NetworkManager {
 
         var urlComponents = URLComponents(string: baseUrl + "/departureBoard")
         urlComponents?.queryItems = queryItems
-        let departureBoard: DepartureBoard = try await sendDataRequest(urlComponents)
-        return departureBoard.departures
+        let departureBoard: DepartureBoardResponse = try await sendDataRequest(urlComponents)
+        return departureBoard.departures.compactMap(Departure.init)
     }
 
     public func getDepartures(
         stopId: String,
-        departureLines: [DepartureLine]
+        departureLines: [DepartureLineRequest]
     ) async throws -> [Departure] {
         try await withThrowingTaskGroup(of: [Departure].self) { [weak self] group -> [Departure] in
             for line in departureLines {

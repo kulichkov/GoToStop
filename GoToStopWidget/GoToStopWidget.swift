@@ -74,12 +74,14 @@ struct GoToStopWidgetEntryView : View {
     var body: some View {
         VStack(alignment: .leading) {
             Text(entry.data.stop)
-            ForEach(entry.data.items.indices.prefix(4), id: \.self) { index in
+            ForEach(entry.data.items.indices.prefix(8), id: \.self) { index in
                 HStack {
                     Text(entry.data.items[index].name)
                     Text(entry.data.items[index].direction)
                     Spacer()
-                    Text(entry.data.items[index].departureTime.formatted(date: .omitted, time: .shortened))
+                    if let departureTime = entry.data.items[index].realTime ?? entry.data.items[index].scheduledTime {
+                        Text(departureTime.formatted(date: .omitted, time: .shortened))
+                    }
                 }
             }
             
@@ -121,9 +123,15 @@ extension WidgetData {
         items: [
             .init(
                 name: "Tram 17",
-                direction: "Somewhere",
-                departureTime: .now,
-                minutesTillDeparture: .zero
+                direction: "Somewhere 1",
+                scheduledTime: .now,
+                realTime: nil
+            ),
+            .init(
+                name: "Tram 17",
+                direction: "Somewhere 2",
+                scheduledTime: .now.addingTimeInterval(600),
+                realTime: nil
             )
         ])
 }

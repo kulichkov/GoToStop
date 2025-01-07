@@ -12,7 +12,7 @@ public struct StopLocation: Codable {
 
 extension StopLocation {
     init?(_ response: StopLocationResponse) {
-        guard let locationId = response.locationId, let name = response.name
+        guard let locationId = response.extId, let name = response.name
         else { return nil }
         self.init(
             locationId: locationId,

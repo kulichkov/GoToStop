@@ -10,7 +10,7 @@ import SwiftUI
 import GoToStopAPI
 
 struct GoToStopWidget: Widget {
-    let kind: String = "GoToStopWidget"
+    let kind: String = "kulichkov.GoToStop.GoToStopWidget"
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: GoToStopWidgetProvider()) { entry in

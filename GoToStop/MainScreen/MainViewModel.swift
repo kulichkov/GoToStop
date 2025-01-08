@@ -95,7 +95,7 @@ final class MainViewModel: ObservableObject {
         
         getSchedule()
         
-        WidgetCenter.shared.reloadTimelines(ofKind: "GoToStopWidget")
+        WidgetCenter.shared.reloadTimelines(ofKind: "kulichkov.GoToStop.GoToStopWidget")
     }
     
     func getSchedule() {

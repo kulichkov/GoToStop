@@ -25,7 +25,7 @@ struct GoToStopWidgetEntryView: View {
             HStack {
                 Text(entry.data.stop)
                 Spacer()
-                Button(intent: RefreshIntent()) { Text("Refresh") }
+                Button(intent: RefreshIntent()) { Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90") }
             }
             ForEach(entry.data.items.indices.prefix(7), id: \.self) { index in
                 HStack {

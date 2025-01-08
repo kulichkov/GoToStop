@@ -8,6 +8,7 @@
 import Foundation
 import GoToStopAPI
 import Combine
+import WidgetKit
 
 struct TripInfo: Identifiable {
     let id = UUID()
@@ -91,6 +92,10 @@ final class MainViewModel: ObservableObject {
         }
         
         savedTrips = Settings.shared.trips
+        
+        getSchedule()
+        
+        WidgetCenter.shared.reloadTimelines(ofKind: "GoToStopWidget")
     }
     
     func getSchedule() {

@@ -27,7 +27,17 @@ struct GoToStopWidgetProvider: TimelineProvider {
                     date: .now,
                     data: widgetData
                 )
-                let timeline = Timeline(entries: [entry], policy: .after(.now.addingTimeInterval(10 * 60)))
+                
+                // Default update time is 10 minutes
+                var newUpdateTime: Date = .now.addingTimeInterval(10 * 60)
+                // Set it to the first item time
+                if let item = widgetData.items.first, let time = item.realTime ?? item.scheduledTime {
+                    newUpdateTime = time
+                }
+                let timeline = Timeline(
+                    entries: [entry],
+                    policy: .after(newUpdateTime)
+                )
                 completion(timeline)
             } catch {
                 debugPrint(error)

@@ -6,14 +6,28 @@
 //
 
 import SwiftUI
+import WidgetKit
+import AppIntents
+
+struct RefreshIntent: AppIntent {
+    static var title: LocalizedStringResource = "Refresh"
+
+    func perform() async throws -> some IntentResult {
+        return .result()
+    }
+}
 
 struct GoToStopWidgetEntryView: View {
     var entry: GoToStopWidgetProvider.Entry
 
     var body: some View {
         VStack(alignment: .leading) {
-            Text(entry.data.stop)
-            ForEach(entry.data.items.indices.prefix(8), id: \.self) { index in
+            HStack {
+                Text(entry.data.stop)
+                Spacer()
+                Button(intent: RefreshIntent()) { Text("Refresh") }
+            }
+            ForEach(entry.data.items.indices.prefix(7), id: \.self) { index in
                 HStack {
                     Text(entry.data.items[index].name)
                     Text(entry.data.items[index].direction)

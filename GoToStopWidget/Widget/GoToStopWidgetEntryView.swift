@@ -31,8 +31,9 @@ struct GoToStopWidgetEntryView: View {
                 HStack {
                     Text(entry.data.items[index].name)
                     Text(entry.data.items[index].direction)
-                    Spacer()
-                    if let departureTime = entry.data.items[index].realTime ?? entry.data.items[index].scheduledTime {
+                        .truncationMode(.middle)
+                    if let departureTime = entry.data.items[index].time {
+                        Spacer()
                         Text(departureTime.formatted(date: .omitted, time: .shortened))
                     }
                 }

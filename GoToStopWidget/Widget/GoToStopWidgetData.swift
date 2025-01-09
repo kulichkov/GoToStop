@@ -15,6 +15,10 @@ struct ScheduleItem: Identifiable {
     let realTime: Date?
 }
 
+extension ScheduleItem {
+    var time: Date? { realTime ?? scheduledTime }
+}
+
 struct GoToStopWidgetData {
     let stop: String
     let items: [ScheduleItem]

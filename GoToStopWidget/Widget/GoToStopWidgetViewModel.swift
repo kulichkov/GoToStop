@@ -9,11 +9,42 @@ import Foundation
 import GoToStopAPI
 
 final class GoToStopWidgetViewModel: ObservableObject {
+    private var hasInitialEntry = false
+    
     @MainActor
-    func getWidgetData() async throws -> GoToStopWidgetData {
-        let stopName = Settings.shared.stopLocation?.name ?? ""
+    func getWidgetEntries() async throws -> [GoToStopWidgetEntry] {
         let scheduledItems = await getSchedule()
-        return .init(stop: stopName, items: scheduledItems)
+        return makeWidgetItems(scheduledItems)
+    }
+    
+    private func makeWidgetItems(_ scheduledItems: [ScheduleItem]) -> [GoToStopWidgetEntry] {
+        // Make times with 1 minutes overhead
+        // to delete an event after its time passes but not when it happens.
+        var dates = scheduledItems.compactMap(\.time)
+            .map { $0.addingTimeInterval(60) }
+        
+        // Insert the current time to update widget immediately
+        dates.insert(.now, at: .zero)
+        
+        var entries: [GoToStopWidgetEntry] = []
+        
+        let stopName = Settings.shared.stopLocation?.name ?? ""
+        
+        for timeToUpdate in dates {
+            let entry = GoToStopWidgetEntry(
+                date: timeToUpdate,
+                data: .init(
+                    stop: stopName,
+                    items: scheduledItems.filter { item in
+                        guard let time = item.time else { return false }
+                        return time > timeToUpdate
+                    }
+                )
+            )
+            entries.append(entry)
+        }
+        
+        return entries
     }
     
     private func getSchedule() async -> [ScheduleItem] {

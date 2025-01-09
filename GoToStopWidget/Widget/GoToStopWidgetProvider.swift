@@ -22,21 +22,10 @@ struct GoToStopWidgetProvider: TimelineProvider {
     func getTimeline(in context: Context, completion: @escaping @Sendable (Timeline<GoToStopWidgetEntry>) -> Void) {
         Task {
             do {
-                let widgetData = try await viewModel.getWidgetData()
-                let entry = GoToStopWidgetEntry(
-                    date: .now,
-                    data: widgetData
-                )
-                
-                // Default update time is 10 minutes
-                var newUpdateTime: Date = .now.addingTimeInterval(10 * 60)
-                // Set it to the first item time
-                if let item = widgetData.items.first, let time = item.realTime ?? item.scheduledTime {
-                    newUpdateTime = time
-                }
+                let widgetEntries = try await viewModel.getWidgetEntries()
                 let timeline = Timeline(
-                    entries: [entry],
-                    policy: .after(newUpdateTime)
+                    entries: widgetEntries,
+                    policy: .atEnd
                 )
                 completion(timeline)
             } catch {

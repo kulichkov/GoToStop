@@ -32,6 +32,10 @@ struct GoToStopWidgetEntryView: View {
                     Text(entry.data.items[index].name)
                     Text(entry.data.items[index].direction)
                         .truncationMode(.middle)
+                    if let minutesLeft = entry.data.items[index].minutesLeft {
+                        Spacer()
+                        Text("in \(minutesLeft) min")
+                    }
                     if let departureTime = entry.data.items[index].time {
                         Spacer()
                         Text(departureTime.formatted(date: .omitted, time: .shortened))

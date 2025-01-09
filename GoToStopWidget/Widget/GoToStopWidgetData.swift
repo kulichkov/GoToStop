@@ -11,11 +11,19 @@ struct ScheduleItem: Identifiable {
     let id = UUID()
     let name: String
     let direction: String
+    let time: Date?
+    let minutesLeft: UInt?
+}
+
+struct ScheduledTrip: Identifiable {
+    let id = UUID()
+    let name: String
+    let direction: String
     let scheduledTime: Date?
     let realTime: Date?
 }
 
-extension ScheduleItem {
+extension ScheduledTrip {
     var time: Date? { realTime ?? scheduledTime }
 }
 
@@ -31,14 +39,14 @@ extension GoToStopWidgetData {
             .init(
                 name: "Tram 17",
                 direction: "Somewhere 1",
-                scheduledTime: .now,
-                realTime: nil
+                time: .now,
+                minutesLeft: .zero
             ),
             .init(
                 name: "Tram 17",
                 direction: "Somewhere 2",
-                scheduledTime: .now.addingTimeInterval(600),
-                realTime: nil
+                time: .now.addingTimeInterval(600),
+                minutesLeft: 10
             )
         ])
 }

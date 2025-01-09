@@ -13,41 +13,63 @@ final class GoToStopWidgetViewModel: ObservableObject {
     
     @MainActor
     func getWidgetEntries() async throws -> [GoToStopWidgetEntry] {
-        let scheduledItems = await getSchedule()
-        return makeWidgetItems(scheduledItems)
+        let scheduledItems = await getTrips()
+        return makeWidgetEntries(scheduledItems)
     }
     
-    private func makeWidgetItems(_ scheduledItems: [ScheduleItem]) -> [GoToStopWidgetEntry] {
-        // Make times with 1 minutes overhead
-        // to delete an event after its time passes but not when it happens.
-        var dates = scheduledItems.compactMap(\.time)
-            .map { $0.addingTimeInterval(60) }
-        
-        // Insert the current time to update widget immediately
-        dates.insert(.now, at: .zero)
+    private func makeWidgetEntries(_ scheduledTrips: [ScheduledTrip]) -> [GoToStopWidgetEntry] {
+        let dates = makeUpdateDates(
+            startDate: scheduledTrips.first?.time,
+            endDate: scheduledTrips.last?.time
+        )
         
         var entries: [GoToStopWidgetEntry] = []
         
         let stopName = Settings.shared.stopLocation?.name ?? ""
         
         for timeToUpdate in dates {
+            let items = scheduledTrips
+                .map { $0.makeScheduledItem(relatedDate: timeToUpdate) }
+                .filter { trip in
+                guard let time = trip.time else { return false }
+                return time >= timeToUpdate
+            }
+            
             let entry = GoToStopWidgetEntry(
                 date: timeToUpdate,
                 data: .init(
                     stop: stopName,
-                    items: scheduledItems.filter { item in
-                        guard let time = item.time else { return false }
-                        return time > timeToUpdate
-                    }
+                    items: items
                 )
             )
+            
             entries.append(entry)
         }
         
         return entries
     }
     
-    private func getSchedule() async -> [ScheduleItem] {
+    private func makeUpdateDates(
+        startDate: Date?,
+        endDate: Date?,
+        interval: TimeInterval = 60
+    ) -> [Date] {
+        guard let startDate, let endDate else { return [] }
+        
+        var updateDates = stride(
+            from: .zero,
+            to: endDate.timeIntervalSince(startDate),
+            by: interval
+        )
+        .map(startDate.addingTimeInterval)
+        
+        // Insert the current time to update widget immediately
+        updateDates.insert(.now, at: .zero)
+        
+        return updateDates
+    }
+    
+    private func getTrips() async -> [ScheduledTrip] {
         guard let stopId = Settings.shared.stopLocation?.locationId
         else { return [] }
         
@@ -67,18 +89,31 @@ final class GoToStopWidgetViewModel: ObservableObject {
         }
         
         return fetchedDepartures
-            .sorted(using: SortDescriptor(\.scheduledTime))
-            .compactMap(ScheduleItem.init)
+            .compactMap(ScheduledTrip.init)
+            .sorted(using: SortDescriptor(\.time))
     }
 }
 
-private extension ScheduleItem {
+private extension ScheduledTrip {
     init?(_ departure: Departure) {
         self.init(
             name: departure.name,
             direction: departure.direction,
             scheduledTime: departure.scheduledTime,
             realTime: departure.realTime
+        )
+    }
+    
+    func makeScheduledItem(relatedDate: Date) -> ScheduleItem {
+        let minutesLeft = time
+            .map { max(.zero, $0.timeIntervalSince(relatedDate) / 60) }
+            .map(UInt.init)
+        
+        return ScheduleItem(
+            name: name,
+            direction: direction,
+            time: time,
+            minutesLeft: minutesLeft
         )
     }
 }

@@ -20,7 +20,7 @@ struct GoToStopWidgetProvider: TimelineProvider {
     }
     
     func getTimeline(in context: Context, completion: @escaping @Sendable (Timeline<GoToStopWidgetEntry>) -> Void) {
-        Task {
+        Task { @MainActor in
             do {
                 let widgetEntries = try await viewModel.getWidgetEntries()
                 let timeline = Timeline(

@@ -9,19 +9,14 @@ import Foundation
 import GoToStopAPI
 
 final class GoToStopWidgetViewModel: ObservableObject {
-    private var hasInitialEntry = false
     
-    @MainActor
     func getWidgetEntries() async throws -> [GoToStopWidgetEntry] {
         let scheduledItems = await getTrips()
         return makeWidgetEntries(scheduledItems)
     }
     
     private func makeWidgetEntries(_ scheduledTrips: [ScheduledTrip]) -> [GoToStopWidgetEntry] {
-        let dates = makeUpdateDates(
-            startDate: scheduledTrips.first?.time,
-            endDate: scheduledTrips.last?.time
-        )
+        let dates = makeUpdateDates()
         
         var entries: [GoToStopWidgetEntry] = []
         
@@ -31,9 +26,9 @@ final class GoToStopWidgetViewModel: ObservableObject {
             let items = scheduledTrips
                 .map { $0.makeScheduledItem(relatedDate: timeToUpdate) }
                 .filter { trip in
-                guard let time = trip.time else { return false }
-                return time >= timeToUpdate
-            }
+                    guard let time = trip.time else { return false }
+                    return time >= timeToUpdate
+                }
             
             let entry = GoToStopWidgetEntry(
                 date: timeToUpdate,
@@ -50,11 +45,18 @@ final class GoToStopWidgetViewModel: ObservableObject {
     }
     
     private func makeUpdateDates(
-        startDate: Date?,
-        endDate: Date?,
+        endDate: Date? = nil,
         interval: TimeInterval = 60
     ) -> [Date] {
-        guard let startDate, let endDate else { return [] }
+        let calendar = Calendar.current
+        var components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: .now)
+        components.second = .zero
+        components.minute? += 1
+        
+        guard let startDate = calendar.date(from: components) else { return [] }
+        
+        // If no endDate then default 10 minutes
+        let endDate = endDate ?? startDate.addingTimeInterval(60 * 10)
         
         var updateDates = stride(
             from: .zero,
@@ -63,9 +65,10 @@ final class GoToStopWidgetViewModel: ObservableObject {
         )
         .map(startDate.addingTimeInterval)
         
-        // Insert the current time to update widget immediately
-        updateDates.insert(.now, at: .zero)
-        
+        if updateDates.first != .now {
+            updateDates.insert(.now, at: .zero)
+        }
+
         return updateDates
     }
     
@@ -106,7 +109,7 @@ private extension ScheduledTrip {
     
     func makeScheduledItem(relatedDate: Date) -> ScheduleItem {
         let minutesLeft = time
-            .map { max(.zero, $0.timeIntervalSince(relatedDate) / 60) }
+            .map { max(.zero, ceil($0.timeIntervalSince(relatedDate) / 60)) }
             .map(UInt.init)
         
         return ScheduleItem(

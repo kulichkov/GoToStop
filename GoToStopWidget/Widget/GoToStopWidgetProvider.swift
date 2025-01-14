@@ -39,6 +39,7 @@ struct GoToStopWidgetProvider: AppIntentTimelineProvider {
         .init(
             date: Date(),
             data: GoToStopWidgetData(
+                updateTime: .now,
                 stop: "-",
                 items: []
             )

@@ -39,6 +39,7 @@ final class GoToStopWidgetViewModel: ObservableObject {
             let entry = GoToStopWidgetEntry(
                 date: timeToUpdate,
                 data: .init(
+                    updateTime: .now,
                     stop: stopName,
                     items: items
                 )

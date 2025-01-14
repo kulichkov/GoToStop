@@ -28,12 +28,14 @@ extension ScheduledTrip {
 }
 
 struct GoToStopWidgetData {
+    let updateTime: Date
     let stop: String
     let items: [ScheduleItem]
 }
 
 extension GoToStopWidgetData {
     static let preview = GoToStopWidgetData(
+        updateTime: .now.addingTimeInterval(-600),
         stop: "Kuhwaldstr.",
         items: [
             .init(

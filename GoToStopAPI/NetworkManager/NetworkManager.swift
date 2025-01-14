@@ -42,6 +42,24 @@ final public class NetworkManager {
             }
     }
     
+    public func getStopLocations(
+        inputs: [String]
+    ) async throws -> [StopLocation] {
+        try await withThrowingTaskGroup(of: [StopLocation].self) { [weak self] group -> [StopLocation] in
+            for input in inputs {
+                group.addTask {
+                    try await self?.getStopLocations(input: input) ?? []
+                }
+            }
+            
+            var collectedStops: [StopLocation] = []
+            for try await stops in group {
+                collectedStops.append(contentsOf: stops)
+            }
+            
+            return collectedStops
+        }
+    }
     
     /// The departure board can be retrieved by a call to the departureBoard service. This method will return the
     /// next departures (or less if not existing) from a given point in time within a duration covered time span.

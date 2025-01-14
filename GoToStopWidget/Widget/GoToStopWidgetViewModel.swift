@@ -10,17 +10,23 @@ import GoToStopAPI
 
 final class GoToStopWidgetViewModel: ObservableObject {
     
-    func getWidgetEntries() async throws -> [GoToStopWidgetEntry] {
-        let scheduledItems = await getTrips()
-        return makeWidgetEntries(scheduledItems)
+    func getWidgetEntries(_ intent: GoToStopIntent) async throws -> [GoToStopWidgetEntry] {
+        guard
+            let stopId = intent.stopLocation?.locationId,
+            let trips = intent.trips
+        else {
+            return []
+        }
+        let scheduledItems = await getTrips(stopId: stopId, trips: trips)
+        
+        let stopName = intent.stopLocation?.name ?? "No stop name"
+        return makeWidgetEntries(stopName: stopName, items: scheduledItems)
     }
     
-    private func makeWidgetEntries(_ scheduledTrips: [ScheduledTrip]) -> [GoToStopWidgetEntry] {
+    private func makeWidgetEntries(stopName: String, items scheduledTrips: [ScheduledTrip]) -> [GoToStopWidgetEntry] {
         let dates = makeUpdateDates()
         
         var entries: [GoToStopWidgetEntry] = []
-        
-        let stopName = Settings.shared.stopLocation?.name ?? ""
         
         for timeToUpdate in dates {
             let items = scheduledTrips
@@ -72,12 +78,7 @@ final class GoToStopWidgetViewModel: ObservableObject {
         return updateDates
     }
     
-    private func getTrips() async -> [ScheduledTrip] {
-        guard let stopId = Settings.shared.stopLocation?.locationId
-        else { return [] }
-        
-        let trips = Settings.shared.trips
-        
+    private func getTrips(stopId: String, trips: [Trip]) async -> [ScheduledTrip] {
         let fetchedDepartures: [Departure]
         do {
             fetchedDepartures = try await NetworkManager.shared.getDepartures(

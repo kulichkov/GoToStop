@@ -8,32 +8,33 @@
 import WidgetKit
 import GoToStopAPI
 
-struct GoToStopWidgetProvider: TimelineProvider {
+struct GoToStopWidgetProvider: AppIntentTimelineProvider {
     private var viewModel = GoToStopWidgetViewModel()
     
-    func getSnapshot(in context: Context, completion: @escaping @Sendable (GoToStopWidgetEntry) -> Void) {
-        let snapshot = GoToStopWidgetEntry(
+    func snapshot(for configuration: GoToStopIntent, in context: Context) async -> GoToStopWidgetEntry {
+        GoToStopWidgetEntry(
             date: Date(),
             data: .preview
         )
-        completion(snapshot)
     }
     
-    func getTimeline(in context: Context, completion: @escaping @Sendable (Timeline<GoToStopWidgetEntry>) -> Void) {
-        Task { @MainActor in
-            do {
-                let widgetEntries = try await viewModel.getWidgetEntries()
-                let timeline = Timeline(
-                    entries: widgetEntries,
-                    policy: .atEnd
-                )
-                completion(timeline)
-            } catch {
-                debugPrint(error)
-            }
+    func timeline(for configuration: GoToStopIntent, in context: Context) async -> Timeline<GoToStopWidgetEntry> {
+        do {
+            let widgetEntries = try await viewModel.getWidgetEntries(configuration)
+            let timeline = Timeline(
+                entries: widgetEntries,
+                policy: .atEnd
+            )
+            return timeline
+        } catch {
+            debugPrint(error)
+            return Timeline(
+                entries: [],
+                policy: .never
+            )
         }
     }
-        
+    
     func placeholder(in context: Context) -> GoToStopWidgetEntry {
         .init(
             date: Date(),

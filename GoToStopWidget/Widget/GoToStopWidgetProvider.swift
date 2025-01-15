@@ -21,9 +21,17 @@ struct GoToStopWidgetProvider: AppIntentTimelineProvider {
     func timeline(for configuration: GoToStopIntent, in context: Context) async -> Timeline<GoToStopWidgetEntry> {
         do {
             let widgetEntries = try await viewModel.getWidgetEntries(configuration)
+            
+            let updatePolicy: TimelineReloadPolicy
+            if let date = widgetEntries.last?.date {
+                updatePolicy = .after(date)
+            } else {
+                updatePolicy = .atEnd
+            }
+            
             let timeline = Timeline(
                 entries: widgetEntries,
-                policy: .atEnd
+                policy: updatePolicy
             )
             return timeline
         } catch {

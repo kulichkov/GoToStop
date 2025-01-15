@@ -24,7 +24,10 @@ final class GoToStopWidgetViewModel: ObservableObject {
     }
     
     private func makeWidgetEntries(stopName: String, items scheduledTrips: [ScheduledTrip]) -> [GoToStopWidgetEntry] {
-        let dates = makeUpdateDates()
+        let dates = makeUpdateDates(
+            endDate: scheduledTrips.last?.scheduledTime,
+            interval: 60
+        )
         
         var entries: [GoToStopWidgetEntry] = []
         
@@ -52,8 +55,8 @@ final class GoToStopWidgetViewModel: ObservableObject {
     }
     
     private func makeUpdateDates(
-        endDate: Date? = nil,
-        interval: TimeInterval = 60
+        endDate: Date?,
+        interval: TimeInterval
     ) -> [Date] {
         let calendar = Calendar.current
         var components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: .now)

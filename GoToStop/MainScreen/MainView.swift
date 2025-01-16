@@ -33,6 +33,13 @@ struct MainView: View {
                 Button("Select trips") { viewModel.isSelectingTrips = true }
                     .disabled(!viewModel.isStopSelected)
                 
+                Text("Live Activity:")
+                HStack {
+                    Button("Start") { viewModel.startLiveActivity() }
+                    Spacer().frame(width: 50)
+                    Button("Stop") { viewModel.stopLiveActivity() }
+                }
+                
                 Spacer().frame(height: 32)
                 HStack {
                     Text("Departure board:")
@@ -79,7 +86,3 @@ struct MainView: View {
         }
     }
 }
-
-//#Preview {
-//    MainView()
-//}

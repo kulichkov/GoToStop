@@ -66,6 +66,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		6910B1A82D391969004A2097 /* Exceptions for "GoToStop" folder in "GoToStopWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Shared Models/GoToStopLiveActivityAttributes.swift",
+			);
+			target = 696689A62D0E0A3D00B0F045 /* GoToStopWidgetExtension */;
+		};
 		696689882D0DF31000B0F045 /* Exceptions for "GoToStopAPI" folder in "GoToStopAPI" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			publicHeaders = (
@@ -85,6 +92,9 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		696689402D0DE91700B0F045 /* GoToStop */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				6910B1A82D391969004A2097 /* Exceptions for "GoToStop" folder in "GoToStopWidgetExtension" target */,
+			);
 			path = GoToStop;
 			sourceTree = "<group>";
 		};
@@ -406,6 +416,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
+				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -463,6 +475,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
+				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;

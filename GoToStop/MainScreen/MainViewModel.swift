@@ -9,6 +9,7 @@ import Foundation
 import GoToStopAPI
 import Combine
 import WidgetKit
+import ActivityKit
 
 struct TripInfo: Identifiable {
     let id = UUID()
@@ -39,6 +40,8 @@ final class MainViewModel: ObservableObject {
             fetchingScheduleTask = nil
         }
     }
+    
+    private var currentActivity: Activity<GoToStopLiveActivityAttributes>? = nil
     
     private var savedTrips: [Trip] = [] {
         didSet {
@@ -79,7 +82,7 @@ final class MainViewModel: ObservableObject {
         getSchedule()
     }
 
-    func refresh() {
+    private func refresh() {
         if let stopName = Settings.shared.stopLocation?.name {
             if !selectedStop.isEmpty, selectedStop != stopName {
                 Settings.shared.trips = []
@@ -119,6 +122,8 @@ final class MainViewModel: ObservableObject {
             scheduleItems = fetchedDepartures
                 .sorted(using: SortDescriptor(\.scheduledTime))
                 .compactMap(ScheduleItem.init)
+            
+            updateLiveActivity()
         }
     }
     
@@ -145,5 +150,59 @@ private extension ScheduleItem {
             scheduledTime: departure.scheduledTime,
             realTime: departure.realTime
         )
+    }
+}
+
+extension MainViewModel {
+    private func getLiveActivityContentState() -> GoToStopLiveActivityAttributes.ContentState {
+        let trips: [GoToStopLiveActivityAttributes.TripItem] = scheduleItems.compactMap {
+            guard let minutesLeft = ($0.realTime ?? $0.scheduledTime)
+                .map({ max(.zero, ceil($0.timeIntervalSince(.now) / 60)) })
+                .map(UInt.init)
+            else { return nil }
+            
+            return .init(
+                id: UUID().uuidString,
+                name: $0.name,
+                direction: $0.direction,
+                minutesLeft: minutesLeft
+            )
+        }
+        return GoToStopLiveActivityAttributes.ContentState(trips: trips)
+    }
+    
+    func startLiveActivity() {
+        guard currentActivity == nil else { return }
+        
+        if ActivityAuthorizationInfo().areActivitiesEnabled {
+            let goToStopAttributes = GoToStopLiveActivityAttributes(stopName: selectedStop)
+            let initialActivityState = getLiveActivityContentState()
+            
+            do {
+                currentActivity = try Activity.request(
+                    attributes: goToStopAttributes,
+                    content: .init(state: initialActivityState, staleDate: nil)
+                )
+            } catch {
+                debugPrint("Couldn't start activity: \(String(describing: error))")
+            }
+        }
+    }
+    
+    func stopLiveActivity() {
+        Task {
+            await currentActivity?.end(nil, dismissalPolicy: .immediate)
+            currentActivity = nil
+        }
+    }
+    
+    func updateLiveActivity() {
+        guard let currentActivity else { return }
+        let contentState = getLiveActivityContentState()
+        let content = ActivityContent(state: contentState, staleDate: nil)
+        
+        Task {
+            await currentActivity.update(content)
+        }
     }
 }

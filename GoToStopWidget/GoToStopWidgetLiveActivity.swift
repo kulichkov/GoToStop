@@ -9,26 +9,9 @@ import ActivityKit
 import WidgetKit
 import SwiftUI
 
-struct GoToStopWidgetAttributes: ActivityAttributes {
-    public struct TripItem: Identifiable, Codable, Hashable {
-        let id: String
-        let name: String
-        let direction: String
-        let minutesLeft: UInt
-    }
-    
-    public struct ContentState: Codable, Hashable {
-        // Dynamic stateful properties about your activity go here!
-        let trips: [TripItem]
-    }
-
-    // Fixed non-changing properties about your activity go here!
-    var stopName: String
-}
-
 struct GoToStopWidgetLiveActivity: Widget {
     var body: some WidgetConfiguration {
-        ActivityConfiguration(for: GoToStopWidgetAttributes.self) { context in
+        ActivityConfiguration(for: GoToStopLiveActivityAttributes.self) { context in
             let stopName = context.attributes.stopName
             let trips = context.state.trips
             
@@ -105,15 +88,15 @@ struct GoToStopWidgetLiveActivity: Widget {
     }
 }
 
-extension GoToStopWidgetAttributes {
-    fileprivate static var preview: GoToStopWidgetAttributes {
-        GoToStopWidgetAttributes(stopName: "F Kuhwaldstraße")
+extension GoToStopLiveActivityAttributes {
+    fileprivate static var preview: GoToStopLiveActivityAttributes {
+        GoToStopLiveActivityAttributes(stopName: "F Kuhwaldstraße")
     }
 }
 
-extension GoToStopWidgetAttributes.ContentState {
-    fileprivate static var trams: GoToStopWidgetAttributes.ContentState {
-        GoToStopWidgetAttributes.ContentState(
+extension GoToStopLiveActivityAttributes.ContentState {
+    fileprivate static var trams: GoToStopLiveActivityAttributes.ContentState {
+        GoToStopLiveActivityAttributes.ContentState(
             trips: [
                 .init(
                     id: UUID().uuidString,
@@ -162,8 +145,8 @@ extension GoToStopWidgetAttributes.ContentState {
      }
 }
 
-#Preview("Notification", as: .content, using: GoToStopWidgetAttributes.preview) {
+#Preview("Notification", as: .content, using: GoToStopLiveActivityAttributes.preview) {
    GoToStopWidgetLiveActivity()
 } contentStates: {
-    GoToStopWidgetAttributes.ContentState.trams
+    GoToStopLiveActivityAttributes.ContentState.trams
 }

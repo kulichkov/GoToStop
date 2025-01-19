@@ -83,6 +83,31 @@ public class Settings {
         }
     }
     
+    private func getObjects<K: Hashable & Decodable, T: Decodable>(for key: Settings.Key) -> Dictionary<K, T> {
+        guard let data = userDefaults?.data(forKey: key.rawValue)
+        else { return [:] }
+        
+        do {
+            return try JSONDecoder().decode(Dictionary<K, T>.self, from: data)
+        } catch {
+            debugPrint("Error: \(error)")
+            return [:]
+        }
+    }
+    
+    private func setObjects<K: Hashable & Encodable, T: Encodable>(_ objects: Dictionary<K, T>, for key: Settings.Key) {
+        guard !objects.isEmpty else {
+            userDefaults?.set([:], forKey: key.rawValue)
+            return
+        }
+        do {
+            let data = try JSONEncoder().encode(objects)
+            userDefaults?.set(data, forKey: key.rawValue)
+        } catch {
+            debugPrint("Error saving object: \(error)")
+        }
+    }
+    
     private func getString(for key: Settings.Key) -> String? {
         userDefaults?.string(forKey: key.rawValue)
     }

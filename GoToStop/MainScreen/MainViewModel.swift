@@ -172,20 +172,21 @@ extension MainViewModel {
     }
     
     func startLiveActivity() {
-        guard currentActivity == nil else { return }
+        guard
+            ActivityAuthorizationInfo().areActivitiesEnabled,
+            currentActivity == nil
+        else { return }
         
-        if ActivityAuthorizationInfo().areActivitiesEnabled {
-            let goToStopAttributes = GoToStopLiveActivityAttributes(stopName: selectedStop)
-            let initialActivityState = getLiveActivityContentState()
-            
-            do {
-                currentActivity = try Activity.request(
-                    attributes: goToStopAttributes,
-                    content: .init(state: initialActivityState, staleDate: nil)
-                )
-            } catch {
-                debugPrint("Couldn't start activity: \(String(describing: error))")
-            }
+        let goToStopAttributes = GoToStopLiveActivityAttributes(stopName: selectedStop)
+        let initialActivityState = getLiveActivityContentState()
+        
+        do {
+            currentActivity = try Activity.request(
+                attributes: goToStopAttributes,
+                content: .init(state: initialActivityState, staleDate: nil)
+            )
+        } catch {
+            debugPrint("Couldn't start activity: \(String(describing: error))")
         }
     }
     

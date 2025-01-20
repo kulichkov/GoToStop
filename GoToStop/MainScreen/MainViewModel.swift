@@ -41,7 +41,9 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    private var currentActivity: Activity<GoToStopLiveActivityAttributes>? = nil
+    private var currentActivities: [Activity<GoToStopLiveActivityAttributes>] {
+        Activity.activities
+    }
     
     private var savedTrips: [Trip] = [] {
         didSet {
@@ -174,17 +176,18 @@ extension MainViewModel {
     func startLiveActivity() {
         guard
             ActivityAuthorizationInfo().areActivitiesEnabled,
-            currentActivity == nil
+            currentActivities.isEmpty
         else { return }
         
         let goToStopAttributes = GoToStopLiveActivityAttributes(stopName: selectedStop)
         let initialActivityState = getLiveActivityContentState()
         
         do {
-            currentActivity = try Activity.request(
+            let newActivity = try Activity.request(
                 attributes: goToStopAttributes,
                 content: .init(state: initialActivityState, staleDate: nil)
             )
+            debugPrint("Started activity: \(newActivity.id)")
         } catch {
             debugPrint("Couldn't start activity: \(String(describing: error))")
         }
@@ -192,18 +195,23 @@ extension MainViewModel {
     
     func stopLiveActivity() {
         Task {
-            await currentActivity?.end(nil, dismissalPolicy: .immediate)
-            currentActivity = nil
+            for activity in currentActivities {
+                debugPrint("Ending activity: \(activity.id)")
+                await activity.end(nil, dismissalPolicy: .immediate)
+            }
         }
     }
     
     func updateLiveActivity() {
-        guard let currentActivity else { return }
+        guard !currentActivities.isEmpty else { return }
         let contentState = getLiveActivityContentState()
         let content = ActivityContent(state: contentState, staleDate: nil)
         
         Task {
-            await currentActivity.update(content)
+            for activity in currentActivities {
+                debugPrint("Updating activity: \(activity.id)")
+                await activity.update(content)
+            }
         }
     }
 }

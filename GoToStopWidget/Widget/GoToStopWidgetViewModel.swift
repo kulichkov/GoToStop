@@ -8,7 +8,16 @@
 import Foundation
 import GoToStopAPI
 
+extension GoToStopWidgetViewModel {
+    struct Constant {
+        let secondsInMinute: TimeInterval = 60
+        let uiUpdateTimeInterval: TimeInterval = 60
+        let tenMinutes: TimeInterval = 60 * 10
+    }
+}
+
 final class GoToStopWidgetViewModel: ObservableObject {
+    private let constant = Constant()
     
     func getWidgetEntries(_ intent: GoToStopIntent) async throws -> [GoToStopWidgetEntry] {
         guard
@@ -26,7 +35,7 @@ final class GoToStopWidgetViewModel: ObservableObject {
     private func makeWidgetEntries(stopName: String, items scheduledTrips: [ScheduledTrip]) -> [GoToStopWidgetEntry] {
         let dates = makeUpdateDates(
             endDate: scheduledTrips.last?.scheduledTime,
-            interval: 60
+            interval: constant.uiUpdateTimeInterval
         )
         
         var entries: [GoToStopWidgetEntry] = []
@@ -66,7 +75,7 @@ final class GoToStopWidgetViewModel: ObservableObject {
         guard let startDate = calendar.date(from: components) else { return [] }
         
         // If no endDate then default 10 minutes
-        let endDate = endDate ?? startDate.addingTimeInterval(60 * 10)
+        let endDate = endDate ?? startDate.addingTimeInterval(constant.tenMinutes)
         
         var updateDates = stride(
             from: .zero,
@@ -113,8 +122,9 @@ private extension ScheduledTrip {
     }
     
     func makeScheduledItem(relatedDate: Date) -> ScheduleItem {
+        let secondsInMinute: TimeInterval = 60
         let minutesLeft = time
-            .map { max(.zero, ceil($0.timeIntervalSince(relatedDate) / 60)) }
+            .map { max(.zero, ceil($0.timeIntervalSince(relatedDate) / secondsInMinute)) }
             .map(UInt.init)
         
         return ScheduleItem(

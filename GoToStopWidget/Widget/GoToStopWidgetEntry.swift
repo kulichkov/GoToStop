@@ -9,5 +9,6 @@ import WidgetKit
 
 struct GoToStopWidgetEntry: TimelineEntry {
     let date: Date
+    let widgetFamily: WidgetFamily
     let data: GoToStopWidgetData
 }

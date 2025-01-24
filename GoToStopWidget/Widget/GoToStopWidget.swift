@@ -20,7 +20,11 @@ struct GoToStopWidget: Widget {
                 GoToStopWidgetEntryView(entry: entry)
                     .containerBackground(.fill.tertiary, for: .widget)
             }
-            .supportedFamilies([.systemMedium])
+            .supportedFamilies([
+                .systemSmall,
+                .systemMedium,
+                .systemLarge,
+            ])
     }
 }
 
@@ -29,10 +33,7 @@ struct GoToStopWidget: Widget {
 } timeline: {
     GoToStopWidgetEntry(
         date: .now,
-        data: .preview
-    )
-    GoToStopWidgetEntry(
-        date: .now.addingTimeInterval(160),
+        widgetFamily: .systemSmall,
         data: .preview
     )
 }

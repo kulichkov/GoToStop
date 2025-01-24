@@ -20,33 +20,109 @@ struct RefreshIntent: AppIntent {
 struct GoToStopWidgetEntryView: View {
     var entry: GoToStopWidgetProvider.Entry
 
+    var atTime: String {
+        entry.data.updateTime.formatted(date: .omitted, time: .shortened)
+    }
+    
+    var numberOfItems: Int {
+        switch entry.widgetFamily {
+        case .systemSmall: 2
+        case .systemMedium: 2
+        default: 6
+        }
+    }
+    
     var body: some View {
         VStack(alignment: .leading) {
-            HStack {
-                Text(entry.data.stop)
-                Spacer()
-                Text("Updated: \(entry.data.updateTime.formatted(date: .omitted, time: .shortened))")
-                Button(intent: RefreshIntent()) { Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90") }
-            }
-            ForEach(entry.data.items.indices.prefix(7), id: \.self) { index in
+            header
+            Spacer(minLength: 16)
+            tripList
+                .padding(.horizontal, -4)
+            Spacer()
+        }
+        .font(.caption2)
+    }
+    
+    var header: some View {
+        HStack(alignment: .top) {
+            Text(entry.data.stop)
+                .lineLimit(2)
+                .truncationMode(.head)
+            Spacer()
+            Button(intent: RefreshIntent()) {
                 HStack {
-                    Text(entry.data.items[index].name)
-                    Text(entry.data.items[index].direction)
-                        .truncationMode(.middle)
-                    if let minutesLeft = entry.data.items[index].minutesLeft {
-                        Spacer()
-                        Text("in \(minutesLeft) min")
-                    }
-                    if let departureTime = entry.data.items[index].time {
-                        Spacer()
-                        Text(departureTime.formatted(date: .omitted, time: .shortened))
+                    Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90")
+                    if entry.widgetFamily != .systemSmall {
+                        Text(atTime)
                     }
                 }
             }
-            
-            Spacer()
+            .padding(.trailing, -4)
         }
-        .font(.caption)
-        .lineLimit(1)
     }
+    
+    var tripList: some View {
+        VStack(spacing: 8) {
+            ForEach(entry.data.items.prefix(numberOfItems)) { item in
+                tripView(item)
+            }
+        }
+    }
+    
+    func tripView(_ item: ScheduleItem) -> some View {
+        VStack(alignment: .leading) {
+            HStack {
+                Text(item.name)
+                Spacer()
+                Text(item.direction).truncationMode(.head)
+            }
+            Spacer(minLength: 4)
+            HStack {
+                if let minutesLeft = item.minutesLeft {
+                    Text("in \(minutesLeft) min")
+                }
+                Spacer()
+                if let departureTime = item.time {
+                    Text(departureTime.formatted(date: .omitted, time: .shortened))
+                }
+            }
+        }
+        .lineLimit(1)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(.foreground, lineWidth: 1)
+        )
+    }
+}
+
+#Preview(as: .systemSmall) {
+    GoToStopWidget()
+} timeline: {
+    GoToStopWidgetEntry(
+        date: .now,
+        widgetFamily: .systemSmall,
+        data: .preview2
+    )
+}
+
+#Preview(as: .systemMedium) {
+    GoToStopWidget()
+} timeline: {
+    GoToStopWidgetEntry(
+        date: .now,
+        widgetFamily: .systemMedium,
+        data: .preview2
+    )
+}
+
+#Preview(as: .systemLarge) {
+    GoToStopWidget()
+} timeline: {
+    GoToStopWidgetEntry(
+        date: .now,
+        widgetFamily: .systemLarge,
+        data: .preview2
+    )
 }

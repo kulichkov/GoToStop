@@ -36,19 +36,115 @@ struct GoToStopWidgetData {
 extension GoToStopWidgetData {
     static let preview = GoToStopWidgetData(
         updateTime: .now.addingTimeInterval(-600),
-        stop: "Kuhwaldstr.",
+        stop: "Frankfurt (Main) Kuhwaldstraße",
         items: [
             .init(
                 name: "Tram 17",
-                direction: "Somewhere 1",
+                direction: "Frankfurt (Main) Rebstockbad",
                 time: .now,
                 minutesLeft: .zero
             ),
             .init(
                 name: "Tram 17",
-                direction: "Somewhere 2",
+                direction: "Frankfurt (Main) Rebstockbad",
                 time: .now.addingTimeInterval(600),
                 minutesLeft: 10
             )
+        ])
+    
+    static let preview2 = GoToStopWidgetData(
+        updateTime: .now.addingTimeInterval(-600),
+        stop: "Frankfurt (Main) Leonardo-da-Vinci-Allee",
+        items: [
+            .init(
+                name: "Tram 17",
+                direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
+                time: .now,
+                minutesLeft: .zero
+            ),
+            .init(
+                name: "Tram 17",
+                direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
+                time: .now,
+                minutesLeft: 10
+            ),
+            .init(
+                name: "Tram 17",
+                direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
+                time: .now.addingTimeInterval(600),
+                minutesLeft: 10
+            ),
+            .init(
+                name: "Tram 17",
+                direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
+                time: .now.addingTimeInterval(600),
+                minutesLeft: 10
+            ),
+            .init(
+                name: "Tram 17",
+                direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
+                time: .now.addingTimeInterval(600),
+                minutesLeft: 10
+            ),
+            .init(
+                name: "Tram 17",
+                direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
+                time: .now,
+                minutesLeft: .zero
+            ),
+            .init(
+                name: "Tram 17",
+                direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
+                time: .now,
+                minutesLeft: 10
+            ),
+            .init(
+                name: "Tram 17",
+                direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
+                time: .now.addingTimeInterval(600),
+                minutesLeft: 10
+            ),
+            .init(
+                name: "Tram 17",
+                direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
+                time: .now.addingTimeInterval(600),
+                minutesLeft: 10
+            ),
+            .init(
+                name: "Tram 17",
+                direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
+                time: .now.addingTimeInterval(600),
+                minutesLeft: 10
+            ),
+            .init(
+                name: "Tram 17",
+                direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
+                time: .now,
+                minutesLeft: .zero
+            ),
+            .init(
+                name: "Tram 17",
+                direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
+                time: .now,
+                minutesLeft: 10
+            ),
+            .init(
+                name: "Tram 17",
+                direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
+                time: .now.addingTimeInterval(600),
+                minutesLeft: 10
+            ),
+            .init(
+                name: "Tram 17",
+                direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
+                time: .now.addingTimeInterval(600),
+                minutesLeft: 10
+            ),
+            .init(
+                name: "Tram 17",
+                direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
+                time: .now.addingTimeInterval(600),
+                minutesLeft: 10
+            ),
         ])
 }

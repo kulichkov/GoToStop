@@ -14,13 +14,14 @@ struct GoToStopWidgetProvider: AppIntentTimelineProvider {
     func snapshot(for configuration: GoToStopIntent, in context: Context) async -> GoToStopWidgetEntry {
         GoToStopWidgetEntry(
             date: Date(),
+            widgetFamily: context.family,
             data: .preview
         )
     }
     
     func timeline(for configuration: GoToStopIntent, in context: Context) async -> Timeline<GoToStopWidgetEntry> {
         do {
-            let widgetEntries = try await viewModel.getWidgetEntries(configuration)
+            let widgetEntries = try await viewModel.getWidgetEntries(configuration, widgetFamily: context.family)
             
             let updatePolicy: TimelineReloadPolicy
             if let date = widgetEntries.last?.date {
@@ -46,6 +47,7 @@ struct GoToStopWidgetProvider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> GoToStopWidgetEntry {
         .init(
             date: Date(),
+            widgetFamily: context.family,
             data: GoToStopWidgetData(
                 updateTime: .now,
                 stop: "-",

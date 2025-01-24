@@ -7,6 +7,7 @@
 
 import Foundation
 import GoToStopAPI
+import enum WidgetKit.WidgetFamily
 
 extension GoToStopWidgetViewModel {
     struct Constant {
@@ -19,7 +20,10 @@ extension GoToStopWidgetViewModel {
 final class GoToStopWidgetViewModel: ObservableObject {
     private let constant = Constant()
     
-    func getWidgetEntries(_ intent: GoToStopIntent) async throws -> [GoToStopWidgetEntry] {
+    func getWidgetEntries(
+        _ intent: GoToStopIntent,
+        widgetFamily: WidgetFamily
+    ) async throws -> [GoToStopWidgetEntry] {
         guard
             let stopId = intent.stopLocation?.locationId,
             let trips = intent.trips
@@ -29,10 +33,18 @@ final class GoToStopWidgetViewModel: ObservableObject {
         let scheduledItems = await getTrips(stopId: stopId, trips: trips)
         
         let stopName = intent.stopLocation?.name ?? "No stop name"
-        return makeWidgetEntries(stopName: stopName, items: scheduledItems)
+        return makeWidgetEntries(
+            stopName: stopName,
+            items: scheduledItems,
+            widgetFamily: widgetFamily
+        )
     }
     
-    private func makeWidgetEntries(stopName: String, items scheduledTrips: [ScheduledTrip]) -> [GoToStopWidgetEntry] {
+    private func makeWidgetEntries(
+        stopName: String,
+        items scheduledTrips: [ScheduledTrip],
+        widgetFamily: WidgetFamily
+    ) -> [GoToStopWidgetEntry] {
         let dates = makeUpdateDates(
             endDate: scheduledTrips.last?.scheduledTime,
             interval: constant.uiUpdateTimeInterval
@@ -50,6 +62,7 @@ final class GoToStopWidgetViewModel: ObservableObject {
             
             let entry = GoToStopWidgetEntry(
                 date: timeToUpdate,
+                widgetFamily: widgetFamily,
                 data: .init(
                     updateTime: .now,
                     stop: stopName,

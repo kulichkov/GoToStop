@@ -8,7 +8,7 @@
 public struct Departure {
     public let name: String
     public let stopId: String
-    public let category: String
+    public let category: TransportCategory
     public let lineId: String
     public let scheduledTime: Date?
     public let realTime: Date?
@@ -22,12 +22,13 @@ extension Departure {
             let name = response.name,
             let product = response.product?.first,
             let stopId = response.stopid,
-            let category = product.catOut,
+            let catOut = product.catOut,
             let lineId = product.line,
             let direction = response.direction,
             let directionId = response.directionId
         else { return nil }
         
+        let category = TransportCategory(rawValue: catOut) ?? .unknown
         let scheduledTime = ServerDateFormatter.date(date: response.date, time: response.time)
         let realTime = ServerDateFormatter.date(date: response.rtDate, time: response.rtTime)
         

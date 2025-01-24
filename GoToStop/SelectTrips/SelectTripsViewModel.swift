@@ -10,7 +10,7 @@ import GoToStopAPI
 
 struct TripItem: Identifiable, Hashable {
     struct Trip: Hashable {
-        let category: String
+        let category: TransportCategory
         let lineId: String
         let name: String
         let direction: String

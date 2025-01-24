@@ -12,7 +12,7 @@ struct Trip: AppEntity, Hashable {
     let id: String
     let name: String
     let direction: String
-    let category: String
+    let category: TransportCategory
     let lineId: String
     let directionId: String
     
@@ -20,7 +20,7 @@ struct Trip: AppEntity, Hashable {
     static var defaultQuery = TripQuery()
             
     var displayRepresentation: DisplayRepresentation {
-        DisplayRepresentation(title: "\(name) \(direction)")
+        DisplayRepresentation(title: "\(name)\n→ \(direction)")
     }
 }
 
@@ -59,11 +59,13 @@ extension Trip {
         let components = identifier.split(separator: Trip.idSeparator)
         guard components.count == 5 else { return nil }
         
+        let category = TransportCategory(rawValue: String(components[2])) ?? .unknown
+        
         self.init(
             id: identifier,
             name: String(components[0]),
             direction: String(components[1]),
-            category: String(components[2]),
+            category: category,
             lineId: String(components[3]),
             directionId: String(components[4])
         )
@@ -73,7 +75,7 @@ extension Trip {
         let id = [
             departure.name,
             departure.direction,
-            departure.category,
+            departure.category.rawValue,
             departure.lineId,
             departure.directionId,
         ]
@@ -86,5 +88,4 @@ extension Trip {
         self.lineId = departure.lineId
         self.directionId = departure.directionId
     }
-    
 }

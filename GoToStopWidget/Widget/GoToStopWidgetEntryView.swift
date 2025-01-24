@@ -33,12 +33,11 @@ struct GoToStopWidgetEntryView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack() {
             header
-            Spacer(minLength: 16)
+            Spacer().frame(height: 16)
             tripList
                 .padding(.horizontal, -4)
-            Spacer()
         }
         .font(.caption2)
     }
@@ -46,6 +45,7 @@ struct GoToStopWidgetEntryView: View {
     var header: some View {
         HStack(alignment: .top) {
             Text(entry.data.stop)
+                .fontWeight(.bold)
                 .lineLimit(2)
                 .truncationMode(.head)
             Spacer()
@@ -66,6 +66,7 @@ struct GoToStopWidgetEntryView: View {
             ForEach(entry.data.items.prefix(numberOfItems)) { item in
                 tripView(item)
             }
+            Spacer()
         }
     }
     
@@ -76,7 +77,7 @@ struct GoToStopWidgetEntryView: View {
                 Spacer()
                 Text(item.direction).truncationMode(.head)
             }
-            Spacer(minLength: 4)
+            Spacer().frame(height: 2)
             HStack {
                 if let minutesLeft = item.minutesLeft {
                     Text("in \(minutesLeft) min")

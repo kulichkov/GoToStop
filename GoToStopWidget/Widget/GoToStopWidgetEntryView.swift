@@ -97,11 +97,13 @@ struct GoToStopWidgetEntryView: View {
                         .strikethrough(false)
                         .foregroundStyle(.red)
                 }
-                if let realTime = item.realTime {
-                    Text("Time: " + realTime.formatted(date: .omitted, time: .shortened))
+                
+                if item.timeDiffers, let realTime = item.realTime {
+                    Text("Actual: " + realTime.formatted(date: .omitted, time: .shortened))
                 }
                 if let scheduledTime = item.scheduledTime {
                     Text("Scheduled: " + scheduledTime.formatted(date: .omitted, time: .shortened))
+                        .foregroundStyle(item.timeDiffers ? .secondary : .primary)
                 }
             }
             .strikethrough(item.isCancelled)

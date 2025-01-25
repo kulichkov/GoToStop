@@ -17,6 +17,10 @@ struct ScheduleItem: Identifiable {
     let isReachable: Bool
     let isCancelled: Bool
     var time: Date? { realTime ?? scheduledTime }
+    var timeDiffers: Bool {
+        guard let realTime, let scheduledTime else { return false }
+        return realTime != scheduledTime
+    }
 }
 
 struct ScheduledTrip: Identifiable {

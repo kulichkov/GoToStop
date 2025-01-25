@@ -7,7 +7,6 @@
 
 import Foundation
 import GoToStopAPI
-import enum WidgetKit.WidgetFamily
 
 extension GoToStopWidgetViewModel {
     struct Constant {
@@ -21,8 +20,7 @@ final class GoToStopWidgetViewModel: ObservableObject {
     private let constant = Constant()
     
     func getWidgetEntries(
-        _ intent: GoToStopIntent,
-        widgetFamily: WidgetFamily
+        _ intent: GoToStopIntent
     ) async throws -> [GoToStopWidgetEntry] {
         guard
             let stopId = intent.stopLocation?.locationId,
@@ -36,14 +34,16 @@ final class GoToStopWidgetViewModel: ObservableObject {
         return makeWidgetEntries(
             stopName: stopName,
             items: scheduledItems,
-            widgetFamily: widgetFamily
+            stop: intent.stopLocation,
+            trips: intent.trips ?? []
         )
     }
     
     private func makeWidgetEntries(
         stopName: String,
         items scheduledTrips: [ScheduledTrip],
-        widgetFamily: WidgetFamily
+        stop: StopLocation?,
+        trips: [Trip]
     ) -> [GoToStopWidgetEntry] {
         let dates = makeUpdateDates(
             endDate: scheduledTrips.last?.scheduledTime,
@@ -62,12 +62,13 @@ final class GoToStopWidgetViewModel: ObservableObject {
             
             let entry = GoToStopWidgetEntry(
                 date: timeToUpdate,
-                widgetFamily: widgetFamily,
                 data: .init(
                     updateTime: .now,
                     stop: stopName,
                     items: items
-                )
+                ),
+                stop: stop,
+                trips: trips
             )
             
             entries.append(entry)

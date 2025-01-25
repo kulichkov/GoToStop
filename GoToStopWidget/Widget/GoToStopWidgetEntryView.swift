@@ -19,17 +19,19 @@ struct RefreshIntent: AppIntent {
 
 struct GoToStopWidgetEntryView: View {
     var entry: GoToStopWidgetProvider.Entry
+    
+    @Environment(\.widgetFamily) var widgetFamily: WidgetFamily
 
     private var atTime: String {
         entry.data.updateTime.formatted(date: .omitted, time: .shortened)
     }
     
     private var isCompact: Bool {
-        entry.widgetFamily == .systemSmall
+        widgetFamily == .systemSmall
     }
     
     private var numberOfItems: Int {
-        switch entry.widgetFamily {
+        switch widgetFamily {
         case .systemSmall: 2
         case .systemMedium: 2
         default: 6
@@ -156,7 +158,6 @@ struct GoToStopWidgetEntryView: View {
 } timeline: {
     GoToStopWidgetEntry(
         date: .now,
-        widgetFamily: .systemSmall,
         data: .preview2
     )
 }
@@ -166,7 +167,6 @@ struct GoToStopWidgetEntryView: View {
 } timeline: {
     GoToStopWidgetEntry(
         date: .now,
-        widgetFamily: .systemMedium,
         data: .preview2
     )
 }
@@ -176,7 +176,6 @@ struct GoToStopWidgetEntryView: View {
 } timeline: {
     GoToStopWidgetEntry(
         date: .now,
-        widgetFamily: .systemLarge,
         data: .preview2
     )
 }

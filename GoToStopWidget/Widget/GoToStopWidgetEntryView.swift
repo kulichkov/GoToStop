@@ -20,15 +20,15 @@ struct RefreshIntent: AppIntent {
 struct GoToStopWidgetEntryView: View {
     var entry: GoToStopWidgetProvider.Entry
 
-    var atTime: String {
+    private var atTime: String {
         entry.data.updateTime.formatted(date: .omitted, time: .shortened)
     }
     
-    var isCompact: Bool {
+    private var isCompact: Bool {
         entry.widgetFamily == .systemSmall
     }
     
-    var numberOfItems: Int {
+    private var numberOfItems: Int {
         switch entry.widgetFamily {
         case .systemSmall: 2
         case .systemMedium: 2
@@ -46,7 +46,7 @@ struct GoToStopWidgetEntryView: View {
         .font(.caption2)
     }
     
-    var header: some View {
+    private var header: some View {
         HStack(alignment: .top) {
             Text(entry.data.stop)
                 .fontWeight(.bold)
@@ -65,23 +65,25 @@ struct GoToStopWidgetEntryView: View {
         }
     }
     
-    var tripList: some View {
+    private var tripList: some View {
         VStack(spacing: 8) {
             ForEach(entry.data.items.prefix(numberOfItems)) { item in
-                tripView(item)
+                if isCompact {
+                    tripCompactView(item)
+                } else {
+                    tripView(item)
+                }
             }
             Spacer()
         }
     }
     
-    func tripView(_ item: ScheduleItem) -> some View {
+    private func tripView(_ item: ScheduleItem) -> some View {
         VStack(alignment: .leading) {
             HStack {
                 Text(item.name)
                 Spacer()
-                if !isCompact {
-                    Text("→")
-                }
+                Text("→")
                 Text(item.direction).truncationMode(.head)
             }
             Spacer().frame(height: 2)
@@ -91,7 +93,43 @@ struct GoToStopWidgetEntryView: View {
                 }
                 Spacer()
                 if item.isCancelled {
-                    Text(isCompact ? "⊗" : "Cancelled")
+                    Text("Cancelled")
+                        .strikethrough(false)
+                        .foregroundStyle(.red)
+                }
+                if let realTime = item.realTime {
+                    Text("Time: " + realTime.formatted(date: .omitted, time: .shortened))
+                }
+                if let scheduledTime = item.scheduledTime {
+                    Text("Scheduled: " + scheduledTime.formatted(date: .omitted, time: .shortened))
+                }
+            }
+            .strikethrough(item.isCancelled)
+        }
+        .lineLimit(1)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(.foreground, lineWidth: 1)
+        )
+    }
+    
+    private func tripCompactView(_ item: ScheduleItem) -> some View {
+        VStack(alignment: .leading) {
+            HStack {
+                Text(item.name)
+                Spacer()
+                Text(item.direction).truncationMode(.head)
+            }
+            Spacer().frame(height: 2)
+            HStack {
+                if let minutesLeft = item.minutesLeft {
+                    Text("in \(minutesLeft) min")
+                }
+                Spacer()
+                if item.isCancelled {
+                    Text("⊗")
                         .strikethrough(false)
                         .foregroundStyle(.red)
                 }

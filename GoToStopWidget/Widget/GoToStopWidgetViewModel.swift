@@ -145,7 +145,8 @@ private extension ScheduledTrip {
         return ScheduleItem(
             name: name,
             direction: direction,
-            time: time,
+            scheduledTime: scheduledTime,
+            realTime: realTime,
             minutesLeft: minutesLeft,
             isReachable: isReachable,
             isCancelled: isCancelled

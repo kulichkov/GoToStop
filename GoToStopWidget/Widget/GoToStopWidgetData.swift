@@ -11,10 +11,12 @@ struct ScheduleItem: Identifiable {
     let id = UUID()
     let name: String
     let direction: String
-    let time: Date?
+    let scheduledTime: Date?
+    let realTime: Date?
     let minutesLeft: UInt?
     let isReachable: Bool
     let isCancelled: Bool
+    var time: Date? { realTime ?? scheduledTime }
 }
 
 struct ScheduledTrip: Identifiable {
@@ -45,7 +47,8 @@ extension GoToStopWidgetData {
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Rebstockbad",
-                time: .now,
+                scheduledTime: .now,
+                realTime: .now.addingTimeInterval(120),
                 minutesLeft: .zero,
                 isReachable: false,
                 isCancelled: true
@@ -53,7 +56,8 @@ extension GoToStopWidgetData {
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Rebstockbad",
-                time: .now.addingTimeInterval(600),
+                scheduledTime: .now.addingTimeInterval(600),
+                realTime: .now.addingTimeInterval(780),
                 minutesLeft: 10,
                 isReachable: true,
                 isCancelled: false
@@ -67,7 +71,8 @@ extension GoToStopWidgetData {
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
-                time: .now,
+                scheduledTime: .now,
+                realTime: nil,
                 minutesLeft: .zero,
                 isReachable: true,
                 isCancelled: false
@@ -75,7 +80,8 @@ extension GoToStopWidgetData {
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
-                time: .now,
+                scheduledTime: .now.addingTimeInterval(120),
+                realTime: .now.addingTimeInterval(180),
                 minutesLeft: 10,
                 isReachable: false,
                 isCancelled: true
@@ -83,7 +89,8 @@ extension GoToStopWidgetData {
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
-                time: .now.addingTimeInterval(600),
+                scheduledTime: .now.addingTimeInterval(600),
+                realTime: .now.addingTimeInterval(780),
                 minutesLeft: 10,
                 isReachable: true,
                 isCancelled: false
@@ -91,7 +98,8 @@ extension GoToStopWidgetData {
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
-                time: .now.addingTimeInterval(600),
+                scheduledTime: .now.addingTimeInterval(660),
+                realTime: nil,
                 minutesLeft: 10,
                 isReachable: true,
                 isCancelled: false
@@ -99,15 +107,8 @@ extension GoToStopWidgetData {
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
-                time: .now.addingTimeInterval(600),
-                minutesLeft: 10,
-                isReachable: true,
-                isCancelled: false
-            ),
-            .init(
-                name: "Tram 17",
-                direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
-                time: .now,
+                scheduledTime: .now,
+                realTime: nil,
                 minutesLeft: .zero,
                 isReachable: true,
                 isCancelled: false
@@ -115,7 +116,17 @@ extension GoToStopWidgetData {
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
-                time: .now,
+                scheduledTime: .now.addingTimeInterval(120),
+                realTime: .now.addingTimeInterval(180),
+                minutesLeft: 10,
+                isReachable: false,
+                isCancelled: true
+            ),
+            .init(
+                name: "Tram 17",
+                direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
+                scheduledTime: .now.addingTimeInterval(600),
+                realTime: .now.addingTimeInterval(780),
                 minutesLeft: 10,
                 isReachable: true,
                 isCancelled: false
@@ -123,7 +134,8 @@ extension GoToStopWidgetData {
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
-                time: .now.addingTimeInterval(600),
+                scheduledTime: .now.addingTimeInterval(660),
+                realTime: nil,
                 minutesLeft: 10,
                 isReachable: true,
                 isCancelled: false
@@ -131,23 +143,8 @@ extension GoToStopWidgetData {
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
-                time: .now.addingTimeInterval(600),
-                minutesLeft: 10,
-                isReachable: true,
-                isCancelled: false
-            ),
-            .init(
-                name: "Tram 17",
-                direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
-                time: .now.addingTimeInterval(600),
-                minutesLeft: 10,
-                isReachable: true,
-                isCancelled: false
-            ),
-            .init(
-                name: "Tram 17",
-                direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
-                time: .now,
+                scheduledTime: .now,
+                realTime: nil,
                 minutesLeft: .zero,
                 isReachable: true,
                 isCancelled: false
@@ -155,7 +152,17 @@ extension GoToStopWidgetData {
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
-                time: .now,
+                scheduledTime: .now.addingTimeInterval(120),
+                realTime: .now.addingTimeInterval(180),
+                minutesLeft: 10,
+                isReachable: false,
+                isCancelled: true
+            ),
+            .init(
+                name: "Tram 17",
+                direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
+                scheduledTime: .now.addingTimeInterval(600),
+                realTime: .now.addingTimeInterval(780),
                 minutesLeft: 10,
                 isReachable: true,
                 isCancelled: false
@@ -163,7 +170,8 @@ extension GoToStopWidgetData {
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
-                time: .now.addingTimeInterval(600),
+                scheduledTime: .now.addingTimeInterval(660),
+                realTime: nil,
                 minutesLeft: 10,
                 isReachable: true,
                 isCancelled: false
@@ -171,7 +179,26 @@ extension GoToStopWidgetData {
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
-                time: .now.addingTimeInterval(600),
+                scheduledTime: .now,
+                realTime: nil,
+                minutesLeft: .zero,
+                isReachable: true,
+                isCancelled: false
+            ),
+            .init(
+                name: "Tram 17",
+                direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
+                scheduledTime: .now.addingTimeInterval(120),
+                realTime: .now.addingTimeInterval(180),
+                minutesLeft: 10,
+                isReachable: false,
+                isCancelled: true
+            ),
+            .init(
+                name: "Tram 17",
+                direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
+                scheduledTime: .now.addingTimeInterval(600),
+                realTime: .now.addingTimeInterval(780),
                 minutesLeft: 10,
                 isReachable: true,
                 isCancelled: false
@@ -179,7 +206,8 @@ extension GoToStopWidgetData {
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
-                time: .now.addingTimeInterval(600),
+                scheduledTime: .now.addingTimeInterval(660),
+                realTime: nil,
                 minutesLeft: 10,
                 isReachable: true,
                 isCancelled: false

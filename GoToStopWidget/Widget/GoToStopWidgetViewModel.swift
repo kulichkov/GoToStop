@@ -129,6 +129,8 @@ private extension ScheduledTrip {
         self.init(
             name: departure.name,
             direction: departure.direction,
+            isCancelled: departure.isCancelled,
+            isReachable: departure.isReachable,
             scheduledTime: departure.scheduledTime,
             realTime: departure.realTime
         )
@@ -144,7 +146,9 @@ private extension ScheduledTrip {
             name: name,
             direction: direction,
             time: time,
-            minutesLeft: minutesLeft
+            minutesLeft: minutesLeft,
+            isReachable: isReachable,
+            isCancelled: isCancelled
         )
     }
 }

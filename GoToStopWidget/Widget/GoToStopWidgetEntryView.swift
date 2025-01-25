@@ -24,6 +24,10 @@ struct GoToStopWidgetEntryView: View {
         entry.data.updateTime.formatted(date: .omitted, time: .shortened)
     }
     
+    var isCompact: Bool {
+        entry.widgetFamily == .systemSmall
+    }
+    
     var numberOfItems: Int {
         switch entry.widgetFamily {
         case .systemSmall: 2
@@ -52,7 +56,7 @@ struct GoToStopWidgetEntryView: View {
             Button(intent: RefreshIntent()) {
                 HStack {
                     Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90")
-                    if entry.widgetFamily != .systemSmall {
+                    if !isCompact {
                         Text(atTime)
                     }
                 }
@@ -75,6 +79,9 @@ struct GoToStopWidgetEntryView: View {
             HStack {
                 Text(item.name)
                 Spacer()
+                if !isCompact {
+                    Text("→")
+                }
                 Text(item.direction).truncationMode(.head)
             }
             Spacer().frame(height: 2)
@@ -83,10 +90,16 @@ struct GoToStopWidgetEntryView: View {
                     Text("in \(minutesLeft) min")
                 }
                 Spacer()
+                if item.isCancelled {
+                    Text(isCompact ? "⊗" : "Cancelled")
+                        .strikethrough(false)
+                        .foregroundStyle(.red)
+                }
                 if let departureTime = item.time {
                     Text(departureTime.formatted(date: .omitted, time: .shortened))
                 }
             }
+            .strikethrough(item.isCancelled)
         }
         .lineLimit(1)
         .padding(.horizontal, 8)

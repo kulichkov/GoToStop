@@ -13,12 +13,16 @@ struct ScheduleItem: Identifiable {
     let direction: String
     let time: Date?
     let minutesLeft: UInt?
+    let isReachable: Bool
+    let isCancelled: Bool
 }
 
 struct ScheduledTrip: Identifiable {
     let id = UUID()
     let name: String
     let direction: String
+    let isCancelled: Bool
+    let isReachable: Bool
     let scheduledTime: Date?
     let realTime: Date?
 }
@@ -42,13 +46,17 @@ extension GoToStopWidgetData {
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Rebstockbad",
                 time: .now,
-                minutesLeft: .zero
+                minutesLeft: .zero,
+                isReachable: false,
+                isCancelled: true
             ),
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Rebstockbad",
                 time: .now.addingTimeInterval(600),
-                minutesLeft: 10
+                minutesLeft: 10,
+                isReachable: true,
+                isCancelled: false
             )
         ])
     
@@ -60,91 +68,121 @@ extension GoToStopWidgetData {
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 time: .now,
-                minutesLeft: .zero
+                minutesLeft: .zero,
+                isReachable: true,
+                isCancelled: false
             ),
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 time: .now,
-                minutesLeft: 10
+                minutesLeft: 10,
+                isReachable: false,
+                isCancelled: true
             ),
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 time: .now.addingTimeInterval(600),
-                minutesLeft: 10
+                minutesLeft: 10,
+                isReachable: true,
+                isCancelled: false
             ),
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 time: .now.addingTimeInterval(600),
-                minutesLeft: 10
+                minutesLeft: 10,
+                isReachable: true,
+                isCancelled: false
             ),
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 time: .now.addingTimeInterval(600),
-                minutesLeft: 10
+                minutesLeft: 10,
+                isReachable: true,
+                isCancelled: false
             ),
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 time: .now,
-                minutesLeft: .zero
+                minutesLeft: .zero,
+                isReachable: true,
+                isCancelled: false
             ),
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 time: .now,
-                minutesLeft: 10
+                minutesLeft: 10,
+                isReachable: true,
+                isCancelled: false
             ),
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 time: .now.addingTimeInterval(600),
-                minutesLeft: 10
+                minutesLeft: 10,
+                isReachable: true,
+                isCancelled: false
             ),
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 time: .now.addingTimeInterval(600),
-                minutesLeft: 10
+                minutesLeft: 10,
+                isReachable: true,
+                isCancelled: false
             ),
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 time: .now.addingTimeInterval(600),
-                minutesLeft: 10
+                minutesLeft: 10,
+                isReachable: true,
+                isCancelled: false
             ),
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 time: .now,
-                minutesLeft: .zero
+                minutesLeft: .zero,
+                isReachable: true,
+                isCancelled: false
             ),
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 time: .now,
-                minutesLeft: 10
+                minutesLeft: 10,
+                isReachable: true,
+                isCancelled: false
             ),
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 time: .now.addingTimeInterval(600),
-                minutesLeft: 10
+                minutesLeft: 10,
+                isReachable: true,
+                isCancelled: false
             ),
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 time: .now.addingTimeInterval(600),
-                minutesLeft: 10
+                minutesLeft: 10,
+                isReachable: true,
+                isCancelled: false
             ),
             .init(
                 name: "Tram 17",
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 time: .now.addingTimeInterval(600),
-                minutesLeft: 10
+                minutesLeft: 10,
+                isReachable: true,
+                isCancelled: false
             ),
         ])
 }

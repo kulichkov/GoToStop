@@ -12,6 +12,8 @@ public struct Departure {
     public let lineId: String
     public let scheduledTime: Date?
     public let realTime: Date?
+    public let isCancelled: Bool
+    public let isReachable: Bool
     public let direction: String
     public let directionId: String
 }
@@ -31,6 +33,8 @@ extension Departure {
         let category = TransportCategory(rawValue: catOut) ?? .unknown
         let scheduledTime = ServerDateFormatter.date(date: response.date, time: response.time)
         let realTime = ServerDateFormatter.date(date: response.rtDate, time: response.rtTime)
+        let isCancelled = response.cancelled ?? false
+        let isReachable = response.reachable ?? true
         
         self.init(
             name: name,
@@ -39,6 +43,8 @@ extension Departure {
             lineId: lineId,
             scheduledTime: scheduledTime,
             realTime: realTime,
+            isCancelled: isCancelled,
+            isReachable: isReachable,
             direction: direction,
             directionId: directionId
         )

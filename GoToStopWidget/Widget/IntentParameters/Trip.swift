@@ -20,7 +20,7 @@ struct Trip: AppEntity, Hashable {
     static var defaultQuery = TripQuery()
             
     var displayRepresentation: DisplayRepresentation {
-        DisplayRepresentation(title: "\(name)\n→ \(direction)")
+        DisplayRepresentation(title: "\(name)\n\(direction)")
     }
 }
 

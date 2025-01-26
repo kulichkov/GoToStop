@@ -16,6 +16,20 @@ struct TripItem: Identifiable, Hashable {
         let direction: String
         let directionId: String
         
+        init(
+            category: TransportCategory,
+            lineId: String,
+            name: String,
+            direction: String,
+            directionId: String
+        ) {
+            self.category = category
+            self.lineId = lineId
+            self.name = name
+            self.direction = direction
+            self.directionId = directionId
+        }
+        
         init(_ departure: Departure) {
             self.category = departure.category
             self.lineId = departure.lineId

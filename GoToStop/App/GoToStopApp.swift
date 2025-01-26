@@ -11,35 +11,63 @@ import struct GoToStopAPI.StopLocation
 import struct GoToStopAPI.Trip
 import enum GoToStopAPI.TransportCategory
 
+struct StopScheduleParameters {
+    let stopLocation: StopLocation
+    let tripItems: [TripItem]
+}
+
 @main
 struct GoToStopApp: App {
+    @State var stopScheduleParameters: StopScheduleParameters? {
+        didSet {
+            goToStopSchedule = stopScheduleParameters != nil
+        }
+    }
+    @State var goToStopSchedule: Bool = false
+    
     var body: some Scene {
         WindowGroup {
-            MainView()
-                .onOpenURL(perform: handleUrl)
+            NavigationStack {
+                MainView()
+                    .onOpenURL(perform: handleUrl)
+                    .navigationDestination(isPresented: $goToStopSchedule) {
+                        if let stopScheduleParameters {
+                            StopScheduleView(viewModel: .init(stopScheduleParameters))
+                        } else {
+                            EmptyView()
+                        }
+                    }
+            }
         }
     }
     
     private func handleUrl(_ url: URL) {
-        debugPrint(#function, "URL: ", url)
-        guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+        debugPrint(#function)
+        self.stopScheduleParameters = url.getStopScheduleParameters()
+    }
+}
+
+extension URL {
+    func getStopScheduleParameters() -> StopScheduleParameters? {
+        debugPrint(#function, "URL: ", self)
+        guard let urlComponents = URLComponents(url: self, resolvingAgainstBaseURL: false) else {
             debugPrint(#function, "Couldn't make components from the url")
-            return
+            return nil
         }
         guard let queryItems = urlComponents.queryItems, !queryItems.isEmpty else {
             debugPrint(#function, "Couldn't get query items from the url")
-            return
+            return nil
         }
         guard let stopString = queryItems.first(where: { $0.name == "stop" })?.value else {
             debugPrint(#function, "Couldn't get stop string from a query item")
-            return
+            return nil
         }
         
         let stopComponents = stopString.split(separator: "#")
         
         guard stopComponents.count == 2 else {
             debugPrint(#function, "Stop string \(stopString) doesn't have all stop components")
-            return
+            return nil
         }
         
         let locationId = stopComponents[0]
@@ -58,7 +86,20 @@ struct GoToStopApp: App {
         debugPrint(#function, "Stop location to use:", stop)
         debugPrint(#function, "trips to use:", trips)
         
-        // TODO: Go to the information screen using the stop and the trips
+        let tripItems: [TripItem] = trips.map { trip in
+            TripItem(trip: .init(
+                category: trip.category,
+                lineId: trip.lineId,
+                name: trip.name,
+                direction: trip.direction,
+                directionId: trip.directionId
+            ))
+        }
+        
+        return StopScheduleParameters(
+            stopLocation: stop,
+            tripItems: tripItems
+        )
     }
 }
 

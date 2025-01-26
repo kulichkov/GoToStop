@@ -16,6 +16,10 @@ extension GoToStopWidgetViewModel {
     }
 }
 
+enum GoToStopWidgetError: Error {
+    case noParametersSet
+}
+
 final class GoToStopWidgetViewModel: ObservableObject {
     private let constant = Constant()
     
@@ -26,7 +30,7 @@ final class GoToStopWidgetViewModel: ObservableObject {
             let stopId = intent.stopLocation?.locationId,
             let trips = intent.trips
         else {
-            return []
+            throw GoToStopWidgetError.noParametersSet
         }
         let scheduledItems = await getTrips(stopId: stopId, trips: trips)
         
@@ -40,7 +44,7 @@ final class GoToStopWidgetViewModel: ObservableObject {
     }
     
     private func makeWidgetEntries(
-        stopName: String,
+        stopName: String?,
         items scheduledTrips: [ScheduledTrip],
         stop: StopLocation?,
         trips: [Trip]

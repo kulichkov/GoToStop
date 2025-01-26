@@ -17,9 +17,14 @@ struct GoToStopWidget: Widget {
             kind: kind,
             intent: GoToStopIntent.self,
             provider: GoToStopWidgetProvider()) { entry in
-                GoToStopWidgetEntryView(entry: entry)
-                    .containerBackground(.fill.tertiary, for: .widget)
-                    .widgetURL(entry.makeWidgetUrl())
+                if entry.stop == nil || entry.trips.isEmpty {
+                    GoToStopWidgetUsageView()
+                        .containerBackground(.fill.tertiary, for: .widget)
+                } else {
+                    GoToStopWidgetEntryView(entry: entry)
+                        .containerBackground(.fill.tertiary, for: .widget)
+                        .widgetURL(entry.makeWidgetUrl())
+                }
             }
             .supportedFamilies([
                 .systemSmall,

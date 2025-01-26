@@ -50,10 +50,12 @@ struct GoToStopWidgetEntryView: View {
     
     private var header: some View {
         HStack(alignment: .top) {
-            Text(entry.data.stop)
-                .fontWeight(.bold)
-                .lineLimit(2)
-                .truncationMode(.head)
+            if let stop = entry.data.stop {
+                Text(stop)
+                    .fontWeight(.bold)
+                    .lineLimit(2)
+                    .truncationMode(.head)
+            }
             Spacer()
             Button(intent: RefreshIntent()) {
                 HStack {
@@ -178,4 +180,12 @@ struct GoToStopWidgetEntryView: View {
         date: .now,
         data: .preview2
     )
+}
+
+
+struct GoToStopWidgetUsageView: View {
+    var body: some View {
+        Text("Please edit the widget to specify a stop, trips and directions")
+            .multilineTextAlignment(.center)
+    }
 }

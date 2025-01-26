@@ -39,7 +39,7 @@ extension ScheduledTrip {
 
 struct GoToStopWidgetData {
     let updateTime: Date
-    let stop: String
+    let stop: String?
     let items: [ScheduleItem]
 }
 

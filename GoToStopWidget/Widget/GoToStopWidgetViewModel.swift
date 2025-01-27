@@ -49,8 +49,12 @@ final class GoToStopWidgetViewModel: ObservableObject {
         stop: StopLocation?,
         trips: [Trip]
     ) -> [GoToStopWidgetEntry] {
+        // Make the end date be a minute later then the last scheduled trip
+        // to show an empty widget instead of outdated trips
+        let endDate = scheduledTrips.last?.scheduledTime?.addingTimeInterval(constant.secondsInMinute)
+        
         let dates = makeUpdateDates(
-            endDate: scheduledTrips.last?.scheduledTime,
+            endDate: endDate,
             interval: constant.uiUpdateTimeInterval
         )
         

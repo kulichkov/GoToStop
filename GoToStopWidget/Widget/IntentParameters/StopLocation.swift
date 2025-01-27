@@ -20,6 +20,14 @@ struct StopLocation: AppEntity {
     var displayRepresentation: DisplayRepresentation {
         DisplayRepresentation(title: "\(name)")
     }
+    
+    static func mock() -> Self {
+        .init(
+            id: "1234567#Stop location name",
+            locationId: "1234567",
+            name: "Stop location name"
+        )
+    }
 }
 
 struct StopLocationQuery: EntityStringQuery {

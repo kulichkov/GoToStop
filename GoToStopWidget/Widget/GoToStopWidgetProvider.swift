@@ -13,7 +13,7 @@ struct GoToStopWidgetProvider: AppIntentTimelineProvider {
     
     func snapshot(for configuration: GoToStopIntent, in context: Context) async -> GoToStopWidgetEntry {
         GoToStopWidgetEntry(
-            date: Date(),
+            date: .now,
             data: .preview
         )
     }
@@ -45,12 +45,8 @@ struct GoToStopWidgetProvider: AppIntentTimelineProvider {
     
     func placeholder(in context: Context) -> GoToStopWidgetEntry {
         .init(
-            date: Date(),
-            data: GoToStopWidgetData(
-                updateTime: .now,
-                stop: "-",
-                items: []
-            )
+            date: .now,
+            data: .preview2
         )
     }
 

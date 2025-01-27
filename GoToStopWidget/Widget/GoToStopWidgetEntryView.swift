@@ -39,13 +39,16 @@ struct GoToStopWidgetEntryView: View {
     }
     
     var body: some View {
-        VStack() {
-            header
-            Spacer().frame(height: 16)
-            tripList
-                .padding(.horizontal, -4)
+        GeometryReader { geometry in
+            VStack {
+                header
+                Spacer().frame(height: 16)
+                tripList
+                    .padding(.horizontal, -4)
+            }
+            .font(.caption2)
+            .frame(height: geometry.size.height, alignment: .top)
         }
-        .font(.caption2)
     }
     
     private var header: some View {
@@ -160,7 +163,9 @@ struct GoToStopWidgetEntryView: View {
 } timeline: {
     GoToStopWidgetEntry(
         date: .now,
-        data: .preview2
+        data: .preview2,
+        stop: .mock(),
+        trips: [.mock()]
     )
 }
 
@@ -169,7 +174,9 @@ struct GoToStopWidgetEntryView: View {
 } timeline: {
     GoToStopWidgetEntry(
         date: .now,
-        data: .preview2
+        data: .preview2,
+        stop: .mock(),
+        trips: [.mock()]
     )
 }
 
@@ -178,7 +185,9 @@ struct GoToStopWidgetEntryView: View {
 } timeline: {
     GoToStopWidgetEntry(
         date: .now,
-        data: .preview2
+        data: .preview2,
+        stop: .mock(),
+        trips: [.mock()]
     )
 }
 

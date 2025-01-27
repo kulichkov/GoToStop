@@ -22,6 +22,17 @@ struct Trip: AppEntity, Hashable {
     var displayRepresentation: DisplayRepresentation {
         DisplayRepresentation(title: "\(name)\n\(direction)")
     }
+    
+    static func mock() -> Self {
+        .init(
+            id: "Tram 66#Somewhere#Tram#66#1234567",
+            name: "Tram 66",
+            direction: "Somewhere",
+            category: .tram,
+            lineId: "66",
+            directionId: "1234567"
+        )
+    }
 }
 
 struct TripQuery: EntityQuery {

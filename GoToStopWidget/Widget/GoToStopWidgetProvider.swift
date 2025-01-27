@@ -37,7 +37,7 @@ struct GoToStopWidgetProvider: AppIntentTimelineProvider {
         } catch {
             debugPrint(error)
             return Timeline(
-                entries: [],
+                entries: [.init(date: .now, data: .init(updateTime: .now, stop: nil, items: []))],
                 policy: .never
             )
         }

@@ -24,7 +24,8 @@ struct StopLocation: AppEntity {
 
 struct StopLocationQuery: EntityStringQuery {
     func entities(matching string: String) async throws -> [StopLocation] {
-        try await NetworkManager.shared.getStopLocations(input: string).map(StopLocation.init)
+        let ids = try await NetworkManager.shared.getStopLocations(input: string).map(\.locationId)
+        return try await NetworkManager.shared.getStopLocations(inputs: ids).map(StopLocation.init)
     }
     
     func entities(for identifiers: [StopLocation.ID]) async throws -> [StopLocation] {

@@ -16,23 +16,39 @@ extension GoToStopWidgetViewModel {
     }
 }
 
+enum GoToStopWidgetError: Error {
+    case noParametersSet
+}
+
 final class GoToStopWidgetViewModel: ObservableObject {
     private let constant = Constant()
     
-    func getWidgetEntries(_ intent: GoToStopIntent) async throws -> [GoToStopWidgetEntry] {
+    func getWidgetEntries(
+        _ intent: GoToStopIntent
+    ) async throws -> [GoToStopWidgetEntry] {
         guard
             let stopId = intent.stopLocation?.locationId,
             let trips = intent.trips
         else {
-            return []
+            throw GoToStopWidgetError.noParametersSet
         }
         let scheduledItems = await getTrips(stopId: stopId, trips: trips)
         
         let stopName = intent.stopLocation?.name ?? "No stop name"
-        return makeWidgetEntries(stopName: stopName, items: scheduledItems)
+        return makeWidgetEntries(
+            stopName: stopName,
+            items: scheduledItems,
+            stop: intent.stopLocation,
+            trips: intent.trips ?? []
+        )
     }
     
-    private func makeWidgetEntries(stopName: String, items scheduledTrips: [ScheduledTrip]) -> [GoToStopWidgetEntry] {
+    private func makeWidgetEntries(
+        stopName: String?,
+        items scheduledTrips: [ScheduledTrip],
+        stop: StopLocation?,
+        trips: [Trip]
+    ) -> [GoToStopWidgetEntry] {
         let dates = makeUpdateDates(
             endDate: scheduledTrips.last?.scheduledTime,
             interval: constant.uiUpdateTimeInterval
@@ -54,7 +70,9 @@ final class GoToStopWidgetViewModel: ObservableObject {
                     updateTime: .now,
                     stop: stopName,
                     items: items
-                )
+                ),
+                stop: stop,
+                trips: trips
             )
             
             entries.append(entry)
@@ -116,6 +134,8 @@ private extension ScheduledTrip {
         self.init(
             name: departure.name,
             direction: departure.direction,
+            isCancelled: departure.isCancelled,
+            isReachable: departure.isReachable,
             scheduledTime: departure.scheduledTime,
             realTime: departure.realTime
         )
@@ -130,8 +150,11 @@ private extension ScheduledTrip {
         return ScheduleItem(
             name: name,
             direction: direction,
-            time: time,
-            minutesLeft: minutesLeft
+            scheduledTime: scheduledTime,
+            realTime: realTime,
+            minutesLeft: minutesLeft,
+            isReachable: isReachable,
+            isCancelled: isCancelled
         )
     }
 }

@@ -25,6 +25,18 @@ struct ScheduleItem: Identifiable {
     let realTime: Date?
 }
 
+extension ScheduleItem {
+    init?(_ departure: Departure) {
+        self.init(
+            name: departure.name,
+            direction: departure.direction,
+            scheduledTime: departure.scheduledTime,
+            realTime: departure.realTime
+        )
+    }
+}
+
+
 final class MainViewModel: ObservableObject {
     @Published private(set) var apiKey = Settings.shared.apiKey
     @Published private(set) var selectedStop = ""
@@ -141,17 +153,6 @@ final class MainViewModel: ObservableObject {
             .filter { $0 == false }
             .sink { [weak self] _ in self?.refresh() }
             .store(in: &binding)
-    }
-}
-
-private extension ScheduleItem {
-    init?(_ departure: Departure) {
-        self.init(
-            name: departure.name,
-            direction: departure.direction,
-            scheduledTime: departure.scheduledTime,
-            realTime: departure.realTime
-        )
     }
 }
 

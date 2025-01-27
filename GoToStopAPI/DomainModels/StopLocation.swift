@@ -8,6 +8,14 @@
 public struct StopLocation: Codable {
     public let locationId: String
     public let name: String
+    
+    public init(
+        locationId: String,
+        name: String
+    ) {
+        self.locationId = locationId
+        self.name = name
+    }
 }
 
 extension StopLocation {

@@ -16,24 +16,3 @@ struct StopLocationResponse: Codable {
     let weight: Double? // 2422
     let products: Int? // 111
 }
-
-extension StopLocationResponse {
-    private var idComponents: [String] {
-        (id ?? "")
-            .split(separator: "@")
-            .map(String.init)
-    }
-    
-    private func getComponent(key: String) -> String? {
-        let components = idComponents
-        let prefix = "\(key)="
-        guard let component = components.first(where: { $0.hasPrefix(prefix) })
-        else { return nil }
-        
-        return String(component.trimmingPrefix(prefix))
-    }
-    
-    var locationId: String? {
-        getComponent(key: "L")
-    }
-}

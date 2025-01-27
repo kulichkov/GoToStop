@@ -8,14 +8,14 @@
 public struct Trip: Codable {
     public let name: String
     public let direction: String
-    public let category: String
+    public let category: TransportCategory
     public let lineId: String
     public let directionId: String
     
     public init(
         name: String,
         direction: String,
-        category: String,
+        category: TransportCategory,
         lineId: String,
         directionId: String
     ) {

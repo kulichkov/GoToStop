@@ -31,6 +31,7 @@ public struct DepartureResponse: Decodable {
     let rtTime: String? // "20:04:00"
     let rtDate: String? // "2024-12-07"
     let reachable: Bool? // true
+    let cancelled: Bool? // true
     let direction: String? // "Frankfurt (Main) Rebstockbad"
     
     enum CodingKeys: String, CodingKey {
@@ -49,6 +50,7 @@ public struct DepartureResponse: Decodable {
         case rtTime
         case rtDate
         case reachable
+        case cancelled
         case direction
     }
 }

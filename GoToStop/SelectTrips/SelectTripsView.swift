@@ -18,8 +18,9 @@ struct SelectTripsView: View {
                 HStack {
                     Text(
                         [
+                            item.trip.category.emoji,
                             item.trip.name,
-                            "to:",
+                            "\n→",
                             item.trip.direction
                         ]
                             .joined(separator: " ")

@@ -17,10 +17,20 @@ struct GoToStopWidget: Widget {
             kind: kind,
             intent: GoToStopIntent.self,
             provider: GoToStopWidgetProvider()) { entry in
-                GoToStopWidgetEntryView(entry: entry)
-                    .containerBackground(.fill.tertiary, for: .widget)
+                if entry.stop == nil || entry.trips.isEmpty {
+                    GoToStopWidgetUsageView()
+                        .containerBackground(.fill.tertiary, for: .widget)
+                } else {
+                    GoToStopWidgetEntryView(entry: entry)
+                        .containerBackground(.fill.tertiary, for: .widget)
+                        .widgetURL(entry.makeWidgetUrl())
+                }
             }
-            .supportedFamilies([.systemMedium])
+            .supportedFamilies([
+                .systemSmall,
+                .systemMedium,
+                .systemLarge,
+            ])
     }
 }
 
@@ -29,10 +39,6 @@ struct GoToStopWidget: Widget {
 } timeline: {
     GoToStopWidgetEntry(
         date: .now,
-        data: .preview
-    )
-    GoToStopWidgetEntry(
-        date: .now.addingTimeInterval(160),
         data: .preview
     )
 }

@@ -44,7 +44,6 @@ struct GoToStopWidgetEntryView: View {
                 header
                 Spacer().frame(height: 16)
                 tripList
-                    .padding(.horizontal, -4)
             }
             .font(.caption2)
             .frame(height: geometry.size.height, alignment: .top)
@@ -68,7 +67,6 @@ struct GoToStopWidgetEntryView: View {
                     }
                 }
             }
-            .padding(.trailing, -4)
         }
     }
     
@@ -101,6 +99,10 @@ struct GoToStopWidgetEntryView: View {
                 Spacer()
                 if item.isCancelled {
                     Text("Cancelled")
+                        .strikethrough(false)
+                        .foregroundStyle(.red)
+                } else if !item.isReachable {
+                    Text("!")
                         .strikethrough(false)
                         .foregroundStyle(.red)
                 }
@@ -139,6 +141,10 @@ struct GoToStopWidgetEntryView: View {
                 Spacer()
                 if item.isCancelled {
                     Text("⊗")
+                        .strikethrough(false)
+                        .foregroundStyle(.red)
+                } else if !item.isReachable {
+                    Text("!")
                         .strikethrough(false)
                         .foregroundStyle(.red)
                 }

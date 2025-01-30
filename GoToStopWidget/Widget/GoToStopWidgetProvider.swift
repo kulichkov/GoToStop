@@ -14,7 +14,9 @@ struct GoToStopWidgetProvider: AppIntentTimelineProvider {
     func snapshot(for configuration: GoToStopIntent, in context: Context) async -> GoToStopWidgetEntry {
         GoToStopWidgetEntry(
             date: .now,
-            data: .preview
+            data: .preview2,
+            stop: .mock(),
+            trips: [.mock()]
         )
     }
     
@@ -22,20 +24,14 @@ struct GoToStopWidgetProvider: AppIntentTimelineProvider {
         do {
             let widgetEntries = try await viewModel.getWidgetEntries(configuration)
             
-            let updatePolicy: TimelineReloadPolicy
-            if let date = widgetEntries.last?.date {
-                updatePolicy = .after(date)
-            } else {
-                updatePolicy = .atEnd
-            }
+            let tenMinutesLater = Date.now.addingTimeInterval(10 * 60)
             
-            let timeline = Timeline(
+            return Timeline(
                 entries: widgetEntries,
-                policy: updatePolicy
+                policy: .after(tenMinutesLater)
             )
-            return timeline
         } catch {
-            debugPrint(error)
+            debugPrint(#function, error, "Show widget usage")
             return Timeline(
                 entries: [.init(date: .now, data: .init(updateTime: .now, stop: nil, items: []))],
                 policy: .never
@@ -46,11 +42,9 @@ struct GoToStopWidgetProvider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> GoToStopWidgetEntry {
         .init(
             date: .now,
-            data: .preview2
+            data: .preview2,
+            stop: .mock(),
+            trips: [.mock()]
         )
     }
-
-//    func relevances() async -> WidgetRelevances<ConfigurationAppIntent> {
-//        // Generate a list containing the contexts this widget is relevant in.
-//    }
 }

@@ -78,7 +78,7 @@ extension GoToStopWidgetData {
                 scheduledTime: .now,
                 realTime: nil,
                 minutesLeft: .zero,
-                isReachable: true,
+                isReachable: false,
                 isCancelled: false
             ),
             .init(

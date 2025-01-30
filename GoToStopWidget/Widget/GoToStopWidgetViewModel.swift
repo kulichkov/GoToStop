@@ -32,7 +32,7 @@ final class GoToStopWidgetViewModel: ObservableObject {
         else {
             throw GoToStopWidgetError.noParametersSet
         }
-        let scheduledItems = await getTrips(stopId: stopId, trips: trips)
+        let scheduledItems = try await getTrips(stopId: stopId, trips: trips)
         
         let stopName = intent.stopLocation?.name ?? "No stop name"
         return makeWidgetEntries(
@@ -51,7 +51,7 @@ final class GoToStopWidgetViewModel: ObservableObject {
     ) -> [GoToStopWidgetEntry] {
         // Make the end date be a minute later then the last scheduled trip
         // to show an empty widget instead of outdated trips
-        let endDate = scheduledTrips.last?.scheduledTime?.addingTimeInterval(constant.secondsInMinute)
+        let endDate = scheduledTrips.last?.scheduledTime?.addingTimeInterval(2 * constant.secondsInMinute)
         
         let dates = makeUpdateDates(
             endDate: endDate,
@@ -113,20 +113,17 @@ final class GoToStopWidgetViewModel: ObservableObject {
         return updateDates
     }
     
-    private func getTrips(stopId: String, trips: [Trip]) async -> [ScheduledTrip] {
-        let fetchedDepartures: [Departure]
-        do {
-            fetchedDepartures = try await NetworkManager.shared.getDepartures(
-                stopId: stopId,
-                departureLines: trips.map {
-                    DepartureLineRequest(id: $0.lineId, directionId: $0.directionId)
-                }
+    private func getTrips(stopId: String, trips: [Trip]) async throws -> [ScheduledTrip] {
+        let departureLines = trips.map {
+            DepartureLineRequest(
+                id: $0.lineId,
+                directionId: $0.directionId
             )
-        } catch {
-            fetchedDepartures = []
-            debugPrint(error)
         }
-        
+        let fetchedDepartures = try await NetworkManager.shared.getDepartures(
+            stopId: stopId,
+            departureLines: departureLines
+        )
         return fetchedDepartures
             .compactMap(ScheduledTrip.init)
             .sorted(using: SortDescriptor(\.time))

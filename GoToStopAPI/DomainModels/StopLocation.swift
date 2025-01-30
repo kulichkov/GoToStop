@@ -8,13 +8,19 @@
 public struct StopLocation: Codable {
     public let locationId: String
     public let name: String
+    public let latitude: Double?
+    public let longitude: Double?
     
     public init(
         locationId: String,
-        name: String
+        name: String,
+        latitude: Double? = nil,
+        longitude: Double? = nil
     ) {
         self.locationId = locationId
         self.name = name
+        self.latitude = latitude
+        self.longitude = longitude
     }
 }
 
@@ -24,7 +30,9 @@ extension StopLocation {
         else { return nil }
         self.init(
             locationId: locationId,
-            name: name
+            name: name,
+            latitude: response.lat,
+            longitude: response.lon
         )
     }
 }

@@ -7,6 +7,7 @@
 
 import Foundation
 import GoToStopAPI
+import CoreLocation
 
 extension GoToStopWidgetViewModel {
     struct Constant {
@@ -22,6 +23,10 @@ enum GoToStopWidgetError: Error {
 
 final class GoToStopWidgetViewModel: ObservableObject {
     private let constant = Constant()
+    
+    init() {
+        CLLocationManager().requestWhenInUseAuthorization()
+    }
     
     func getWidgetEntries(
         _ intent: GoToStopIntent

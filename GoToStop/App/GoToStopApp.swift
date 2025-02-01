@@ -28,15 +28,12 @@ struct GoToStopApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                MainView()
-                    .onOpenURL(perform: handleUrl)
-                    .navigationDestination(isPresented: $goToStopSchedule) {
-                        if let stopScheduleParameters {
-                            StopScheduleView(viewModel: .init(stopScheduleParameters))
-                        } else {
-                            EmptyView()
-                        }
-                    }
+                if let stopScheduleParameters {
+                    StopDetailsView(viewModel: .init(stopScheduleParameters))
+                } else {
+                    WelcomeView()
+                        .onOpenURL(perform: handleUrl)
+                }
             }
         }
     }

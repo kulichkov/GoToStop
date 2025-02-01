@@ -57,6 +57,7 @@ struct GoToStopWidgetEntryView: View {
                     .fontWeight(.bold)
                     .lineLimit(2)
                     .truncationMode(.head)
+                    .padding(.leading, 8)
             }
             Spacer()
             Button(intent: RefreshIntent()) {
@@ -91,10 +92,12 @@ struct GoToStopWidgetEntryView: View {
                 Text("→")
                 Text(item.direction).truncationMode(.head)
             }
-            Spacer().frame(height: 2)
+            Spacer().frame(height: 4)
             HStack {
                 if let minutesLeft = item.minutesLeft {
                     Text("in \(minutesLeft) min")
+                        .foregroundStyle(.green)
+                        .brightness(-0.2)
                 }
                 Spacer()
                 if item.isCancelled {
@@ -109,6 +112,8 @@ struct GoToStopWidgetEntryView: View {
                 
                 if item.timeDiffers, let realTime = item.realTime {
                     Text("Actual: " + realTime.formatted(date: .omitted, time: .shortened))
+                        .foregroundStyle(.orange)
+                        .brightness(-0.2)
                 }
                 if let scheduledTime = item.scheduledTime {
                     Text("Scheduled: " + scheduledTime.formatted(date: .omitted, time: .shortened))
@@ -120,10 +125,8 @@ struct GoToStopWidgetEntryView: View {
         .lineLimit(1)
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(.foreground, lineWidth: 1)
-        )
+        .background(Color(UIColor.systemGray5))
+        .cornerRadius(8)
     }
     
     private func tripCompactView(_ item: ScheduleItem) -> some View {
@@ -133,10 +136,12 @@ struct GoToStopWidgetEntryView: View {
                 Spacer()
                 Text(item.direction).truncationMode(.head)
             }
-            Spacer().frame(height: 2)
+            Spacer().frame(height: 4)
             HStack {
                 if let minutesLeft = item.minutesLeft {
                     Text("in \(minutesLeft) min")
+                        .foregroundStyle(.green)
+                        .brightness(-0.2)
                 }
                 Spacer()
                 if item.isCancelled {
@@ -157,10 +162,8 @@ struct GoToStopWidgetEntryView: View {
         .lineLimit(1)
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(.foreground, lineWidth: 1)
-        )
+        .background(Color(UIColor.systemGray5))
+        .cornerRadius(8)
     }
 }
 

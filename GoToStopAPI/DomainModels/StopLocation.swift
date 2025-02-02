@@ -5,7 +5,7 @@
 //  Created by Mikhail Kulichkov on 06.01.25.
 //
 
-import class CoreLocation.CLLocation
+import CoreLocation
 
 public struct StopLocation: Codable {
     public let locationId: String

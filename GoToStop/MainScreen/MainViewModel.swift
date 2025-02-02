@@ -139,8 +139,7 @@ final class MainViewModel: ObservableObject {
             let fetchedDepartures: [Departure]
             do {
                 fetchedDepartures = try await NetworkManager.shared.getDepartures(
-                    stopId: stopId,
-                    departureLines: savedTrips.map { DepartureLineRequest(id: $0.lineId, directionId: $0.directionId) }
+                    savedTrips.map { DepartureBoardRequest(stopId: stopId, lineId: $0.lineId, directionId: $0.directionId) }
                 )
             } catch {
                 fetchedDepartures = []

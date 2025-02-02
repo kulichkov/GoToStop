@@ -7,6 +7,7 @@
 
 public struct Departure {
     public let name: String
+    public let stop: String
     public let stopId: String
     public let category: TransportCategory
     public let lineId: String
@@ -23,6 +24,7 @@ extension Departure {
         guard
             let name = response.name,
             let product = response.product?.first,
+            let stop = response.stop,
             let stopId = response.stopid,
             let catOut = product.catOut,
             let lineId = product.line,
@@ -38,6 +40,7 @@ extension Departure {
         
         self.init(
             name: name,
+            stop: stop,
             stopId: stopId,
             category: category,
             lineId: lineId,

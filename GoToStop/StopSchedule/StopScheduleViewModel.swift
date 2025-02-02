@@ -54,9 +54,10 @@ final class StopScheduleViewModel: ObservableObject {
         stopId: String,
         tripItems: [TripItem]
     ) {
-        let departureLines = trips.map { tripItem in
-            DepartureLineRequest(
-                id: tripItem.trip.lineId,
+        let departureRequests = trips.map { tripItem in
+            DepartureBoardRequest(
+                stopId: stopId,
+                lineId: tripItem.trip.lineId,
                 directionId: tripItem.trip.directionId
             )
         }
@@ -64,10 +65,7 @@ final class StopScheduleViewModel: ObservableObject {
         Task { @MainActor in
             let fetchedDepartures: [Departure]
             do {
-                fetchedDepartures = try await NetworkManager.shared.getDepartures(
-                    stopId: stopId,
-                    departureLines: departureLines
-                )
+                fetchedDepartures = try await NetworkManager.shared.getDepartures(departureRequests)
             } catch {
                 fetchedDepartures = []
                 debugPrint(error)

@@ -77,7 +77,9 @@ final class SelectTripsViewModel: ObservableObject {
                 guard let stop = Settings.shared.stopLocation
                 else { return }
                 
-                let departures = try await NetworkManager.shared.getDepartures(stopId: stop.locationId)
+                let request = DepartureBoardRequest(stopId: stop.locationId)
+                
+                let departures = try await NetworkManager.shared.getDepartures(request)
                 let stopDepartures = departures.filter { $0.stopId.contains(stop.locationId) }
                 
                 let values: [TripItem.Trip] = stopDepartures.map(TripItem.Trip.init)

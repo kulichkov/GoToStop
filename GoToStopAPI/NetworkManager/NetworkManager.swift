@@ -78,17 +78,25 @@ final public class NetworkManager {
     /// - Returns: The result list always contains all departures running the last minute found
     /// even if the requested maximum was overrun.
     public func getDepartures(
-        stopId: String,
-        directionId: String? = nil,
-        lines: String? = nil
+        _ request: DepartureBoardRequest
     ) async throws -> [Departure] {
         var queryItems: [URLQueryItem] = []
-        queryItems.append(URLQueryItem(name: "id", value: stopId))
-        if let directionId {
+        queryItems.append(URLQueryItem(name: "id", value: request.stopId))
+        
+        if let directionId = request.directionId {
             queryItems.append(URLQueryItem(name: "direction", value: directionId))
         }
-        if let lines {
-            queryItems.append(URLQueryItem(name: "lines", value: lines))
+        if let lineId = request.lineId {
+            queryItems.append(URLQueryItem(name: "lines", value: lineId))
+        }
+        if let date = request.date {
+            queryItems.append(URLQueryItem(name: "date", value: date))
+        }
+        if let time = request.time {
+            queryItems.append(URLQueryItem(name: "time", value: time))
+        }
+        if let duration = request.duration {
+            queryItems.append(URLQueryItem(name: "duration", value: "\(duration)"))
         }
 
         var urlComponents = URLComponents(string: baseUrl + "/departureBoard")
@@ -98,17 +106,12 @@ final public class NetworkManager {
     }
 
     public func getDepartures(
-        stopId: String,
-        departureLines: [DepartureLineRequest]
+        _ requests: [DepartureBoardRequest]
     ) async throws -> [Departure] {
         try await withThrowingTaskGroup(of: [Departure].self) { [weak self] group -> [Departure] in
-            for line in departureLines {
+            for request in requests {
                 group.addTask {
-                    try await self?.getDepartures(
-                        stopId: stopId,
-                        directionId: line.directionId,
-                        lines: line.id
-                    ) ?? []
+                    try await self?.getDepartures(request) ?? []
                 }
             }
             

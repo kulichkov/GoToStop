@@ -119,16 +119,10 @@ final class GoToStopWidgetViewModel: ObservableObject {
     }
     
     private func getTrips(stopId: String, trips: [Trip]) async throws -> [ScheduledTrip] {
-        let departureLines = trips.map {
-            DepartureLineRequest(
-                id: $0.lineId,
-                directionId: $0.directionId
-            )
+        let departureRequests = trips.map {
+            DepartureBoardRequest(stopId: stopId, lineId: $0.lineId, directionId: $0.directionId)
         }
-        let fetchedDepartures = try await NetworkManager.shared.getDepartures(
-            stopId: stopId,
-            departureLines: departureLines
-        )
+        let fetchedDepartures = try await NetworkManager.shared.getDepartures(departureRequests)
         return fetchedDepartures
             .compactMap(ScheduledTrip.init)
             .sorted(using: SortDescriptor(\.time))

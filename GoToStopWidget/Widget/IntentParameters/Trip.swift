@@ -44,8 +44,13 @@ struct TripQuery: EntityQuery {
             return []
         }
         
-        let departures = try await NetworkManager.shared.getDepartures(stopId: stop.locationId)
-        let stopDepartures = departures.filter { $0.stopId.contains(stop.locationId) }
+        let request = DepartureBoardRequest(
+            stopId: stop.locationId,
+            time: "08:00"
+        )
+        
+        let departures = try await NetworkManager.shared.getDepartures(request)
+        let stopDepartures = departures.filter { $0.stop.contains(stop.name) }
         
         let trips: [Trip] = stopDepartures.map(Trip.init)
         let sortDescriptors: [SortDescriptor<Trip>] = [
@@ -54,8 +59,10 @@ struct TripQuery: EntityQuery {
             SortDescriptor(\.direction, order: .forward)
         ]
         
-        return Array(Set(trips))
+        let result = Array(Set(trips))
             .sorted(using: sortDescriptors)
+        
+        return result
     }
     
     func entities(for identifiers: [String]) async throws -> [Trip] {

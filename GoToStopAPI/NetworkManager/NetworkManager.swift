@@ -29,6 +29,8 @@ final public class NetworkManager {
     ) async throws -> [StopLocation] {
         var queryItems: [URLQueryItem] = []
         queryItems.append(URLQueryItem(name: "input", value: input))
+        queryItems.append(URLQueryItem(name: "type", value: "S"))
+        queryItems.append(URLQueryItem(name: "withProducts", value: "0"))
 
         var urlComponents = URLComponents(string: baseUrl + "/location.name")
         urlComponents?.queryItems = queryItems

@@ -119,8 +119,15 @@ final class GoToStopWidgetViewModel: ObservableObject {
     }
     
     private func getTrips(stopId: String, trips: [Trip]) async throws -> [ScheduledTrip] {
+        let duration: Int = 60 * max(1, min(8/trips.count, 8))
+        debugPrint(#function, "duration set to: \(duration) for \(trips.count) trip(s)")
         let departureRequests = trips.map {
-            DepartureBoardRequest(stopId: stopId, lineId: $0.lineId, directionId: $0.directionId)
+            DepartureBoardRequest(
+                stopId: stopId,
+                lineId: $0.lineId,
+                directionId: $0.directionId,
+                duration: duration
+            )
         }
         let fetchedDepartures = try await NetworkManager.shared.getDepartures(departureRequests)
         return fetchedDepartures

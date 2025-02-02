@@ -8,7 +8,7 @@
 import Foundation
 
 struct DepartureBoardResponse: Decodable {
-    let departures: [DepartureResponse]
+    let departures: [DepartureResponse]?
 
     enum CodingKeys: String, CodingKey {
         case departures = "Departure"

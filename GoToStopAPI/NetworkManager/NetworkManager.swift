@@ -102,7 +102,7 @@ final public class NetworkManager {
         var urlComponents = URLComponents(string: baseUrl + "/departureBoard")
         urlComponents?.queryItems = queryItems
         let departureBoard: DepartureBoardResponse = try await sendDataRequest(urlComponents)
-        return departureBoard.departures.compactMap(Departure.init)
+        return departureBoard.departures?.compactMap(Departure.init) ?? []
     }
 
     public func getDepartures(

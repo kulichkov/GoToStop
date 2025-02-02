@@ -54,11 +54,15 @@ final class StopScheduleViewModel: ObservableObject {
         stopId: String,
         tripItems: [TripItem]
     ) {
-        let departureRequests = trips.map { tripItem in
+        let duration: Int = 60 * max(1, min(8/tripItems.count, 8))
+        debugPrint(#function, "duration set to: \(duration)")
+        
+        let departureRequests = tripItems.map { tripItem in
             DepartureBoardRequest(
                 stopId: stopId,
                 lineId: tripItem.trip.lineId,
-                directionId: tripItem.trip.directionId
+                directionId: tripItem.trip.directionId,
+                duration: duration
             )
         }
         

@@ -46,7 +46,7 @@ struct GoToStopWidgetEntryView: View {
         GeometryReader { geometry in
             VStack {
                 header
-                Spacer().frame(height: 16)
+                Spacer().frame(height: 8)
                 if hasTrips {
                     tripList
                 } else {

@@ -30,10 +30,6 @@ struct GoToStopWidgetEntryView: View {
         widgetFamily == .systemSmall
     }
     
-    private var hasTrips: Bool {
-        !entry.data.items.isEmpty
-    }
-    
     private var numberOfItems: Int {
         switch widgetFamily {
         case .systemSmall: 2
@@ -47,15 +43,7 @@ struct GoToStopWidgetEntryView: View {
             VStack {
                 header
                 Spacer().frame(height: 8)
-                if hasTrips {
-                    tripList
-                } else {
-                    HStack(alignment: .top) {
-                        Text("No tracked public transport is expected in the next hour")
-                        Spacer()
-                    }
-                    .padding(.horizontal, 8)
-                }
+                tripList
             }
             .font(.caption2)
             .frame(height: geometry.size.height, alignment: .top)

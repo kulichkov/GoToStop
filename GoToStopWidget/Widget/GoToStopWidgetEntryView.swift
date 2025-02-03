@@ -50,7 +50,11 @@ struct GoToStopWidgetEntryView: View {
                 if hasTrips {
                     tripList
                 } else {
-                    Text("No public transport is expected in the next hour")
+                    HStack(alignment: .top) {
+                        Text("No tracked public transport is expected in the next hour")
+                        Spacer()
+                    }
+                    .padding(.horizontal, 8)
                 }
             }
             .font(.caption2)

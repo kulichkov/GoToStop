@@ -23,6 +23,7 @@ struct StopDetailsView: View {
                         .fontWeight(.semibold)
                         .foregroundColor(.primary)
                         .padding(.top, 20)
+                        .padding(.horizontal)
                     
                     // Transport List
                     VStack(alignment: .leading, spacing: 12) {

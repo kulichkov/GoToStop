@@ -30,6 +30,10 @@ struct GoToStopWidgetEntryView: View {
         widgetFamily == .systemSmall
     }
     
+    private var hasTrips: Bool {
+        !entry.data.items.isEmpty
+    }
+    
     private var numberOfItems: Int {
         switch widgetFamily {
         case .systemSmall: 2
@@ -43,7 +47,11 @@ struct GoToStopWidgetEntryView: View {
             VStack {
                 header
                 Spacer().frame(height: 16)
-                tripList
+                if hasTrips {
+                    tripList
+                } else {
+                    Text("No public transport is expected in the next hour")
+                }
             }
             .font(.caption2)
             .frame(height: geometry.size.height, alignment: .top)
@@ -195,6 +203,17 @@ struct GoToStopWidgetEntryView: View {
     GoToStopWidgetEntry(
         date: .now,
         data: .preview2,
+        stop: .mock(),
+        trips: [.mock()]
+    )
+}
+
+#Preview(as: .systemSmall) {
+    GoToStopWidget()
+} timeline: {
+    GoToStopWidgetEntry(
+        date: .now,
+        data: .init(updateTime: .now, stop: "Kuhwaldstraße", items: []),
         stop: .mock(),
         trips: [.mock()]
     )

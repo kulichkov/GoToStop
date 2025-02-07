@@ -73,6 +73,30 @@
 			);
 			target = 696689A62D0E0A3D00B0F045 /* GoToStopWidgetExtension */;
 		};
+		6950F56F2D537CB300BBBD29 /* Exceptions for "Logger" folder in "GoToStop" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ApiLogger.swift,
+				WidgetLogger.swift,
+			);
+			target = 6966893D2D0DE91700B0F045 /* GoToStop */;
+		};
+		6950F5702D537CB500BBBD29 /* Exceptions for "Logger" folder in "GoToStopAPI" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AppLogger.swift,
+				WidgetLogger.swift,
+			);
+			target = 6966897F2D0DF31000B0F045 /* GoToStopAPI */;
+		};
+		6950F5762D537CEB00BBBD29 /* Exceptions for "Logger" folder in "GoToStopWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ApiLogger.swift,
+				AppLogger.swift,
+			);
+			target = 696689A62D0E0A3D00B0F045 /* GoToStopWidgetExtension */;
+		};
 		696689882D0DF31000B0F045 /* Exceptions for "GoToStopAPI" folder in "GoToStopAPI" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			publicHeaders = (
@@ -90,6 +114,16 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		6950F5642D537A7B00BBBD29 /* Logger */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				6950F56F2D537CB300BBBD29 /* Exceptions for "Logger" folder in "GoToStop" target */,
+				6950F5702D537CB500BBBD29 /* Exceptions for "Logger" folder in "GoToStopAPI" target */,
+				6950F5762D537CEB00BBBD29 /* Exceptions for "Logger" folder in "GoToStopWidgetExtension" target */,
+			);
+			path = Logger;
+			sourceTree = "<group>";
+		};
 		696689402D0DE91700B0F045 /* GoToStop */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -147,6 +181,7 @@
 		696689352D0DE91700B0F045 = {
 			isa = PBXGroup;
 			children = (
+				6950F5642D537A7B00BBBD29 /* Logger */,
 				696689E72D0E126500B0F045 /* GoToStopWidgetExtension.entitlements */,
 				696689402D0DE91700B0F045 /* GoToStop */,
 				696689812D0DF31000B0F045 /* GoToStopAPI */,
@@ -205,6 +240,7 @@
 				696689BC2D0E0A3F00B0F045 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
+				6950F5642D537A7B00BBBD29 /* Logger */,
 				696689402D0DE91700B0F045 /* GoToStop */,
 			);
 			name = GoToStop;
@@ -228,6 +264,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				6950F5642D537A7B00BBBD29 /* Logger */,
 				696689812D0DF31000B0F045 /* GoToStopAPI */,
 			);
 			name = GoToStopAPI;
@@ -250,6 +287,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				6950F5642D537A7B00BBBD29 /* Logger */,
 				696689AD2D0E0A3E00B0F045 /* GoToStopWidget */,
 			);
 			name = GoToStopWidgetExtension;

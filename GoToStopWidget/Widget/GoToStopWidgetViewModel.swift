@@ -8,12 +8,6 @@
 import Foundation
 import GoToStopAPI
 import CoreLocation
-import OSLog
-
-private let logger = Logger(
-    subsystem: "kulichkov.GoToStop.Widget",
-    category: "GoToStopWidgetViewModel"
-)
 
 extension GoToStopWidgetViewModel {
     struct Constant {
@@ -38,24 +32,24 @@ final class GoToStopWidgetViewModel: ObservableObject {
     func getWidgetEntries(
         _ intent: GoToStopIntent
     ) async throws -> [GoToStopWidgetEntry] {
-        logger.info("Start getting widget entries")
+        logger?.info("Start getting widget entries")
         guard let stopLocation = intent.stopLocation else {
-            logger.error("No stop set in the widget")
+            logger?.error("No stop set in the widget")
             throw GoToStopWidgetError.noStopSet
         }
         
         guard let trips = intent.trips else {
-            logger.error("No trips set in the widget")
+            logger?.error("No trips set in the widget")
             throw GoToStopWidgetError.noTripsSet
         }
         
-        logger.info("Get scheduled items")
+        logger?.info("Get scheduled items")
         let scheduledItems = try await getTrips(
             stopId: stopLocation.locationId,
             trips: trips
         )
-        logger.info("Successfully got scheduled items: \(scheduledItems)")
-        logger.info("Stop name: \(stopLocation.name)")
+        logger?.info("Successfully got scheduled items: \(scheduledItems)")
+        logger?.info("Stop name: \(stopLocation.name)")
         
         return makeWidgetEntries(
             stopName: stopLocation.name,
@@ -71,18 +65,18 @@ final class GoToStopWidgetViewModel: ObservableObject {
         stop: StopLocation?,
         trips: [Trip]
     ) -> [GoToStopWidgetEntry] {
-        logger.info("Start making widget entries for stopId: \(String(describing: String(describing: stop?.locationId))), scheduledTrips: \(scheduledTrips), trips: \(trips)")
+        logger?.info("Start making widget entries for stopId: \(String(describing: String(describing: stop?.locationId))), scheduledTrips: \(scheduledTrips), trips: \(trips)")
         
         // Make the end date be a minute later then the last scheduled trip
         // to show an empty widget instead of outdated trips
         let endDate = scheduledTrips.last?.scheduledTime?.addingTimeInterval(2 * constant.secondsInMinute)
-        logger.info("End date: \(String(describing: endDate))")
+        logger?.info("End date: \(String(describing: endDate))")
         
         let dates = makeUpdateDates(
             endDate: endDate,
             interval: constant.uiUpdateTimeInterval
         )
-        logger.info("Dates made: \(dates)")
+        logger?.info("Dates made: \(dates)")
         
         var entries: [GoToStopWidgetEntry] = []
         
@@ -108,7 +102,7 @@ final class GoToStopWidgetViewModel: ObservableObject {
             entries.append(entry)
         }
         
-        logger.info("Entries made: \(entries)")
+        logger?.info("Entries made: \(entries)")
         
         return entries
     }

@@ -41,6 +41,8 @@ struct GoToStopApp: App {
     private func handleUrl(_ url: URL) {
         debugPrint(#function)
         self.stopScheduleParameters = url.getStopScheduleParameters()
+        let url = try? LogExporter().getLogs()
+        debugPrint(#function)
     }
 }
 

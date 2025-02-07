@@ -40,7 +40,7 @@ public class Settings {
         do {
             return try JSONDecoder().decode(T.self, from: data)
         } catch {
-            debugPrint("Error: \(error)")
+            logger?.error("\(error)")
             return nil
         }
     }
@@ -54,7 +54,7 @@ public class Settings {
             let data = try JSONEncoder().encode(object)
             userDefaults?.set(data, forKey: key.rawValue)
         } catch {
-            debugPrint("Error saving object: \(error)")
+            logger?.error("Error saving object: \(error)")
         }
     }
     
@@ -65,7 +65,7 @@ public class Settings {
         do {
             return try JSONDecoder().decode([T].self, from: data)
         } catch {
-            debugPrint("Error: \(error)")
+            logger?.error("\(error)")
             return []
         }
     }
@@ -79,7 +79,7 @@ public class Settings {
             let data = try JSONEncoder().encode(objects)
             userDefaults?.set(data, forKey: key.rawValue)
         } catch {
-            debugPrint("Error saving object: \(error)")
+            logger?.error("Error saving object: \(error)")
         }
     }
     
@@ -90,7 +90,7 @@ public class Settings {
         do {
             return try JSONDecoder().decode(Dictionary<K, T>.self, from: data)
         } catch {
-            debugPrint("Error: \(error)")
+            logger?.error("\(error)")
             return [:]
         }
     }
@@ -104,7 +104,7 @@ public class Settings {
             let data = try JSONEncoder().encode(objects)
             userDefaults?.set(data, forKey: key.rawValue)
         } catch {
-            debugPrint("Error saving object: \(error)")
+            logger?.error("Error saving object: \(error)")
         }
     }
     

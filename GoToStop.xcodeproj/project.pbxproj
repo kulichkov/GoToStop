@@ -70,6 +70,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		692C5A7B2D58E69600CF5357 /* Exceptions for "GoToStop" folder in "GoToStop" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 6966893D2D0DE91700B0F045 /* GoToStop */;
+		};
 		6950F56F2D537CB300BBBD29 /* Exceptions for "Logger" folder in "GoToStop" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -123,6 +130,9 @@
 		};
 		696689402D0DE91700B0F045 /* GoToStop */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				692C5A7B2D58E69600CF5357 /* Exceptions for "GoToStop" folder in "GoToStop" target */,
+			);
 			path = GoToStop;
 			sourceTree = "<group>";
 		};
@@ -537,6 +547,7 @@
 				DEVELOPMENT_TEAM = PY3Q8L7FLF;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GoToStop/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
 				INFOPLIST_KEY_NSSupportsLiveActivities = NO;
 				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = NO;
@@ -571,6 +582,7 @@
 				DEVELOPMENT_TEAM = PY3Q8L7FLF;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GoToStop/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
 				INFOPLIST_KEY_NSSupportsLiveActivities = NO;
 				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = NO;

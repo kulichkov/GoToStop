@@ -10,10 +10,17 @@ import Foundation
 public enum NetworkManagerError: Error {
     case wrongUrl
     case wrongRequest
+    case noApiBearer
 }
 
 final public class NetworkManager {
     public static let shared = NetworkManager()
+    
+    fileprivate let apiBearer: String? = {
+        let bearer = ProcessInfo.processInfo.environment["API_BEARER"]
+        guard let bearer, !bearer.isEmpty else { return nil }
+        return bearer
+    }()
     
     private let baseUrl: String = "https://www.rmv.de/hapi"
     
@@ -128,13 +135,13 @@ final public class NetworkManager {
 private extension NetworkManager {
     
     func sendDataRequest<T: Decodable>(_ urlComponents: URLComponents?) async throws -> T {
+        guard let apiBearer else { throw NetworkManagerError.noApiBearer }
         guard let url = urlComponents?.url else { throw NetworkManagerError.wrongUrl }
+        
         var request = URLRequest(url: url)
-        
-        let bearerToken = "YOUR_BEARER_TOKEN_HERE"
-        
+                
         let apiKeyField = "Authorization"
-        let apiKeyValue = "Bearer \(bearerToken)"
+        let apiKeyValue = "Bearer \(apiBearer)"
 
         let acceptField = "Accept"
         let acceptValue = "application/json"

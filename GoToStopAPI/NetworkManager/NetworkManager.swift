@@ -131,8 +131,10 @@ private extension NetworkManager {
         guard let url = urlComponents?.url else { throw NetworkManagerError.wrongUrl }
         var request = URLRequest(url: url)
         
+        let bearerToken = "YOUR_BEARER_TOKEN_HERE"
+        
         let apiKeyField = "Authorization"
-        let apiKeyValue = "Bearer \(Settings.shared.apiKey ?? "")"
+        let apiKeyValue = "Bearer \(bearerToken)"
 
         let acceptField = "Accept"
         let acceptValue = "application/json"
@@ -141,8 +143,8 @@ private extension NetworkManager {
         request.addValue(acceptValue, forHTTPHeaderField: acceptField)
 
         let (data, response) = try await URLSession.shared.data(for: request)
-        debugPrint(response)
-        debugPrint(String(data: data, encoding: .utf8) ?? "No Data")
+        logger?.info("Network response: \(response)")
+        logger?.info("Response data: \(String(data: data, encoding: .utf8) ?? "No data")")
         
         return try JSONDecoder().decode(T.self, from: data)
     }

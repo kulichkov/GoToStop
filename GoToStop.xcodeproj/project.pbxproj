@@ -12,6 +12,9 @@
 		696689AA2D0E0A3E00B0F045 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 696689A92D0E0A3D00B0F045 /* WidgetKit.framework */; };
 		696689AC2D0E0A3E00B0F045 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 696689AB2D0E0A3E00B0F045 /* SwiftUI.framework */; };
 		696689BD2D0E0A3F00B0F045 /* GoToStopWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 696689A72D0E0A3D00B0F045 /* GoToStopWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		69D8070D2D58DBB500E28B18 /* Configuration.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 69D8070C2D58DBB500E28B18 /* Configuration.xcconfig */; };
+		69D8070E2D58DBB500E28B18 /* Configuration.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 69D8070C2D58DBB500E28B18 /* Configuration.xcconfig */; };
+		69D8070F2D58DBB500E28B18 /* Configuration.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 69D8070C2D58DBB500E28B18 /* Configuration.xcconfig */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,6 +66,7 @@
 		696689A92D0E0A3D00B0F045 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		696689AB2D0E0A3E00B0F045 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		696689E72D0E126500B0F045 /* GoToStopWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GoToStopWidgetExtension.entitlements; sourceTree = "<group>"; };
+		69D8070C2D58DBB500E28B18 /* Configuration.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Configuration.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -171,6 +175,7 @@
 		696689352D0DE91700B0F045 = {
 			isa = PBXGroup;
 			children = (
+				69D8070C2D58DBB500E28B18 /* Configuration.xcconfig */,
 				6950F5642D537A7B00BBBD29 /* Logger */,
 				696689E72D0E126500B0F045 /* GoToStopWidgetExtension.entitlements */,
 				696689402D0DE91700B0F045 /* GoToStop */,
@@ -335,6 +340,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69D8070E2D58DBB500E28B18 /* Configuration.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -342,6 +348,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69D8070F2D58DBB500E28B18 /* Configuration.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -349,6 +356,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69D8070D2D58DBB500E28B18 /* Configuration.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -394,6 +402,7 @@
 /* Begin XCBuildConfiguration section */
 		6966894A2D0DE91800B0F045 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 69D8070C2D58DBB500E28B18 /* Configuration.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -459,6 +468,7 @@
 		};
 		6966894B2D0DE91800B0F045 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 69D8070C2D58DBB500E28B18 /* Configuration.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;

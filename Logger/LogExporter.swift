@@ -37,11 +37,11 @@ extension OSLogEntryLog.Level {
 }
 
 class LogExporter {
-    func getLogs() throws -> URL {
+    func getLogs(name: String) throws -> URL {
         let documentDirectory = try getDocumentDirectory()
-        let logsDirUrl = documentDirectory.appendingPathComponent(dirName)
-        let jsonFileUrl = logsDirUrl.appendingPathComponent(jsonFileName)
-        let zipFileUrl = documentDirectory.appendingPathComponent(zipFileName)
+        let logsDirUrl = documentDirectory.appendingPathComponent(name)
+        let jsonFileUrl = logsDirUrl.appendingPathComponent(name + ".json")
+        let zipFileUrl = documentDirectory.appendingPathComponent(name + ".zip")
     
         // Remove previous items if they exist
         try removeItem(at: logsDirUrl)
@@ -53,7 +53,7 @@ class LogExporter {
         try compress(directoryUrl: logsDirUrl, to: zipFileUrl)
         try removeItem(at: logsDirUrl)
         
-        return jsonFileUrl
+        return zipFileUrl
     }
 }
 
@@ -85,18 +85,6 @@ private extension LogExporter {
 }
 
 private extension LogExporter {
-    var zipFileName: String {
-        "\(dirName).zip"
-    }
-    
-    var jsonFileName: String {
-        "\(dirName).json"
-    }
-    
-    var dirName: String {
-        "\(Logger.subsystem ?? "Logs")"
-    }
-    
     func getDocumentDirectory() throws -> URL {
         guard let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
             throw LogExporterError.noDocumentDirectoryUrl
@@ -147,8 +135,7 @@ private extension LogExporter {
         var coordinatorError: NSError?
         let coordinator = NSFileCoordinator()
         
-        let moveItem = { [weak self] (zipAccessURL: URL) in
-            guard let self else { return }
+        let moveItem = { (zipAccessURL: URL) in
             do {
                 exporterLogger?.info("Move item \(zipAccessURL) to \(zipFileUrl)")
                 try FileManager.default.moveItem(at: zipAccessURL, to: zipFileUrl)

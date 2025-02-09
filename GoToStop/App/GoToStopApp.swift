@@ -29,7 +29,7 @@ struct GoToStopApp: App {
         WindowGroup {
             NavigationStack {
                 if let stopScheduleParameters {
-                    StopDetailsView(viewModel: .init(stopScheduleParameters))
+                    StopScheduleView(viewModel: .init(stopScheduleParameters))
                 } else {
                     WelcomeView()
                         .onOpenURL(perform: handleUrl)
@@ -41,7 +41,7 @@ struct GoToStopApp: App {
     private func handleUrl(_ url: URL) {
         debugPrint(#function)
         self.stopScheduleParameters = url.getStopScheduleParameters()
-        let url = try? LogExporter().getLogs()
+//        let url = try? LogExporter().getLogs()
         debugPrint(#function)
     }
 }

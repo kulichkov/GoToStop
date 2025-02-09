@@ -1,5 +1,5 @@
 //
-//  StopDetailsView.swift
+//  StopScheduleView.swift
 //  GoToStop
 //
 //  Created by Mikhail Kulichkov on 01.02.25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct StopDetailsView: View {
+struct StopScheduleView: View {
     @StateObject var viewModel: StopScheduleViewModel
     
     var body: some View {

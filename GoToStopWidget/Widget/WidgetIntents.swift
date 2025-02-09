@@ -26,14 +26,3 @@ struct RefreshIntent: AppIntent {
         return .result()
     }
 }
-
-struct ShareLogsIntent: AppIntent {
-    static var title: LocalizedStringResource = "Share logs"
-
-    func perform() async throws -> some IntentResult {
-        let url = try? LogExporter().getLogs(name: UUID().uuidString)
-        let path = url!.path()
-        let doesExist = FileManager.default.isReadableFile(atPath: path)
-        return .result()
-    }
-}

@@ -7,9 +7,7 @@
 
 import Foundation
 import SwiftUI
-import struct GoToStopAPI.StopLocation
-import struct GoToStopAPI.Trip
-import enum GoToStopAPI.TransportCategory
+import GoToStopAPI
 
 struct StopScheduleParameters {
     let stopLocation: StopLocation
@@ -25,15 +23,26 @@ struct GoToStopApp: App {
     }
     @State var goToStopSchedule: Bool = false
     
+    @AppStorage(Settings.Key.isSharingLogs.rawValue, store: Settings.container)
+    var isSharingLogs: Bool = false
+    
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                if let stopScheduleParameters {
-                    StopScheduleView(viewModel: .init(stopScheduleParameters))
-                } else {
-                    WelcomeView()
-                        .onOpenURL(perform: handleUrl)
+                VStack {
+                    if let stopScheduleParameters {
+                        StopScheduleView(viewModel: .init(stopScheduleParameters))
+                    } else {
+                        WelcomeView()
+                            .onOpenURL(perform: handleUrl)
+                    }
                 }
+                .navigationDestination(isPresented: $isSharingLogs) { DebugMenuView() }
+            }
+            .onTapGesture(count: 5) {
+                logger?.info("Go to debug menu. isSharingLogs is \(isSharingLogs)")
+                isSharingLogs = true
+                
             }
         }
     }

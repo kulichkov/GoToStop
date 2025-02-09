@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import GoToStopAPI
 
 struct WelcomeView: View {
     var body: some View {

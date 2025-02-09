@@ -12,13 +12,15 @@ public class Settings {
         case isSharingLogs = "isSharingLogs"
     }
     
+    static public let container: UserDefaults = {
+        UserDefaults(suiteName: Settings.suiteName) ?? .standard
+    }()
+    
     @propertyWrapper
     public struct Setting<Value> {
         let key: Key
+        var container: UserDefaults { Settings.container }
         let defaultValue: Value
-        private var container: UserDefaults {
-            UserDefaults(suiteName: Settings.suiteName) ?? .standard
-        }
 
         public var wrappedValue: Value {
             get {

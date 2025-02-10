@@ -35,7 +35,9 @@ struct GoToStopApp: App {
                             .onOpenURL(perform: handleUrl)
                     }
                 }
-                .navigationDestination(isPresented: $goToDebugMenu) { DebugMenuView() }
+                .navigationDestination(isPresented: $goToDebugMenu) {
+                    DebugMenuView(viewModel: DebugMenuViewModel())
+                }
             }
             .onTapGesture(count: 5) {
                 logger?.info("Go to debug menu")

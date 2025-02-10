@@ -37,19 +37,35 @@ extension OSLogEntryLog.Level {
 }
 
 class LogExporter {
-    func getLogs(name: String) throws -> URL {
+    private static var dateFormatter: DateFormatter = {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd_HH-mm-ss"
+        return dateFormatter
+    }()
+    
+    func makeJson(name: String) throws -> URL {
+        let name = name + "_" + LogExporter.dateFormatter.string(from: .now)
         let documentDirectory = try getDocumentDirectory()
-        let logsDirUrl = documentDirectory.appendingPathComponent(name)
-        let jsonFileUrl = logsDirUrl.appendingPathComponent(name + ".json")
-        let zipFileUrl = documentDirectory.appendingPathComponent(name + ".zip")
+        let jsonFileUrl = documentDirectory.appending(path: name + ".json")
+        let logEntries = try retrieveLogEntries()
+        try makeLogJsonFile(logEntries, at: jsonFileUrl)
+        return jsonFileUrl
+    }
+    
+    func makeZip(name: String, from urls: [URL]) throws -> URL {
+        let name = name + "_" + LogExporter.dateFormatter.string(from: .now)
+        let documentDirectory = try getDocumentDirectory()
+        
+        let logsDirUrl = documentDirectory.appending(path: name, directoryHint: .isDirectory)
+        let zipFileUrl = documentDirectory.appending(path: name + ".zip")
     
         // Remove previous items if they exist
         try removeItem(at: logsDirUrl)
         try removeItem(at: zipFileUrl)
         
         try createFolder(at: logsDirUrl)
-        let logEntries = try retrieveLogEntries()
-        try makeLogJsonFile(logEntries, at: jsonFileUrl)
+        try moveItems(from: urls, to: logsDirUrl)
+        
         try compress(directoryUrl: logsDirUrl, to: zipFileUrl)
         try removeItem(at: logsDirUrl)
         
@@ -157,6 +173,14 @@ private extension LogExporter {
             throw LogExporterError.failedToCreateZip(error)
         } else {
             exporterLogger?.info("Successfully archived item \(directoryUrl) to \(zipFileUrl)")
+        }
+    }
+    
+    private func moveItems(from urls: [URL], to directory: URL) throws {
+        for oldUrl in urls {
+            let name = oldUrl.lastPathComponent
+            let newUrl = directory.appending(path: name)
+            try FileManager.default.moveItem(at: oldUrl, to: newUrl)
         }
     }
 }

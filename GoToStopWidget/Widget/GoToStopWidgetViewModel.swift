@@ -32,6 +32,8 @@ final class GoToStopWidgetViewModel: ObservableObject {
     func getWidgetEntries(
         _ intent: GoToStopIntent
     ) async throws -> [GoToStopWidgetEntry] {
+        Task { getLogsIfNeeded() }
+        
         logger?.info("Start getting widget entries")
         guard let stopLocation = intent.stopLocation else {
             logger?.error("No stop set in the widget")
@@ -147,6 +149,23 @@ final class GoToStopWidgetViewModel: ObservableObject {
         return fetchedDepartures
             .compactMap(ScheduledTrip.init)
             .sorted(using: SortDescriptor(\.time))
+    }
+    
+    private func getLogsIfNeeded() {
+        guard Settings.shared.isSharingLogs else {
+            return
+        }
+        let name = "\(ProcessInfo().processName)_pid\(ProcessInfo().processIdentifier)"
+        logger?.info("Logs sharing started for \(name)")
+        do {
+            let logUrl = try LogExporter().makeJson(name: name)
+            Settings.shared.logsUrls.append(logUrl)
+        } catch {
+            logger?.error("Failed to export logs: \(error)")
+            Settings.shared.logsErrors.append(error.localizedDescription)
+        }
+        logger?.info("Settings.shared.logsUrls: \(Settings.shared.logsUrls)")
+        logger?.info("Settings.shared.logsErrors: \(Settings.shared.logsErrors)")
     }
 }
 

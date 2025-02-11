@@ -9,9 +9,8 @@ import Foundation
 
 public class Settings {
     public enum Key: String {
-        case isSharingLogs = "isSharingLogs"
-        case logsUrls = "logsUrls"
-        case logsErrors = "logsErrors"
+        case shouldCollectWidgetLogs = "shouldCollectWidgetLogs"
+        case widgetLogsUrl = "widgetLogsUrl"
     }
     
     static public let container: UserDefaults = {
@@ -37,14 +36,11 @@ public class Settings {
     public static let shared = Settings()
     public static let suiteName = "group.kulichkov.GoToStop"
         
-    @Setting(key: .isSharingLogs, defaultValue: false)
-    public var isSharingLogs: Bool
+    @Setting(key: .shouldCollectWidgetLogs, defaultValue: false)
+    public var shouldCollectWidgetLogs: Bool
     
-    @Setting(key: .logsUrls, defaultValue: [])
-    public var logsUrls: [URL]
-    
-    @Setting(key: .logsErrors, defaultValue: [])
-    public var logsErrors: [String]
+    @Setting(key: .widgetLogsUrl, defaultValue: nil)
+    public var widgetLogsUrl: URL?
     
     private init() {}
 }

@@ -16,8 +16,8 @@ public enum NetworkManagerError: Error {
 final public class NetworkManager {
     public static let shared = NetworkManager()
     
-    fileprivate let apiBearer: String? = {
-        let bearer = ProcessInfo.processInfo.environment["API_BEARER"]
+    public let apiBearer: String? = {
+        let bearer = Bundle.main.infoDictionary?["API_BEARER"] as? String
         guard let bearer, !bearer.isEmpty else { return nil }
         return bearer
     }()

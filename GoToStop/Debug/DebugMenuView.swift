@@ -6,7 +6,9 @@
 //
 
 import SwiftUI
+import GoToStopAPI
 
+@available(iOS 18.0, *)
 struct DebugMenuView: View {
     @StateObject var viewModel: DebugMenuViewModel
     
@@ -20,15 +22,16 @@ struct DebugMenuView: View {
                     Text("Share logs")
                 }
             } else {
-                Text("Logs are being collected...")
-                    .onAppear(perform: viewModel.prepareLogs)
+                Button(action: viewModel.startMakingLogs) { Text("Start creating logs") }
+                Spacer().frame(height: 32)
+                Button(action: viewModel.stopMakingLogs) { Text("Stop creating logs") }
             }
         }
-            .onDisappear(perform: viewModel.removeLogs)
             .navigationBarTitle("Debug Menu")
     }
 }
 
+@available(iOS 18.0, *)
 struct DebugView_Previews: PreviewProvider {
     static var previews: some View {
         DebugMenuView(viewModel: DebugMenuViewModel())

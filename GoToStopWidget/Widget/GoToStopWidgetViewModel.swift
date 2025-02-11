@@ -32,8 +32,6 @@ final class GoToStopWidgetViewModel: ObservableObject {
     func getWidgetEntries(
         _ intent: GoToStopIntent
     ) async throws -> [GoToStopWidgetEntry] {
-        Task { getLogsIfNeeded() }
-        
         logger?.info("Start getting widget entries")
         guard let stopLocation = intent.stopLocation else {
             logger?.error("No stop set in the widget")
@@ -152,7 +150,11 @@ final class GoToStopWidgetViewModel: ObservableObject {
     }
     
     private func getLogsIfNeeded() {
+        let name1 = "\(ProcessInfo().processName)_pid\(ProcessInfo().processIdentifier)"
+        logger?.debug("Logs sharing started for \(name1)")
+        
         guard Settings.shared.isSharingLogs else {
+            logger?.debug("No need for log sharing!")
             return
         }
         let name = "\(ProcessInfo().processName)_pid\(ProcessInfo().processIdentifier)"

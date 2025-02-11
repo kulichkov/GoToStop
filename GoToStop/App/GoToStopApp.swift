@@ -36,7 +36,11 @@ struct GoToStopApp: App {
                     }
                 }
                 .navigationDestination(isPresented: $goToDebugMenu) {
-                    DebugMenuView(viewModel: DebugMenuViewModel())
+                    if #available(iOS 18.0, *) {
+                        DebugMenuView(viewModel: DebugMenuViewModel())
+                    } else {
+                        Text("iOS 18.0 or later is required for debugging")
+                    }
                 }
             }
             .onTapGesture(count: 5) {

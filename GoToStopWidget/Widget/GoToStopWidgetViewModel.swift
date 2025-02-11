@@ -32,6 +32,8 @@ final class GoToStopWidgetViewModel: ObservableObject {
     func getWidgetEntries(
         _ intent: GoToStopIntent
     ) async throws -> [GoToStopWidgetEntry] {
+        Task { getLogsIfNeeded() }
+        
         logger?.info("Start getting widget entries")
         guard let stopLocation = intent.stopLocation else {
             logger?.error("No stop set in the widget")
@@ -150,24 +152,19 @@ final class GoToStopWidgetViewModel: ObservableObject {
     }
     
     private func getLogsIfNeeded() {
-        let name1 = "\(ProcessInfo().processName)_pid\(ProcessInfo().processIdentifier)"
-        logger?.debug("Logs sharing started for \(name1)")
+        guard Settings.shared.shouldCollectWidgetLogs else { return }
         
-        guard Settings.shared.isSharingLogs else {
-            logger?.debug("No need for log sharing!")
-            return
-        }
-        let name = "\(ProcessInfo().processName)_pid\(ProcessInfo().processIdentifier)"
-        logger?.info("Logs sharing started for \(name)")
+        logger?.info("Start collecting widget logs")
+        
         do {
-            let logUrl = try LogExporter().makeJson(name: name)
-            Settings.shared.logsUrls.append(logUrl)
+            let name = UUID().uuidString
+            let logsUrl = try LogExporter().makeJson(name: name)
+            Settings.shared.shouldCollectWidgetLogs = false
+            Settings.shared.widgetLogsUrl = logsUrl
+            logger?.info("Widget logs in JSON collected: \(logsUrl)")
         } catch {
-            logger?.error("Failed to export logs: \(error)")
-            Settings.shared.logsErrors.append(error.localizedDescription)
+            logger?.error("Failed to create JSON with logs: \(error)")
         }
-        logger?.info("Settings.shared.logsUrls: \(Settings.shared.logsUrls)")
-        logger?.info("Settings.shared.logsErrors: \(Settings.shared.logsErrors)")
     }
 }
 

@@ -174,6 +174,7 @@ private extension ScheduledTrip {
             direction: departure.direction,
             isCancelled: departure.isCancelled,
             isReachable: departure.isReachable,
+            hasWarnings: !departure.messages.isEmpty,
             scheduledTime: departure.scheduledTime,
             realTime: departure.realTime
         )
@@ -192,7 +193,8 @@ private extension ScheduledTrip {
             realTime: realTime,
             minutesLeft: minutesLeft,
             isReachable: isReachable,
-            isCancelled: isCancelled
+            isCancelled: isCancelled,
+            hasWarnings: hasWarnings
         )
     }
 }

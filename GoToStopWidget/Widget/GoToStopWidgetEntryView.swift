@@ -110,6 +110,11 @@ struct GoToStopWidgetEntryView: View {
                     Text("Scheduled: " + scheduledTime.formatted(date: .omitted, time: .shortened))
                         .foregroundStyle(item.timeDiffers ? .secondary : .primary)
                 }
+                if item.hasWarnings {
+                    Text("Warning")
+                        .foregroundStyle(.orange)
+                        .strikethrough(false)
+                }
             }
             .strikethrough(item.isCancelled)
         }
@@ -130,13 +135,13 @@ struct GoToStopWidgetEntryView: View {
             Spacer().frame(height: 4)
             HStack {
                 if let minutesLeft = item.minutesLeft {
-                    Text("in \(minutesLeft) min")
+                    Text("\(minutesLeft) m")
                         .foregroundStyle(.green)
                         .brightness(-0.2)
                 }
                 Spacer()
                 if item.isCancelled {
-                    Text("⊗")
+                    Image(systemName: "xmark.circle")
                         .strikethrough(false)
                         .foregroundStyle(.red)
                 } else if !item.isReachable {
@@ -146,6 +151,11 @@ struct GoToStopWidgetEntryView: View {
                 }
                 if let departureTime = item.time {
                     Text(departureTime.formatted(date: .omitted, time: .shortened))
+                }
+                if item.hasWarnings {
+                    Image(systemName: "exclamationmark.triangle")
+                        .foregroundStyle(.orange)
+                        .strikethrough(false)
                 }
             }
             .strikethrough(item.isCancelled)

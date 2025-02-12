@@ -33,6 +33,7 @@ public struct DepartureResponse: Decodable {
     let reachable: Bool? // true
     let cancelled: Bool? // true
     let direction: String? // "Frankfurt (Main) Rebstockbad"
+    let messages: MessagesResponse? // "Messages": { "Message": [{...}] }
     
     enum CodingKeys: String, CodingKey {
         case journeyDetailRef = "JourneyDetailRef"
@@ -52,6 +53,7 @@ public struct DepartureResponse: Decodable {
         case reachable
         case cancelled
         case direction
+        case messages = "Messages"
     }
 }
 
@@ -77,6 +79,37 @@ struct ProductResponse: Decodable {
     let routeIdxFrom: Int? // 14
     let routeIdxTo: Int? // 17
     let matchId: String? // "170008"
+}
+
+struct MessagesResponse: Decodable {
+    let message: [MessageResponse]?
+    
+    enum CodingKeys: String, CodingKey {
+        case message = "Message"
+    }
+}
+
+struct MessageResponse: Decodable {
+    let id: String? // "2154037"
+    let channel: [ChannelResponse]?
+    let act: Bool? // true
+    let head: String? // "Frankfurt: U-Bahnen, Trams - Warnstreik am 12.02."
+    let lead: String? // "Die Gewerkschaft ver.di hat zu ...... und die lokalen und regionalen Buslinien.<br>"
+    let text: String? // "Die Gewerkschaft ver.di hat zu <br> ...... und die lokalen und regionalen Buslinien.<br>"
+}
+
+struct ChannelResponse: Decodable {
+    let name: String? // "TIMETABLE"
+    let url: [UrlResponse]?
+    let validFromTime: String? // "10:07:00"
+    let validFromDate: String? // "2025-02-12"
+    let validToTime: String? // "03:30:00"
+    let validToDate: String? // "2025-02-13"
+}
+
+struct UrlResponse: Decodable {
+    let name: String? // - weitere Informationen (Link)
+    let url: String? // https://www.rmv.de/c/de/informationen-zum-rmv/der-rmv/rmv-aktuell/warnstreik-von-verdi-am-122
 }
 
 extension DepartureResponse {

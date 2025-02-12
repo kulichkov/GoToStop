@@ -17,6 +17,15 @@ public struct Departure {
     public let isReachable: Bool
     public let direction: String
     public let directionId: String
+    public let messages: [Message]
+}
+
+public struct Message {
+    public let isActive: Bool
+    public let header: String
+    public let text: String
+    public let urlDescription: String?
+    public let url: URL?
 }
 
 extension Departure {
@@ -37,6 +46,7 @@ extension Departure {
         let realTime = ServerDateFormatter.date(date: response.rtDate, time: response.rtTime)
         let isCancelled = response.cancelled ?? false
         let isReachable = response.reachable ?? true
+        let messages = response.getMessages()
         
         self.init(
             name: name,
@@ -49,8 +59,28 @@ extension Departure {
             isCancelled: isCancelled,
             isReachable: isReachable,
             direction: direction,
-            directionId: directionId
+            directionId: directionId,
+            messages: messages
         )
     }
 }
 
+private extension DepartureResponse {
+    func getMessages() -> [Message] {
+        guard let messages = messages?.message else { return [] }
+        return messages.map { messageInfo in
+            let channel = messageInfo.channel?.first { !($0.url ?? []).isEmpty }
+            let urlData = channel?.url?.first { !($0.url ?? "").isEmpty }
+            let urlDescription = urlData?.name
+            let url = urlData?.url.map(URL.init(string:)) ?? nil
+            
+            return Message(
+                isActive: messageInfo.act ?? false,
+                header: messageInfo.head ?? "",
+                text: messageInfo.text ?? "",
+                urlDescription: urlDescription,
+                url: url
+            )
+        }
+    }
+}

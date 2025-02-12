@@ -14,20 +14,21 @@ struct DebugMenuView: View {
     
     var body: some View {
         VStack {
-            if let url = viewModel.logsLink {
+            if let url = viewModel.zipFileUrl {
                 ShareLink(
                     item: url
                 ) {
                     Image(systemName: "square.and.arrow.up.trianglebadge.exclamationmark.fill")
                     Text("Share logs")
                 }
+            } else if let error = viewModel.error {
+                Text(error)
             } else {
-                Button(action: viewModel.startMakingLogs) { Text("Start creating logs") }
-                Spacer().frame(height: 32)
-                Button(action: viewModel.stopMakingLogs) { Text("Stop creating logs") }
+                Text("Collecting logs...")
             }
         }
-            .navigationBarTitle("Debug Menu")
+        .onAppear(perform: viewModel.startCollectingWidgetLogs)
+        .navigationBarTitle("Debug Menu")
     }
 }
 

@@ -11,60 +11,94 @@ import WidgetKit
 
 @available(iOS 18.0, *)
 final class DebugMenuViewModel: ObservableObject {
-    @Published var logsLink: URL? = nil
+    @Published var zipFileUrl: URL? = nil
+    @Published var error: String? = nil
     
-    private let loggerExporter = LogExporter()
-    private var zipFileUrl: URL?
+    private var timer: Timer?
+    private var appLogsUrl: URL?
+    private var widgetLogsUrl: URL? {
+        get { Settings.shared.widgetLogsUrl }
+        set { Settings.shared.widgetLogsUrl = newValue }
+    }
+    private var shouldCollectWidgetLogs: Bool {
+        get { Settings.shared.shouldCollectWidgetLogs }
+        set { Settings.shared.shouldCollectWidgetLogs = newValue }
+    }
     
-    func startMakingLogs() {
-        cleanUp()
-        Settings.shared.isSharingLogs = true
-        logger?.info("Settings.shared.isSharingLogs set to \(Settings.shared.isSharingLogs)")
-        logger?.info("Log urls: \(Settings.shared.logsUrls)")
-        logger?.info("Log errors: \(Settings.shared.logsErrors)")
-        
-        
-        NotificationCenter.default.addObserver(
-            forName: UserDefaults.didChangeNotification,
-            object: nil,
-            queue: .current,
-            using: { [weak self] _ in self?.handleSettingsChange() }
-        )
-        
+    private var logsUrls: [URL] {
+        [
+            appLogsUrl,
+            widgetLogsUrl
+        ]
+            .compactMap { $0 }
+    }
+    private let logExporter = LogExporter()
+    
+    func startCollectingWidgetLogs() {
+        logger?.info("Start collecting logs")
+        cleanUpLogs()
+        shouldCollectWidgetLogs = true
         WidgetCenter.shared.reloadAllTimelines()
-        
-//        makeAppLogs()
-        
-//        cleanUp()
-//        Settings.shared.isSharingLogs = false
+        Task { await checkIfWidgetExists() }
+        timer = Timer.scheduledTimer(
+            withTimeInterval: 1.0,
+            repeats: true,
+            block: { [weak self] _ in self?.checkWidgetLogs() }
+        )
     }
     
-    func stopMakingLogs() {
-        NotificationCenter.default.removeObserver(self)
-        
-        logger?.info("Settings.shared.isSharingLogs WAS set to \(Settings.shared.isSharingLogs)")
-        logger?.info("Log urls: \(Settings.shared.logsUrls)")
-        logger?.info("Log errors: \(Settings.shared.logsErrors)")
-        Settings.shared.isSharingLogs = false
-        logger?.info("Settings.shared.isSharingLogs set to \(Settings.shared.isSharingLogs)")
-        cleanUp()
-    }
-    
-    private func makeAppLogs() {
-        logger?.info("Make app logs")
-        let name = "\(ProcessInfo().processName)_pid\(ProcessInfo().processIdentifier)"
+    private func checkIfWidgetExists() async {
         do {
-            let appLogsUrl = try loggerExporter.makeJson(name: name)
-            Settings.shared.logsUrls.append(appLogsUrl)
+            let widgets = try await WidgetCenter.shared.currentConfigurations()
+            if widgets.isEmpty {
+                logger?.info("No widget found. Stopping widget log collection...")
+                shouldCollectWidgetLogs = false
+            }
         } catch {
-            Settings.shared.logsErrors.append(error.localizedDescription)
-            logger?.error("Failed to prepare logs: \(error)")
+            logger?.error("Couldn't get any widget configuration: \(error)")
         }
     }
     
-    private func cleanUp() {
+    private func checkWidgetLogs() {
+        logger?.info("shouldCollectWidgetLogs set to \(self.shouldCollectWidgetLogs)")
+        logger?.info("Widget log url: \(String(describing: self.widgetLogsUrl))")
+        
+        if !shouldCollectWidgetLogs {
+            timer?.invalidate()
+            timer = nil
+            makeAppLogs()
+            makeZipArchive()
+        }
+    }
+    
+    private func makeZipArchive() {
+        guard !logsUrls.isEmpty else {
+            logger?.error("No logs to compress!")
+            error = "No logs found!"
+            return
+        }
+        
+        do {
+            zipFileUrl = try logExporter.makeZip(name: "GoToStopLogs", from: logsUrls)
+        } catch {
+            logger?.error("Failed to make zip from logs: \(error)")
+            self.error = "Failed to compress logs: \(error)"
+            return
+        }
+    }
+    
+    private func makeAppLogs() {
+        do {
+            appLogsUrl = try logExporter.makeJson(name: "GoToStopAppLogs")
+            logger?.info("The app logs url: \(String(describing: self.appLogsUrl))")
+        } catch {
+            logger?.error("Failed to prepare the app logs: \(error)")
+        }
+    }
+    
+    private func cleanUpLogs() {
         logger?.info("Remove log-related files")
-        for url in Settings.shared.logsUrls {
+        for url in logsUrls {
             do {
                 logger?.error("Delete log at \(url)")
                 try FileManager.default.removeItem(at: url)
@@ -72,29 +106,9 @@ final class DebugMenuViewModel: ObservableObject {
                 logger?.error("Failed to delete log at \(url): \(error)")
             }
         }
-        Settings.shared.logsUrls = []
-        Settings.shared.logsErrors = []
+        widgetLogsUrl = nil
+        appLogsUrl = nil
     }
     
-    private func handleSettingsChange() {
-        Task {
-            do {
-                let numberOfWidgets = try await WidgetCenter.shared.currentConfigurations().count
-                let numberOfWidgetLogs = Settings.shared.logsUrls.count
-                let numberOfWidgetLogErrors = Settings.shared.logsErrors.count
-                
-                if numberOfWidgetLogs + numberOfWidgetLogErrors == numberOfWidgets {
-                    logger?.info("Widget logs are ready.")
-                    // TODO: get the app logs and share logs. Then clean everything up.
-                } else {
-                    logger?.info("\(numberOfWidgets) log(s) are expected. But found \(numberOfWidgetLogs) log(s) and \(numberOfWidgetLogErrors) error(s).")
-                    logger?.info("Log urls: \(Settings.shared.logsUrls)")
-                    logger?.info("Log errors: \(Settings.shared.logsErrors)")
-                }
-            } catch {
-                logger?.error("Failed to get number of widgets: \(error)")
-            }
-        }
-    }
 }
 

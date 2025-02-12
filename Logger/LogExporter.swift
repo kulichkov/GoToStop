@@ -45,7 +45,7 @@ class LogExporter {
     
     func makeJson(name: String) throws -> URL {
         let name = name + "_" + LogExporter.dateFormatter.string(from: .now)
-        let documentDirectory = try getDocumentDirectory()
+        let documentDirectory = try getLogsDirectory()
         let jsonFileUrl = documentDirectory.appending(path: name + ".json")
         let logEntries = try retrieveLogEntries()
         try makeLogJsonFile(logEntries, at: jsonFileUrl)
@@ -54,7 +54,7 @@ class LogExporter {
     
     func makeZip(name: String, from urls: [URL]) throws -> URL {
         let name = name + "_" + LogExporter.dateFormatter.string(from: .now)
-        let documentDirectory = try getDocumentDirectory()
+        let documentDirectory = try getLogsDirectory()
         
         let logsDirUrl = documentDirectory.appending(path: name, directoryHint: .isDirectory)
         let zipFileUrl = documentDirectory.appending(path: name + ".zip")
@@ -101,11 +101,23 @@ private extension LogExporter {
 }
 
 private extension LogExporter {
-    func getDocumentDirectory() throws -> URL {
-        guard let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+    func getLogsDirectory() throws -> URL {
+        guard let containerDirectory = FileManager.default
+            .containerURL(forSecurityApplicationGroupIdentifier: "group.kulichkov.GoToStop")?
+            .appending(path: "Logs", directoryHint: .isDirectory)
+        else {
             throw LogExporterError.noDocumentDirectoryUrl
         }
-        return documentDirectory
+        
+        var isDirectory: ObjCBool = false
+        let directoryExists = FileManager.default.fileExists(atPath: containerDirectory.path(), isDirectory: &isDirectory)
+        
+        if !directoryExists || !isDirectory.boolValue {
+            logger?.info("No log directory found. Creating...")
+            try FileManager.default.createDirectory(at: containerDirectory, withIntermediateDirectories: true, attributes: nil)
+        }
+        
+        return containerDirectory
     }
     
     func retrieveLogEntries() throws -> [OSLogEntryLog] {

@@ -157,8 +157,7 @@ final class GoToStopWidgetViewModel: ObservableObject {
         logger?.info("Start collecting widget logs")
         
         do {
-            let name = UUID().uuidString
-            let logsUrl = try LogExporter().makeJson(name: name)
+            let logsUrl = try LogExporter().makeJson(name: "GoToStopWidgetLogs")
             Settings.shared.shouldCollectWidgetLogs = false
             Settings.shared.widgetLogsUrl = logsUrl
             logger?.info("Widget logs in JSON collected: \(logsUrl)")

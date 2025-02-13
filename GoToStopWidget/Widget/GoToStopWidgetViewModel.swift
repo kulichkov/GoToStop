@@ -181,17 +181,11 @@ private extension ScheduledTrip {
     }
     
     func makeScheduledItem(relatedDate: Date) -> ScheduleItem {
-        let secondsInMinute: TimeInterval = 60
-        let minutesLeft = time
-            .map { max(.zero, ceil($0.timeIntervalSince(relatedDate) / secondsInMinute)) }
-            .map(UInt.init)
-        
-        return ScheduleItem(
+        ScheduleItem(
             name: name,
             direction: direction,
             scheduledTime: scheduledTime,
             realTime: realTime,
-            minutesLeft: minutesLeft,
             isReachable: isReachable,
             isCancelled: isCancelled,
             hasWarnings: hasWarnings

@@ -85,8 +85,8 @@ struct GoToStopWidgetEntryView: View {
             }
             Spacer().frame(height: 4)
             HStack {
-                if let minutesLeft = item.minutesLeft {
-                    Text("in \(minutesLeft) min")
+                if let time = item.time, let timeLeft = Date.now.shortTime(to: time) {
+                    Text("in \(timeLeft)")
                         .foregroundStyle(.green)
                         .brightness(-0.2)
                 }
@@ -134,8 +134,8 @@ struct GoToStopWidgetEntryView: View {
             }
             Spacer().frame(height: 4)
             HStack {
-                if let minutesLeft = item.minutesLeft {
-                    Text("\(minutesLeft) m")
+                if let time = item.time, let timeLeft = Date.now.abbreviatedTime(to: time) {
+                    Text("\(timeLeft)")
                         .foregroundStyle(.green)
                         .brightness(-0.2)
                 }

@@ -19,7 +19,6 @@ struct StopScheduleView: View {
                 VStack(spacing: 20) {
                     // Station Name
                     Text(viewModel.stop.name)
-                        .multilineTextAlignment(.center)
                         .font(.title)
                         .fontWeight(.semibold)
                         .foregroundColor(.primary)
@@ -62,7 +61,51 @@ struct StopScheduleView: View {
                             }
                         } else {
                             ForEach(viewModel.scheduleItems) { item in
-                                makeScheduleItemView(item)
+                                HStack {
+                                    VStack(alignment: .leading) {
+                                        Text("\(item.name)")
+                                            .font(.body)
+                                            .foregroundColor(.primary)
+                                        
+                                        Text("→ \(item.direction)")
+                                            .font(.body)
+                                            .foregroundColor(.primary)
+                                        
+                                        VStack(alignment: .leading) {
+                                            if let minutesUntilDeparture = item.minutesLeft {
+                                                Text("Departs in \(minutesUntilDeparture) min")
+                                                    .font(.footnote)
+                                                    .foregroundColor(.green)
+                                                    .brightness(-0.2)
+                                            }
+                                            
+                                            if let scheduledTime = item.scheduledTime {
+                                                Text("Scheduled at \(scheduledTime.formatted(date: .omitted, time: .shortened))")
+                                                    .font(.footnote)
+                                                    .foregroundColor(.gray)
+                                            }
+                                            
+                                            if item.timeDiffers, let actualTime = item.realTime {
+                                                Text("Actually at \(actualTime.formatted(date: .omitted, time: .shortened))")
+                                                    .font(.footnote)
+                                                    .foregroundColor(item.isCancelled ? .gray : .orange)
+                                                    .brightness(item.isCancelled ? 1.0 : -0.2)
+                                            }
+                                        }
+                                        .strikethrough(item.isCancelled)
+                                        
+                                        if item.isCancelled {
+                                            Text("Cancelled")
+                                                .font(.footnote)
+                                                .foregroundColor(.red)
+                                        }
+                                    }
+                                    Spacer()
+                                }
+                                .padding(.vertical, 8)
+                                .padding(.horizontal)
+                                .background(Color(UIColor.systemGray5))
+                                .cornerRadius(10)
                             }
                         }
                     }
@@ -73,67 +116,5 @@ struct StopScheduleView: View {
         }
         .navigationTitle("Stop schedule")
         .onOpenURL(perform: viewModel.handleWidgetURL)
-    }
-    
-    func makeScheduleItemView(_ item: ScheduleItem) -> some View {
-        HStack {
-            VStack(alignment: .leading) {
-                Text("\(item.name)")
-                    .font(.body)
-                    .foregroundColor(.primary)
-                
-                Text("→ \(item.direction)")
-                    .font(.body)
-                    .foregroundColor(.primary)
-                
-                VStack(alignment: .leading) {
-                    if let timeUntilDeparture = item.timeLeft {
-                        Text("Departs in \(timeUntilDeparture)")
-                            .font(.footnote)
-                            .foregroundColor(.green)
-                            .brightness(-0.2)
-                    }
-                    
-                    if let scheduledTime = item.scheduledTime {
-                        Text("Scheduled at \(scheduledTime.formatted(date: .omitted, time: .shortened))")
-                            .font(.footnote)
-                            .foregroundColor(.gray)
-                    }
-                    
-                    if item.timeDiffers, let actualTime = item.realTime {
-                        Text("Actually at \(actualTime.formatted(date: .omitted, time: .shortened))")
-                            .font(.footnote)
-                            .foregroundColor(item.isCancelled ? .gray : .orange)
-                            .brightness(item.isCancelled ? 1.0 : -0.2)
-                    }
-                }
-                .strikethrough(item.isCancelled)
-                
-                if item.isCancelled {
-                    Text("Cancelled")
-                        .font(.footnote)
-                        .foregroundColor(.red)
-                }
-                
-                ForEach(item.activeMessages.indices, id: \.self) { index in
-                    Text("⚠️ \(item.activeMessages[index].header)")
-                        .font(.footnote)
-                        .foregroundColor(.primary)
-                    
-                    if let url = item.activeMessages[index].url {
-                        Button(action: { UIApplication.shared.open(url) }) {
-                            Text("\(item.activeMessages[index].urlDescription ?? "Details")")
-                                .font(.footnote)
-                                .multilineTextAlignment(.leading)
-                        }
-                    }
-                }
-            }
-            Spacer()
-        }
-        .padding(.vertical, 8)
-        .padding(.horizontal)
-        .background(Color(UIColor.systemGray5))
-        .cornerRadius(10)
     }
 }

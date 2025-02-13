@@ -13,7 +13,7 @@ struct ScheduleItem: Identifiable {
     let direction: String
     let scheduledTime: Date?
     let realTime: Date?
-    let minutesLeft: UInt?
+    let relatedTime: Date?
     let isReachable: Bool
     let isCancelled: Bool
     let hasWarnings: Bool
@@ -28,7 +28,7 @@ struct ScheduleItem: Identifiable {
         direction: String,
         scheduledTime: Date?,
         realTime: Date?,
-        minutesLeft: UInt?,
+        relatedTime: Date?,
         isReachable: Bool,
         isCancelled: Bool,
         hasWarnings: Bool = false
@@ -37,7 +37,7 @@ struct ScheduleItem: Identifiable {
         self.direction = direction
         self.scheduledTime = scheduledTime
         self.realTime = realTime
-        self.minutesLeft = minutesLeft
+        self.relatedTime = relatedTime
         self.isReachable = isReachable
         self.isCancelled = isCancelled
         self.hasWarnings = hasWarnings
@@ -75,7 +75,7 @@ extension GoToStopWidgetData {
                 direction: "Frankfurt (Main) Rebstockbad",
                 scheduledTime: .now,
                 realTime: .now.addingTimeInterval(120),
-                minutesLeft: .zero,
+                relatedTime: .now,
                 isReachable: false,
                 isCancelled: true,
                 hasWarnings: false
@@ -85,7 +85,7 @@ extension GoToStopWidgetData {
                 direction: "Frankfurt (Main) Rebstockbad",
                 scheduledTime: .now.addingTimeInterval(600),
                 realTime: .now.addingTimeInterval(780),
-                minutesLeft: 10,
+                relatedTime: .now.addingTimeInterval(600),
                 isReachable: true,
                 isCancelled: false,
                 hasWarnings: true
@@ -101,7 +101,7 @@ extension GoToStopWidgetData {
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 scheduledTime: .now,
                 realTime: nil,
-                minutesLeft: .zero,
+                relatedTime: .now,
                 isReachable: false,
                 isCancelled: false,
                 hasWarnings: true
@@ -111,7 +111,7 @@ extension GoToStopWidgetData {
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 scheduledTime: .now.addingTimeInterval(120),
                 realTime: .now.addingTimeInterval(180),
-                minutesLeft: 10,
+                relatedTime: .now.addingTimeInterval(600),
                 isReachable: false,
                 isCancelled: true,
                 hasWarnings: true
@@ -121,7 +121,7 @@ extension GoToStopWidgetData {
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 scheduledTime: .now.addingTimeInterval(600),
                 realTime: .now.addingTimeInterval(780),
-                minutesLeft: 10,
+                relatedTime: .now.addingTimeInterval(600),
                 isReachable: true,
                 isCancelled: false
             ),
@@ -130,7 +130,7 @@ extension GoToStopWidgetData {
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 scheduledTime: .now.addingTimeInterval(660),
                 realTime: nil,
-                minutesLeft: 10,
+                relatedTime: .now.addingTimeInterval(600),
                 isReachable: true,
                 isCancelled: false
             ),
@@ -139,7 +139,7 @@ extension GoToStopWidgetData {
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 scheduledTime: .now,
                 realTime: nil,
-                minutesLeft: .zero,
+                relatedTime: .now,
                 isReachable: true,
                 isCancelled: false
             ),
@@ -148,7 +148,7 @@ extension GoToStopWidgetData {
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 scheduledTime: .now.addingTimeInterval(120),
                 realTime: .now.addingTimeInterval(180),
-                minutesLeft: 10,
+                relatedTime: .now.addingTimeInterval(600),
                 isReachable: false,
                 isCancelled: true
             ),
@@ -157,7 +157,7 @@ extension GoToStopWidgetData {
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 scheduledTime: .now.addingTimeInterval(600),
                 realTime: .now.addingTimeInterval(780),
-                minutesLeft: 10,
+                relatedTime: .now.addingTimeInterval(600),
                 isReachable: true,
                 isCancelled: false
             ),
@@ -166,7 +166,7 @@ extension GoToStopWidgetData {
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 scheduledTime: .now.addingTimeInterval(660),
                 realTime: nil,
-                minutesLeft: 10,
+                relatedTime: .now.addingTimeInterval(600),
                 isReachable: true,
                 isCancelled: false
             ),
@@ -175,7 +175,7 @@ extension GoToStopWidgetData {
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 scheduledTime: .now,
                 realTime: nil,
-                minutesLeft: .zero,
+                relatedTime: .now,
                 isReachable: true,
                 isCancelled: false
             ),
@@ -184,7 +184,7 @@ extension GoToStopWidgetData {
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 scheduledTime: .now.addingTimeInterval(120),
                 realTime: .now.addingTimeInterval(180),
-                minutesLeft: 10,
+                relatedTime: .now.addingTimeInterval(600),
                 isReachable: false,
                 isCancelled: true
             ),
@@ -193,7 +193,7 @@ extension GoToStopWidgetData {
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 scheduledTime: .now.addingTimeInterval(600),
                 realTime: .now.addingTimeInterval(780),
-                minutesLeft: 10,
+                relatedTime: .now.addingTimeInterval(600),
                 isReachable: true,
                 isCancelled: false
             ),
@@ -202,7 +202,7 @@ extension GoToStopWidgetData {
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 scheduledTime: .now.addingTimeInterval(660),
                 realTime: nil,
-                minutesLeft: 10,
+                relatedTime: .now.addingTimeInterval(600),
                 isReachable: true,
                 isCancelled: false
             ),
@@ -211,7 +211,7 @@ extension GoToStopWidgetData {
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 scheduledTime: .now,
                 realTime: nil,
-                minutesLeft: .zero,
+                relatedTime: .now,
                 isReachable: true,
                 isCancelled: false
             ),
@@ -220,7 +220,7 @@ extension GoToStopWidgetData {
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 scheduledTime: .now.addingTimeInterval(120),
                 realTime: .now.addingTimeInterval(180),
-                minutesLeft: 10,
+                relatedTime: .now.addingTimeInterval(600),
                 isReachable: false,
                 isCancelled: true
             ),
@@ -229,7 +229,7 @@ extension GoToStopWidgetData {
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 scheduledTime: .now.addingTimeInterval(600),
                 realTime: .now.addingTimeInterval(780),
-                minutesLeft: 10,
+                relatedTime: .now.addingTimeInterval(600),
                 isReachable: true,
                 isCancelled: false
             ),
@@ -238,7 +238,7 @@ extension GoToStopWidgetData {
                 direction: "Frankfurt (Main) Neu-Isenburg Stadtgrenze",
                 scheduledTime: .now.addingTimeInterval(660),
                 realTime: nil,
-                minutesLeft: 10,
+                relatedTime: .now.addingTimeInterval(600),
                 isReachable: true,
                 isCancelled: false
             ),

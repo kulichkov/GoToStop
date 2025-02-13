@@ -84,7 +84,7 @@ final class GoToStopWidgetViewModel: ObservableObject {
         
         for timeToUpdate in dates {
             let items = scheduledTrips
-                .map { $0.makeScheduledItem(relatedDate: timeToUpdate) }
+                .map { $0.makeScheduledItem(relatedTime: timeToUpdate) }
                 .filter { trip in
                     guard let time = trip.time else { return false }
                     return time >= timeToUpdate
@@ -174,24 +174,19 @@ private extension ScheduledTrip {
             direction: departure.direction,
             isCancelled: departure.isCancelled,
             isReachable: departure.isReachable,
-            hasWarnings: !departure.messages.isEmpty,
+            hasWarnings: !departure.messages.filter(\.isActive).isEmpty,
             scheduledTime: departure.scheduledTime,
             realTime: departure.realTime
         )
     }
     
-    func makeScheduledItem(relatedDate: Date) -> ScheduleItem {
-        let secondsInMinute: TimeInterval = 60
-        let minutesLeft = time
-            .map { max(.zero, ceil($0.timeIntervalSince(relatedDate) / secondsInMinute)) }
-            .map(UInt.init)
-        
-        return ScheduleItem(
+    func makeScheduledItem(relatedTime: Date) -> ScheduleItem {
+        ScheduleItem(
             name: name,
             direction: direction,
             scheduledTime: scheduledTime,
             realTime: realTime,
-            minutesLeft: minutesLeft,
+            relatedTime: relatedTime,
             isReachable: isReachable,
             isCancelled: isCancelled,
             hasWarnings: hasWarnings

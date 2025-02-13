@@ -16,11 +16,12 @@ struct ScheduleItem: Identifiable {
     let realTime: Date?
     let isReachable: Bool
     let isCancelled: Bool
+    let messages: [Message]
+    var activeMessages: [Message] { messages.filter(\.isActive) }
     var time: Date? { realTime ?? scheduledTime }
-    var minutesLeft: UInt? {
-        time
-            .map { max(.zero, ceil($0.timeIntervalSince(.now) / 60.0)) }
-            .map(UInt.init)
+    var minutesLeft: String? {
+        guard let time else { return nil }
+        return Date.now.fullTime(to: time)
     }
     var timeDiffers: Bool {
         guard let realTime, let scheduledTime else { return false }
@@ -36,7 +37,8 @@ extension ScheduleItem {
             scheduledTime: departure.scheduledTime,
             realTime: departure.realTime,
             isReachable: departure.isReachable,
-            isCancelled: departure.isCancelled
+            isCancelled: departure.isCancelled,
+            messages: departure.messages
         )
     }
 }

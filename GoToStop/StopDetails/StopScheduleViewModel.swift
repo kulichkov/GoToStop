@@ -110,8 +110,8 @@ final class StopScheduleViewModel: ObservableObject {
                 debugPrint(error)
             }
             scheduleItems = fetchedDepartures
-                .sorted(using: SortDescriptor(\.scheduledTime))
                 .compactMap(ScheduleItem.init)
+                .sorted(using: SortDescriptor(\.time))
         }
     }
 }

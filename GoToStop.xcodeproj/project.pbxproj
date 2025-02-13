@@ -118,6 +118,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		692C5B622D5DFE7300CF5357 /* Extentions */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Extentions;
+			sourceTree = "<group>";
+		};
 		6950F5642D537A7B00BBBD29 /* Logger */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -185,6 +190,7 @@
 		696689352D0DE91700B0F045 = {
 			isa = PBXGroup;
 			children = (
+				692C5B622D5DFE7300CF5357 /* Extentions */,
 				69D8070C2D58DBB500E28B18 /* Configuration.xcconfig */,
 				6950F5642D537A7B00BBBD29 /* Logger */,
 				696689E72D0E126500B0F045 /* GoToStopWidgetExtension.entitlements */,
@@ -245,6 +251,7 @@
 				696689BC2D0E0A3F00B0F045 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
+				692C5B622D5DFE7300CF5357 /* Extentions */,
 				6950F5642D537A7B00BBBD29 /* Logger */,
 				696689402D0DE91700B0F045 /* GoToStop */,
 			);
@@ -269,6 +276,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				692C5B622D5DFE7300CF5357 /* Extentions */,
 				6950F5642D537A7B00BBBD29 /* Logger */,
 				696689812D0DF31000B0F045 /* GoToStopAPI */,
 			);
@@ -292,6 +300,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				692C5B622D5DFE7300CF5357 /* Extentions */,
 				6950F5642D537A7B00BBBD29 /* Logger */,
 				696689AD2D0E0A3E00B0F045 /* GoToStopWidget */,
 			);

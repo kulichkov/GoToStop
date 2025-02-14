@@ -7,9 +7,7 @@
 
 import Foundation
 import SwiftUI
-import struct GoToStopAPI.StopLocation
-import struct GoToStopAPI.Trip
-import enum GoToStopAPI.TransportCategory
+import GoToStopAPI
 
 struct StopScheduleParameters {
     let stopLocation: StopLocation
@@ -24,49 +22,60 @@ struct GoToStopApp: App {
         }
     }
     @State var goToStopSchedule: Bool = false
+    @State var goToDebugMenu: Bool = false
     
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                MainView()
-                    .onOpenURL(perform: handleUrl)
-                    .navigationDestination(isPresented: $goToStopSchedule) {
-                        if let stopScheduleParameters {
-                            StopScheduleView(viewModel: .init(stopScheduleParameters))
-                        } else {
-                            EmptyView()
-                        }
+                VStack {
+                    if let stopScheduleParameters {
+                        StopScheduleView(viewModel: .init(stopScheduleParameters))
+                    } else {
+                        WelcomeView()
+                            .onOpenURL(perform: handleUrl)
                     }
+                }
+                .navigationDestination(isPresented: $goToDebugMenu) {
+                    if #available(iOS 18.0, *) {
+                        DebugMenuView(viewModel: DebugMenuViewModel())
+                    } else {
+                        Text("iOS 18.0 or later is required for debugging")
+                    }
+                }
+            }
+            .onTapGesture(count: 5) {
+                logger?.info("Go to debug menu")
+                goToDebugMenu = true
             }
         }
     }
     
     private func handleUrl(_ url: URL) {
-        debugPrint(#function)
+        logger?.info("Handler url: \(url)")
         self.stopScheduleParameters = url.getStopScheduleParameters()
+        logger?.info("Stop schedule parameters received: \(String(describing: stopScheduleParameters))")
     }
 }
 
 extension URL {
     func getStopScheduleParameters() -> StopScheduleParameters? {
-        debugPrint(#function, "URL: ", self)
         guard let urlComponents = URLComponents(url: self, resolvingAgainstBaseURL: false) else {
-            debugPrint(#function, "Couldn't make components from the url")
+            logger?.error("Couldn't make components from the url")
             return nil
         }
         guard let queryItems = urlComponents.queryItems, !queryItems.isEmpty else {
-            debugPrint(#function, "Couldn't get query items from the url")
+            logger?.error("Couldn't get query items from the url")
             return nil
         }
         guard let stopString = queryItems.first(where: { $0.name == "stop" })?.value else {
-            debugPrint(#function, "Couldn't get stop string from a query item")
+            logger?.error("Couldn't get stop string from a query item")
             return nil
         }
         
         let stopComponents = stopString.split(separator: "#")
         
         guard stopComponents.count == 2 else {
-            debugPrint(#function, "Stop string \(stopString) doesn't have all stop components")
+            logger?.error("Stop string \(stopString) doesn't have all stop components")
             return nil
         }
         
@@ -83,8 +92,8 @@ extension URL {
             .compactMap(\.value)
             .compactMap(Trip.init)
         
-        debugPrint(#function, "Stop location to use:", stop)
-        debugPrint(#function, "trips to use:", trips)
+        logger?.info("Stop location to use: \(String(describing: stop))")
+        logger?.info("Trips to use: \(String(describing: trips))")
         
         let tripItems: [TripItem] = trips.map { trip in
             TripItem(trip: .init(
@@ -107,11 +116,11 @@ private extension Trip {
     init?(_ string: String) {
         let tripComponents = string.split(separator: "#")
         guard tripComponents.count == 5 else {
-            debugPrint(#function, "Trip string \(string) doesn't have all 5 trip components")
+            logger?.error("Trip string \(string) doesn't have all 5 trip components")
             return nil
         }
         guard let category = TransportCategory(rawValue: String(tripComponents[2])) else {
-            debugPrint(#function, "\(tripComponents[2]) is not a proper transport category")
+            logger?.error("\(tripComponents[2]) is not a proper transport category")
             return nil
         }
         

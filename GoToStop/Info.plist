@@ -4,12 +4,5 @@
 <dict>
 	<key>API_BEARER</key>
 	<string>$(API_BEARER)</string>
-	<key>NSExtension</key>
-	<dict>
-		<key>NSExtensionPointIdentifier</key>
-		<string>com.apple.widgetkit-extension</string>
-	</dict>
-	<key>NSWidgetWantsLocation</key>
-	<true/>
 </dict>
 </plist>

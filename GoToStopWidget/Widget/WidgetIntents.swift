@@ -6,6 +6,7 @@
 //
 
 import AppIntents
+import Foundation
 
 struct GoToStopIntent: WidgetConfigurationIntent {
     static var title: LocalizedStringResource = "Select trips parameters"
@@ -16,4 +17,12 @@ struct GoToStopIntent: WidgetConfigurationIntent {
     
     @Parameter(title: "Trips")
     var trips: [Trip]?
+}
+
+struct RefreshIntent: AppIntent {
+    static var title: LocalizedStringResource = "Refresh"
+        
+    func perform() async throws -> some IntentResult {
+        return .result()
+    }
 }

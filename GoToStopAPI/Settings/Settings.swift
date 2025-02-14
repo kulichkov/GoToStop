@@ -5,114 +5,69 @@
 //  Created by Mikhail Kulichkov on 20.12.24.
 //
 
+import Foundation
+
 public class Settings {
-    private enum Key: String {
-        case apiKey = "apiKey"
-        case stopLocation = "stopLocation"
-        case trips = "trips"
+    public enum Key: String {
+        case shouldCollectWidgetLogs = "shouldCollectWidgetLogs"
+        case widgetLogsUrl = "widgetLogsUrl"
+    }
+    
+    static public let container: UserDefaults = {
+        UserDefaults(suiteName: Settings.suiteName) ?? .standard
+    }()
+    
+    @propertyWrapper
+    public struct Setting<Value: Codable> {
+        let key: Key
+        var container: UserDefaults { Settings.container }
+        let defaultValue: Value
+
+        public var wrappedValue: Value {
+            get {
+                container.getObject(for: key.rawValue) ?? defaultValue
+            }
+            set {
+                container.setObject(newValue, for: key.rawValue)
+            }
+        }
     }
     
     public static let shared = Settings()
+    public static let suiteName = "group.kulichkov.GoToStop"
+        
+    @Setting(key: .shouldCollectWidgetLogs, defaultValue: false)
+    public var shouldCollectWidgetLogs: Bool
     
-    /// A suite name based on the AppGroup
-    public let suiteName = "group.kulichkov.GoToStop"
-    
-    public lazy var apiKey: String? = getString(for: .apiKey) {
-        didSet { setString(apiKey, for: .apiKey) }
-    }
-    
-    public lazy var stopLocation: StopLocation? = getObject(for: .stopLocation) {
-        didSet { setObject(stopLocation, for: .stopLocation) }
-    }
-    
-    public lazy var trips: [Trip] = getObjects(for: .trips) {
-        didSet { setObjects(trips, for: .trips) }
-    }
-    
-    private lazy var userDefaults = UserDefaults(suiteName: suiteName)
+    @Setting(key: .widgetLogsUrl, defaultValue: nil)
+    public var widgetLogsUrl: URL?
     
     private init() {}
-    
-    private func getObject<T: Decodable>(for key: Settings.Key) -> T? {
-        guard let data = userDefaults?.data(forKey: key.rawValue)
+}
+
+extension UserDefaults {
+    fileprivate func getObject<T: Decodable>(for key: String) -> T? {
+        guard let data = data(forKey: key)
         else { return nil }
         
         do {
             return try JSONDecoder().decode(T.self, from: data)
         } catch {
-            debugPrint("Error: \(error)")
+            logger?.error("\(error)")
             return nil
         }
     }
     
-    private func setObject(_ object: Encodable?, for key: Settings.Key) {
+    fileprivate func setObject(_ object: Encodable?, for key: String) {
         guard let object else {
-            userDefaults?.set(nil, forKey: key.rawValue)
+            set(nil, forKey: key)
             return
         }
         do {
             let data = try JSONEncoder().encode(object)
-            userDefaults?.set(data, forKey: key.rawValue)
+            set(data, forKey: key)
         } catch {
-            debugPrint("Error saving object: \(error)")
+            logger?.error("Error saving object: \(error)")
         }
-    }
-    
-    private func getObjects<T: Decodable>(for key: Settings.Key) -> [T] {
-        guard let data = userDefaults?.data(forKey: key.rawValue)
-        else { return [] }
-        
-        do {
-            return try JSONDecoder().decode([T].self, from: data)
-        } catch {
-            debugPrint("Error: \(error)")
-            return []
-        }
-    }
-    
-    private func setObjects<T: Encodable>(_ objects: [T], for key: Settings.Key) {
-        guard !objects.isEmpty else {
-            userDefaults?.set([], forKey: key.rawValue)
-            return
-        }
-        do {
-            let data = try JSONEncoder().encode(objects)
-            userDefaults?.set(data, forKey: key.rawValue)
-        } catch {
-            debugPrint("Error saving object: \(error)")
-        }
-    }
-    
-    private func getObjects<K: Hashable & Decodable, T: Decodable>(for key: Settings.Key) -> Dictionary<K, T> {
-        guard let data = userDefaults?.data(forKey: key.rawValue)
-        else { return [:] }
-        
-        do {
-            return try JSONDecoder().decode(Dictionary<K, T>.self, from: data)
-        } catch {
-            debugPrint("Error: \(error)")
-            return [:]
-        }
-    }
-    
-    private func setObjects<K: Hashable & Encodable, T: Encodable>(_ objects: Dictionary<K, T>, for key: Settings.Key) {
-        guard !objects.isEmpty else {
-            userDefaults?.set([:], forKey: key.rawValue)
-            return
-        }
-        do {
-            let data = try JSONEncoder().encode(objects)
-            userDefaults?.set(data, forKey: key.rawValue)
-        } catch {
-            debugPrint("Error saving object: \(error)")
-        }
-    }
-    
-    private func getString(for key: Settings.Key) -> String? {
-        userDefaults?.string(forKey: key.rawValue)
-    }
-    
-    private func setString(_ string: String?, for key: Settings.Key) {
-        userDefaults?.set(string, forKey: key.rawValue)
     }
 }

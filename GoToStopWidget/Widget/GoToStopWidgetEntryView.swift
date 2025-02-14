@@ -7,15 +7,6 @@
 
 import SwiftUI
 import WidgetKit
-import AppIntents
-
-struct RefreshIntent: AppIntent {
-    static var title: LocalizedStringResource = "Refresh"
-
-    func perform() async throws -> some IntentResult {
-        return .result()
-    }
-}
 
 struct GoToStopWidgetEntryView: View {
     var entry: GoToStopWidgetProvider.Entry
@@ -39,13 +30,15 @@ struct GoToStopWidgetEntryView: View {
     }
     
     var body: some View {
-        VStack() {
-            header
-            Spacer().frame(height: 16)
-            tripList
-                .padding(.horizontal, -4)
+        GeometryReader { geometry in
+            VStack {
+                header
+                Spacer().frame(height: 8)
+                tripList
+            }
+            .font(.caption2)
+            .frame(height: geometry.size.height, alignment: .top)
         }
-        .font(.caption2)
     }
     
     private var header: some View {
@@ -55,6 +48,7 @@ struct GoToStopWidgetEntryView: View {
                     .fontWeight(.bold)
                     .lineLimit(2)
                     .truncationMode(.head)
+                    .padding(.leading, 8)
             }
             Spacer()
             Button(intent: RefreshIntent()) {
@@ -65,7 +59,6 @@ struct GoToStopWidgetEntryView: View {
                     }
                 }
             }
-            .padding(.trailing, -4)
         }
     }
     
@@ -90,24 +83,41 @@ struct GoToStopWidgetEntryView: View {
                 Text("→")
                 Text(item.direction).truncationMode(.head)
             }
-            Spacer().frame(height: 2)
+            Spacer().frame(height: 4)
             HStack {
-                if let minutesLeft = item.minutesLeft {
-                    Text("in \(minutesLeft) min")
+                if
+                    let time = item.time,
+                    let relatedTime = item.relatedTime,
+                    let timeLeft = relatedTime.shortTime(to: time)
+                {
+                    Text("in \(timeLeft)")
+                        .foregroundStyle(.green)
+                        .brightness(-0.2)
                 }
                 Spacer()
                 if item.isCancelled {
                     Text("Cancelled")
                         .strikethrough(false)
                         .foregroundStyle(.red)
+                } else if !item.isReachable {
+                    Text("!")
+                        .strikethrough(false)
+                        .foregroundStyle(.red)
                 }
                 
                 if item.timeDiffers, let realTime = item.realTime {
                     Text("Actual: " + realTime.formatted(date: .omitted, time: .shortened))
+                        .foregroundStyle(.orange)
+                        .brightness(-0.2)
                 }
                 if let scheduledTime = item.scheduledTime {
                     Text("Scheduled: " + scheduledTime.formatted(date: .omitted, time: .shortened))
                         .foregroundStyle(item.timeDiffers ? .secondary : .primary)
+                }
+                if item.hasWarnings {
+                    Text("Warning")
+                        .foregroundStyle(.orange)
+                        .strikethrough(false)
                 }
             }
             .strikethrough(item.isCancelled)
@@ -115,10 +125,8 @@ struct GoToStopWidgetEntryView: View {
         .lineLimit(1)
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(.foreground, lineWidth: 1)
-        )
+        .background(Color(UIColor.systemGray5))
+        .cornerRadius(8)
     }
     
     private func tripCompactView(_ item: ScheduleItem) -> some View {
@@ -128,19 +136,34 @@ struct GoToStopWidgetEntryView: View {
                 Spacer()
                 Text(item.direction).truncationMode(.head)
             }
-            Spacer().frame(height: 2)
+            Spacer().frame(height: 4)
             HStack {
-                if let minutesLeft = item.minutesLeft {
-                    Text("in \(minutesLeft) min")
+                if
+                    let time = item.time,
+                    let relatedTime = item.relatedTime,
+                    let timeLeft = relatedTime.abbreviatedTime(to: time)
+                {
+                    Text("\(timeLeft)")
+                        .foregroundStyle(.green)
+                        .brightness(-0.2)
                 }
                 Spacer()
                 if item.isCancelled {
-                    Text("⊗")
+                    Image(systemName: "xmark.circle")
+                        .strikethrough(false)
+                        .foregroundStyle(.red)
+                } else if !item.isReachable {
+                    Text("!")
                         .strikethrough(false)
                         .foregroundStyle(.red)
                 }
                 if let departureTime = item.time {
                     Text(departureTime.formatted(date: .omitted, time: .shortened))
+                }
+                if item.hasWarnings {
+                    Image(systemName: "exclamationmark.triangle")
+                        .foregroundStyle(.orange)
+                        .strikethrough(false)
                 }
             }
             .strikethrough(item.isCancelled)
@@ -148,10 +171,8 @@ struct GoToStopWidgetEntryView: View {
         .lineLimit(1)
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(.foreground, lineWidth: 1)
-        )
+        .background(Color(UIColor.systemGray5))
+        .cornerRadius(8)
     }
 }
 
@@ -160,7 +181,9 @@ struct GoToStopWidgetEntryView: View {
 } timeline: {
     GoToStopWidgetEntry(
         date: .now,
-        data: .preview2
+        data: .preview2,
+        stop: .mock(),
+        trips: [.mock()]
     )
 }
 
@@ -169,7 +192,9 @@ struct GoToStopWidgetEntryView: View {
 } timeline: {
     GoToStopWidgetEntry(
         date: .now,
-        data: .preview2
+        data: .preview2,
+        stop: .mock(),
+        trips: [.mock()]
     )
 }
 
@@ -178,7 +203,20 @@ struct GoToStopWidgetEntryView: View {
 } timeline: {
     GoToStopWidgetEntry(
         date: .now,
-        data: .preview2
+        data: .preview2,
+        stop: .mock(),
+        trips: [.mock()]
+    )
+}
+
+#Preview(as: .systemSmall) {
+    GoToStopWidget()
+} timeline: {
+    GoToStopWidgetEntry(
+        date: .now,
+        data: .init(updateTime: .now, stop: "Kuhwaldstraße", items: []),
+        stop: .mock(),
+        trips: [.mock()]
     )
 }
 

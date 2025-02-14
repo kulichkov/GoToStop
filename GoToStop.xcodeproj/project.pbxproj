@@ -12,6 +12,9 @@
 		696689AA2D0E0A3E00B0F045 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 696689A92D0E0A3D00B0F045 /* WidgetKit.framework */; };
 		696689AC2D0E0A3E00B0F045 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 696689AB2D0E0A3E00B0F045 /* SwiftUI.framework */; };
 		696689BD2D0E0A3F00B0F045 /* GoToStopWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 696689A72D0E0A3D00B0F045 /* GoToStopWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		69D8070D2D58DBB500E28B18 /* Configuration.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 69D8070C2D58DBB500E28B18 /* Configuration.xcconfig */; };
+		69D8070E2D58DBB500E28B18 /* Configuration.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 69D8070C2D58DBB500E28B18 /* Configuration.xcconfig */; };
+		69D8070F2D58DBB500E28B18 /* Configuration.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 69D8070C2D58DBB500E28B18 /* Configuration.xcconfig */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,13 +66,38 @@
 		696689A92D0E0A3D00B0F045 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		696689AB2D0E0A3E00B0F045 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		696689E72D0E126500B0F045 /* GoToStopWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GoToStopWidgetExtension.entitlements; sourceTree = "<group>"; };
+		69D8070C2D58DBB500E28B18 /* Configuration.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Configuration.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		6910B1A82D391969004A2097 /* Exceptions for "GoToStop" folder in "GoToStopWidgetExtension" target */ = {
+		692C5A7B2D58E69600CF5357 /* Exceptions for "GoToStop" folder in "GoToStop" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				"Shared Models/GoToStopLiveActivityAttributes.swift",
+				Info.plist,
+			);
+			target = 6966893D2D0DE91700B0F045 /* GoToStop */;
+		};
+		6950F56F2D537CB300BBBD29 /* Exceptions for "Logger" folder in "GoToStop" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ApiLogger.swift,
+				WidgetLogger.swift,
+			);
+			target = 6966893D2D0DE91700B0F045 /* GoToStop */;
+		};
+		6950F5702D537CB500BBBD29 /* Exceptions for "Logger" folder in "GoToStopAPI" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AppLogger.swift,
+				WidgetLogger.swift,
+			);
+			target = 6966897F2D0DF31000B0F045 /* GoToStopAPI */;
+		};
+		6950F5762D537CEB00BBBD29 /* Exceptions for "Logger" folder in "GoToStopWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ApiLogger.swift,
+				AppLogger.swift,
 			);
 			target = 696689A62D0E0A3D00B0F045 /* GoToStopWidgetExtension */;
 		};
@@ -90,10 +118,25 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		692C5B622D5DFE7300CF5357 /* Extentions */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Extentions;
+			sourceTree = "<group>";
+		};
+		6950F5642D537A7B00BBBD29 /* Logger */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				6950F56F2D537CB300BBBD29 /* Exceptions for "Logger" folder in "GoToStop" target */,
+				6950F5702D537CB500BBBD29 /* Exceptions for "Logger" folder in "GoToStopAPI" target */,
+				6950F5762D537CEB00BBBD29 /* Exceptions for "Logger" folder in "GoToStopWidgetExtension" target */,
+			);
+			path = Logger;
+			sourceTree = "<group>";
+		};
 		696689402D0DE91700B0F045 /* GoToStop */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				6910B1A82D391969004A2097 /* Exceptions for "GoToStop" folder in "GoToStopWidgetExtension" target */,
+				692C5A7B2D58E69600CF5357 /* Exceptions for "GoToStop" folder in "GoToStop" target */,
 			);
 			path = GoToStop;
 			sourceTree = "<group>";
@@ -147,6 +190,9 @@
 		696689352D0DE91700B0F045 = {
 			isa = PBXGroup;
 			children = (
+				692C5B622D5DFE7300CF5357 /* Extentions */,
+				69D8070C2D58DBB500E28B18 /* Configuration.xcconfig */,
+				6950F5642D537A7B00BBBD29 /* Logger */,
 				696689E72D0E126500B0F045 /* GoToStopWidgetExtension.entitlements */,
 				696689402D0DE91700B0F045 /* GoToStop */,
 				696689812D0DF31000B0F045 /* GoToStopAPI */,
@@ -205,6 +251,8 @@
 				696689BC2D0E0A3F00B0F045 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
+				692C5B622D5DFE7300CF5357 /* Extentions */,
+				6950F5642D537A7B00BBBD29 /* Logger */,
 				696689402D0DE91700B0F045 /* GoToStop */,
 			);
 			name = GoToStop;
@@ -228,6 +276,8 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				692C5B622D5DFE7300CF5357 /* Extentions */,
+				6950F5642D537A7B00BBBD29 /* Logger */,
 				696689812D0DF31000B0F045 /* GoToStopAPI */,
 			);
 			name = GoToStopAPI;
@@ -250,6 +300,8 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				692C5B622D5DFE7300CF5357 /* Extentions */,
+				6950F5642D537A7B00BBBD29 /* Logger */,
 				696689AD2D0E0A3E00B0F045 /* GoToStopWidget */,
 			);
 			name = GoToStopWidgetExtension;
@@ -307,6 +359,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69D8070E2D58DBB500E28B18 /* Configuration.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -314,6 +367,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69D8070F2D58DBB500E28B18 /* Configuration.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -321,6 +375,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69D8070D2D58DBB500E28B18 /* Configuration.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -366,6 +421,7 @@
 /* Begin XCBuildConfiguration section */
 		6966894A2D0DE91800B0F045 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 69D8070C2D58DBB500E28B18 /* Configuration.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -416,8 +472,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
-				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = YES;
+				INFOPLIST_KEY_NSSupportsLiveActivities = NO;
+				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -431,6 +487,7 @@
 		};
 		6966894B2D0DE91800B0F045 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 69D8070C2D58DBB500E28B18 /* Configuration.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -475,8 +532,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
-				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = YES;
+				INFOPLIST_KEY_NSSupportsLiveActivities = NO;
+				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -499,7 +556,10 @@
 				DEVELOPMENT_TEAM = PY3Q8L7FLF;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GoToStop/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
+				INFOPLIST_KEY_NSSupportsLiveActivities = NO;
+				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = NO;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -531,7 +591,10 @@
 				DEVELOPMENT_TEAM = PY3Q8L7FLF;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GoToStop/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
+				INFOPLIST_KEY_NSSupportsLiveActivities = NO;
+				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = NO;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -566,6 +629,8 @@
 				ENABLE_MODULE_VERIFIER = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSSupportsLiveActivities = NO;
+				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = NO;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -604,6 +669,8 @@
 				ENABLE_MODULE_VERIFIER = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSSupportsLiveActivities = NO;
+				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = NO;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -639,6 +706,9 @@
 				INFOPLIST_FILE = GoToStopWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = GoToStopWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "The widget needs your location to range stops";
+				INFOPLIST_KEY_NSSupportsLiveActivities = NO;
+				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -668,6 +738,9 @@
 				INFOPLIST_FILE = GoToStopWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = GoToStopWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "The widget needs your location to range stops";
+				INFOPLIST_KEY_NSSupportsLiveActivities = NO;
+				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

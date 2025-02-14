@@ -12,6 +12,5 @@ import SwiftUI
 struct GoToStopWidgetBundle: WidgetBundle {
     var body: some Widget {
         GoToStopWidget()
-        GoToStopWidgetLiveActivity()
     }
 }

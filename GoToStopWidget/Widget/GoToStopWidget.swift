@@ -39,6 +39,8 @@ struct GoToStopWidget: Widget {
 } timeline: {
     GoToStopWidgetEntry(
         date: .now,
-        data: .preview
+        data: .preview2,
+        stop: .mock(),
+        trips: [.mock()]
     )
 }

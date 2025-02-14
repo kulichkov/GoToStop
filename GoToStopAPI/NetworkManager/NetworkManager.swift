@@ -10,10 +10,17 @@ import Foundation
 public enum NetworkManagerError: Error {
     case wrongUrl
     case wrongRequest
+    case noApiBearer
 }
 
 final public class NetworkManager {
     public static let shared = NetworkManager()
+    
+    public let apiBearer: String? = {
+        let bearer = Bundle.main.infoDictionary?["API_BEARER"] as? String
+        guard let bearer, !bearer.isEmpty else { return nil }
+        return bearer
+    }()
     
     private let baseUrl: String = "https://www.rmv.de/hapi"
     
@@ -29,6 +36,8 @@ final public class NetworkManager {
     ) async throws -> [StopLocation] {
         var queryItems: [URLQueryItem] = []
         queryItems.append(URLQueryItem(name: "input", value: input))
+        queryItems.append(URLQueryItem(name: "type", value: "S"))
+        queryItems.append(URLQueryItem(name: "withProducts", value: "0"))
 
         var urlComponents = URLComponents(string: baseUrl + "/location.name")
         urlComponents?.queryItems = queryItems
@@ -76,37 +85,40 @@ final public class NetworkManager {
     /// - Returns: The result list always contains all departures running the last minute found
     /// even if the requested maximum was overrun.
     public func getDepartures(
-        stopId: String,
-        directionId: String? = nil,
-        lines: String? = nil
+        _ request: DepartureBoardRequest
     ) async throws -> [Departure] {
         var queryItems: [URLQueryItem] = []
-        queryItems.append(URLQueryItem(name: "id", value: stopId))
-        if let directionId {
+        queryItems.append(URLQueryItem(name: "id", value: request.stopId))
+        
+        if let directionId = request.directionId {
             queryItems.append(URLQueryItem(name: "direction", value: directionId))
         }
-        if let lines {
-            queryItems.append(URLQueryItem(name: "lines", value: lines))
+        if let lineId = request.lineId {
+            queryItems.append(URLQueryItem(name: "lines", value: lineId))
+        }
+        if let date = request.date {
+            queryItems.append(URLQueryItem(name: "date", value: date))
+        }
+        if let time = request.time {
+            queryItems.append(URLQueryItem(name: "time", value: time))
+        }
+        if let duration = request.duration {
+            queryItems.append(URLQueryItem(name: "duration", value: "\(duration)"))
         }
 
         var urlComponents = URLComponents(string: baseUrl + "/departureBoard")
         urlComponents?.queryItems = queryItems
         let departureBoard: DepartureBoardResponse = try await sendDataRequest(urlComponents)
-        return departureBoard.departures.compactMap(Departure.init)
+        return departureBoard.departures?.compactMap(Departure.init) ?? []
     }
 
     public func getDepartures(
-        stopId: String,
-        departureLines: [DepartureLineRequest]
+        _ requests: [DepartureBoardRequest]
     ) async throws -> [Departure] {
         try await withThrowingTaskGroup(of: [Departure].self) { [weak self] group -> [Departure] in
-            for line in departureLines {
+            for request in requests {
                 group.addTask {
-                    try await self?.getDepartures(
-                        stopId: stopId,
-                        directionId: line.directionId,
-                        lines: line.id
-                    ) ?? []
+                    try await self?.getDepartures(request) ?? []
                 }
             }
             
@@ -123,11 +135,13 @@ final public class NetworkManager {
 private extension NetworkManager {
     
     func sendDataRequest<T: Decodable>(_ urlComponents: URLComponents?) async throws -> T {
+        guard let apiBearer else { throw NetworkManagerError.noApiBearer }
         guard let url = urlComponents?.url else { throw NetworkManagerError.wrongUrl }
-        var request = URLRequest(url: url)
         
+        var request = URLRequest(url: url)
+                
         let apiKeyField = "Authorization"
-        let apiKeyValue = "Bearer \(Settings.shared.apiKey ?? "")"
+        let apiKeyValue = "Bearer \(apiBearer)"
 
         let acceptField = "Accept"
         let acceptValue = "application/json"
@@ -136,8 +150,8 @@ private extension NetworkManager {
         request.addValue(acceptValue, forHTTPHeaderField: acceptField)
 
         let (data, response) = try await URLSession.shared.data(for: request)
-        debugPrint(response)
-        debugPrint(String(data: data, encoding: .utf8) ?? "No Data")
+        logger?.info("Network response: \(response)")
+        logger?.info("Response data: \(String(data: data, encoding: .utf8) ?? "No data")")
         
         return try JSONDecoder().decode(T.self, from: data)
     }

@@ -7,6 +7,7 @@
 
 import Foundation
 import GoToStopAPI
+import CoreLocation
 
 extension GoToStopWidgetViewModel {
     struct Constant {
@@ -17,29 +18,46 @@ extension GoToStopWidgetViewModel {
 }
 
 enum GoToStopWidgetError: Error {
-    case noParametersSet
+    case noStopSet
+    case noTripsSet
 }
 
 final class GoToStopWidgetViewModel: ObservableObject {
     private let constant = Constant()
     
+    init() {
+        CLLocationManager().requestWhenInUseAuthorization()
+    }
+    
     func getWidgetEntries(
         _ intent: GoToStopIntent
     ) async throws -> [GoToStopWidgetEntry] {
-        guard
-            let stopId = intent.stopLocation?.locationId,
-            let trips = intent.trips
-        else {
-            throw GoToStopWidgetError.noParametersSet
-        }
-        let scheduledItems = await getTrips(stopId: stopId, trips: trips)
+        Task { getLogsIfNeeded() }
         
-        let stopName = intent.stopLocation?.name ?? "No stop name"
+        logger?.info("Start getting widget entries")
+        guard let stopLocation = intent.stopLocation else {
+            logger?.error("No stop set in the widget")
+            throw GoToStopWidgetError.noStopSet
+        }
+        
+        guard let trips = intent.trips else {
+            logger?.error("No trips set in the widget")
+            throw GoToStopWidgetError.noTripsSet
+        }
+        
+        logger?.info("Get scheduled items")
+        let scheduledItems = try await getTrips(
+            stopId: stopLocation.locationId,
+            trips: trips
+        )
+        logger?.info("Successfully got scheduled items: \(scheduledItems)")
+        logger?.info("Stop name: \(stopLocation.name)")
+        
         return makeWidgetEntries(
-            stopName: stopName,
+            stopName: stopLocation.name,
             items: scheduledItems,
-            stop: intent.stopLocation,
-            trips: intent.trips ?? []
+            stop: stopLocation,
+            trips: trips
         )
     }
     
@@ -49,16 +67,24 @@ final class GoToStopWidgetViewModel: ObservableObject {
         stop: StopLocation?,
         trips: [Trip]
     ) -> [GoToStopWidgetEntry] {
+        logger?.info("Start making widget entries for stopId: \(String(describing: String(describing: stop?.locationId))), scheduledTrips: \(scheduledTrips), trips: \(trips)")
+        
+        // Make the end date be a minute later then the last scheduled trip
+        // to show an empty widget instead of outdated trips
+        let endDate = scheduledTrips.last?.scheduledTime?.addingTimeInterval(2 * constant.secondsInMinute)
+        logger?.info("End date: \(String(describing: endDate))")
+        
         let dates = makeUpdateDates(
-            endDate: scheduledTrips.last?.scheduledTime,
+            endDate: endDate,
             interval: constant.uiUpdateTimeInterval
         )
+        logger?.info("Dates made: \(dates)")
         
         var entries: [GoToStopWidgetEntry] = []
         
         for timeToUpdate in dates {
             let items = scheduledTrips
-                .map { $0.makeScheduledItem(relatedDate: timeToUpdate) }
+                .map { $0.makeScheduledItem(relatedTime: timeToUpdate) }
                 .filter { trip in
                     guard let time = trip.time else { return false }
                     return time >= timeToUpdate
@@ -77,6 +103,8 @@ final class GoToStopWidgetViewModel: ObservableObject {
             
             entries.append(entry)
         }
+        
+        logger?.info("Entries made: \(entries)")
         
         return entries
     }
@@ -109,23 +137,33 @@ final class GoToStopWidgetViewModel: ObservableObject {
         return updateDates
     }
     
-    private func getTrips(stopId: String, trips: [Trip]) async -> [ScheduledTrip] {
-        let fetchedDepartures: [Departure]
-        do {
-            fetchedDepartures = try await NetworkManager.shared.getDepartures(
+    private func getTrips(stopId: String, trips: [Trip]) async throws -> [ScheduledTrip] {
+        let departureRequests = trips.map {
+            DepartureBoardRequest(
                 stopId: stopId,
-                departureLines: trips.map {
-                    DepartureLineRequest(id: $0.lineId, directionId: $0.directionId)
-                }
+                lineId: $0.lineId,
+                directionId: $0.directionId
             )
-        } catch {
-            fetchedDepartures = []
-            debugPrint(error)
         }
-        
+        let fetchedDepartures = try await NetworkManager.shared.getDepartures(departureRequests)
         return fetchedDepartures
             .compactMap(ScheduledTrip.init)
             .sorted(using: SortDescriptor(\.time))
+    }
+    
+    private func getLogsIfNeeded() {
+        guard Settings.shared.shouldCollectWidgetLogs else { return }
+        
+        logger?.info("Start collecting widget logs")
+        
+        do {
+            let logsUrl = try LogExporter().makeJson(name: "GoToStopWidgetLogs")
+            Settings.shared.shouldCollectWidgetLogs = false
+            Settings.shared.widgetLogsUrl = logsUrl
+            logger?.info("Widget logs in JSON collected: \(logsUrl)")
+        } catch {
+            logger?.error("Failed to create JSON with logs: \(error)")
+        }
     }
 }
 
@@ -136,25 +174,22 @@ private extension ScheduledTrip {
             direction: departure.direction,
             isCancelled: departure.isCancelled,
             isReachable: departure.isReachable,
+            hasWarnings: !departure.messages.filter(\.isActive).isEmpty,
             scheduledTime: departure.scheduledTime,
             realTime: departure.realTime
         )
     }
     
-    func makeScheduledItem(relatedDate: Date) -> ScheduleItem {
-        let secondsInMinute: TimeInterval = 60
-        let minutesLeft = time
-            .map { max(.zero, ceil($0.timeIntervalSince(relatedDate) / secondsInMinute)) }
-            .map(UInt.init)
-        
-        return ScheduleItem(
+    func makeScheduledItem(relatedTime: Date) -> ScheduleItem {
+        ScheduleItem(
             name: name,
             direction: direction,
             scheduledTime: scheduledTime,
             realTime: realTime,
-            minutesLeft: minutesLeft,
+            relatedTime: relatedTime,
             isReachable: isReachable,
-            isCancelled: isCancelled
+            isCancelled: isCancelled,
+            hasWarnings: hasWarnings
         )
     }
 }

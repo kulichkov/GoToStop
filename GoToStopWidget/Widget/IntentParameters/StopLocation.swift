@@ -7,6 +7,7 @@
 
 import AppIntents
 import GoToStopAPI
+import CoreLocation
 
 struct StopLocation: AppEntity {
     let id: String
@@ -20,12 +21,22 @@ struct StopLocation: AppEntity {
     var displayRepresentation: DisplayRepresentation {
         DisplayRepresentation(title: "\(name)")
     }
+    
+    static func mock() -> Self {
+        .init(
+            id: "1234567#Stop location name",
+            locationId: "1234567",
+            name: "Stop location name"
+        )
+    }
 }
 
 struct StopLocationQuery: EntityStringQuery {
     func entities(matching string: String) async throws -> [StopLocation] {
         let ids = try await NetworkManager.shared.getStopLocations(input: string).map(\.locationId)
-        return try await NetworkManager.shared.getStopLocations(inputs: ids).map(StopLocation.init)
+        let locations = try await NetworkManager.shared.getStopLocations(inputs: ids)
+        let recentLocation = CLLocationManager().location
+        return locations.sortedByDistance(from: recentLocation).map(StopLocation.init)
     }
     
     func entities(for identifiers: [StopLocation.ID]) async throws -> [StopLocation] {

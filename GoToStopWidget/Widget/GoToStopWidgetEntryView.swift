@@ -33,6 +33,7 @@ struct GoToStopWidgetEntryView: View {
         GeometryReader { geometry in
             VStack {
                 header
+                    .widgetAccentable()
                 Spacer().frame(height: 8)
                 tripList
             }
@@ -76,102 +77,110 @@ struct GoToStopWidgetEntryView: View {
     }
     
     private func tripView(_ item: ScheduleItem) -> some View {
-        VStack(alignment: .leading) {
-            HStack {
-                Text(item.name)
-                Spacer()
-                Text("→")
-                Text(item.direction).truncationMode(.head)
+        ZStack {
+            Color(UIColor.gray.withAlphaComponent(0.2))
+                .widgetAccentable()
+            
+            VStack(alignment: .leading) {
+                HStack {
+                    Text(item.name)
+                    Spacer()
+                    Text("→")
+                    Text(item.direction).truncationMode(.head)
+                }
+                Spacer().frame(height: 4)
+                HStack {
+                    if
+                        let time = item.time,
+                        let relatedTime = item.relatedTime,
+                        let timeLeft = relatedTime.shortTime(to: time)
+                    {
+                        Text("in \(timeLeft)")
+                            .foregroundStyle(.green)
+                            .brightness(-0.2)
+                    }
+                    Spacer()
+                    if item.isCancelled {
+                        Text("Cancelled")
+                            .strikethrough(false)
+                            .foregroundStyle(.red)
+                    } else if !item.isReachable {
+                        Text("!")
+                            .strikethrough(false)
+                            .foregroundStyle(.red)
+                    }
+                    
+                    if item.timeDiffers, let realTime = item.realTime {
+                        Text("Actual: " + realTime.formatted(date: .omitted, time: .shortened))
+                            .foregroundStyle(.orange)
+                            .brightness(-0.2)
+                    }
+                    if let scheduledTime = item.scheduledTime {
+                        Text("Scheduled: " + scheduledTime.formatted(date: .omitted, time: .shortened))
+                            .foregroundStyle(item.timeDiffers ? .secondary : .primary)
+                    }
+                    if item.hasWarnings {
+                        Text("Warning")
+                            .foregroundStyle(.orange)
+                            .strikethrough(false)
+                    }
+                }
+                .strikethrough(item.isCancelled)
             }
-            Spacer().frame(height: 4)
-            HStack {
-                if
-                    let time = item.time,
-                    let relatedTime = item.relatedTime,
-                    let timeLeft = relatedTime.shortTime(to: time)
-                {
-                    Text("in \(timeLeft)")
-                        .foregroundStyle(.green)
-                        .brightness(-0.2)
-                }
-                Spacer()
-                if item.isCancelled {
-                    Text("Cancelled")
-                        .strikethrough(false)
-                        .foregroundStyle(.red)
-                } else if !item.isReachable {
-                    Text("!")
-                        .strikethrough(false)
-                        .foregroundStyle(.red)
-                }
-                
-                if item.timeDiffers, let realTime = item.realTime {
-                    Text("Actual: " + realTime.formatted(date: .omitted, time: .shortened))
-                        .foregroundStyle(.orange)
-                        .brightness(-0.2)
-                }
-                if let scheduledTime = item.scheduledTime {
-                    Text("Scheduled: " + scheduledTime.formatted(date: .omitted, time: .shortened))
-                        .foregroundStyle(item.timeDiffers ? .secondary : .primary)
-                }
-                if item.hasWarnings {
-                    Text("Warning")
-                        .foregroundStyle(.orange)
-                        .strikethrough(false)
-                }
-            }
-            .strikethrough(item.isCancelled)
+            .lineLimit(1)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
         }
-        .lineLimit(1)
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
-        .background(Color(UIColor.systemGray5))
         .cornerRadius(8)
     }
     
     private func tripCompactView(_ item: ScheduleItem) -> some View {
-        VStack(alignment: .leading) {
-            HStack {
-                Text(item.name)
-                Spacer()
-                Text(item.direction).truncationMode(.head)
+        ZStack {
+            Color(UIColor.gray.withAlphaComponent(0.2))
+                .widgetAccentable()
+
+            VStack(alignment: .leading) {
+                HStack {
+                    Text(item.name)
+                    Spacer()
+                    Text(item.direction).truncationMode(.head)
+                }
+                Spacer().frame(height: 4)
+                HStack {
+                    if
+                        let time = item.time,
+                        let relatedTime = item.relatedTime,
+                        let timeLeft = relatedTime.abbreviatedTime(to: time)
+                    {
+                        Text("\(timeLeft)")
+                            .foregroundStyle(.green)
+                            .brightness(-0.2)
+                    }
+                    Spacer()
+                    if item.isCancelled {
+                        Image(systemName: "xmark.circle")
+                            .strikethrough(false)
+                            .foregroundStyle(.red)
+                    } else if !item.isReachable {
+                        Text("!")
+                            .strikethrough(false)
+                            .foregroundStyle(.red)
+                    }
+                    if let departureTime = item.time {
+                        Text(departureTime.formatted(date: .omitted, time: .shortened))
+                    }
+                    if item.hasWarnings {
+                        Image(systemName: "exclamationmark.triangle")
+                            .foregroundStyle(.orange)
+                            .strikethrough(false)
+                    }
+                }
+                .strikethrough(item.isCancelled)
             }
-            Spacer().frame(height: 4)
-            HStack {
-                if
-                    let time = item.time,
-                    let relatedTime = item.relatedTime,
-                    let timeLeft = relatedTime.abbreviatedTime(to: time)
-                {
-                    Text("\(timeLeft)")
-                        .foregroundStyle(.green)
-                        .brightness(-0.2)
-                }
-                Spacer()
-                if item.isCancelled {
-                    Image(systemName: "xmark.circle")
-                        .strikethrough(false)
-                        .foregroundStyle(.red)
-                } else if !item.isReachable {
-                    Text("!")
-                        .strikethrough(false)
-                        .foregroundStyle(.red)
-                }
-                if let departureTime = item.time {
-                    Text(departureTime.formatted(date: .omitted, time: .shortened))
-                }
-                if item.hasWarnings {
-                    Image(systemName: "exclamationmark.triangle")
-                        .foregroundStyle(.orange)
-                        .strikethrough(false)
-                }
-            }
-            .strikethrough(item.isCancelled)
+            .lineLimit(1)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
         }
-        .lineLimit(1)
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
-        .background(Color(UIColor.systemGray5))
         .cornerRadius(8)
     }
 }

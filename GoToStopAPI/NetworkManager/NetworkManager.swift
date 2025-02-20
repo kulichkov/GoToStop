@@ -197,6 +197,22 @@ extension NetworkManager {
 }
 
 extension NetworkManager: URLSessionDataDelegate {
+    private func getSavedResponse<T: Decodable>(for request: URLRequest) -> T? {
+        guard let filename = request.hashString else { return nil }
+        let fileManager = FileManager.default
+        let temporaryDirectory = fileManager.temporaryDirectory
+        
+        do {
+            return try fileManager.contentsOfDirectory(at: temporaryDirectory, includingPropertiesForKeys: nil)
+                .first { $0.deletingPathExtension().lastPathComponent == filename }
+                .map { try Data(contentsOf: $0) }
+                .map { try JSONDecoder().decode(T.self, from: $0) }
+        } catch {
+            logger?.error("Could not get response for request \(request): \(error)")
+            return nil
+        }
+    }
+    
     private func saveReceivedData(_ data: Data, for task: URLSessionTask) {
         do {
             let temporaryDirectory = FileManager.default.temporaryDirectory

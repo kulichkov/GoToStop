@@ -126,6 +126,14 @@ final public class NetworkManager: NSObject {
         }
     }
     
+    public func requestDepartures(
+        _ request: DepartureBoardRequest
+    ) throws {
+        let urlComponents = prepareDepartureBoardUrlComponents(request)
+        let urlRequest = try prepareUrlRequest(urlComponents)
+        try requestData(with: urlRequest)
+    }
+    
     private func prepareDepartureBoardUrlComponents(_ request: DepartureBoardRequest) -> URLComponents? {
         var queryItems: [URLQueryItem] = []
         queryItems.append(URLQueryItem(name: "id", value: request.stopId))
@@ -179,6 +187,13 @@ extension NetworkManager {
         
         return try JSONDecoder().decode(T.self, from: data)
     }
+    
+    private func requestData(with request: URLRequest) throws {
+        let task = backgroundUrlSession.dataTask(with: request)
+        logger?.info("Background url request task created: \(request)")
+        task.resume()
+        logger?.info("Background task for url request \(request) started: \(task)")
+    }
 }
 
 extension NetworkManager: URLSessionDataDelegate {
@@ -192,6 +207,6 @@ extension NetworkManager: URLSessionDataDelegate {
     
     public func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
         logger?.info("Session \(session.configuration.identifier ?? "no identifier") finished background events")
-        // TODO: after this `completionHandler` of `onBackgroundURLSessionEvents` closure should be called
+        #warning("after this `completionHandler` of `onBackgroundURLSessionEvents` closure should be called")
     }
 }

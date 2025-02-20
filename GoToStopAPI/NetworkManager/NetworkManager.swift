@@ -53,7 +53,9 @@ final public class NetworkManager: NSObject {
 
         var urlComponents = URLComponents(string: baseUrl + "/location.name")
         urlComponents?.queryItems = queryItems
-        let stopsAndCoordinates: LocationNameResponse = try await sendDataRequest(urlComponents)
+        
+        let urlRequest = try prepareUrlRequest(urlComponents)
+        let stopsAndCoordinates: LocationNameResponse = try await getData(with: urlRequest)
         return stopsAndCoordinates.locations
             .compactMap { location in
                 switch location {
@@ -99,28 +101,9 @@ final public class NetworkManager: NSObject {
     public func getDepartures(
         _ request: DepartureBoardRequest
     ) async throws -> [Departure] {
-        var queryItems: [URLQueryItem] = []
-        queryItems.append(URLQueryItem(name: "id", value: request.stopId))
-        
-        if let directionId = request.directionId {
-            queryItems.append(URLQueryItem(name: "direction", value: directionId))
-        }
-        if let lineId = request.lineId {
-            queryItems.append(URLQueryItem(name: "lines", value: lineId))
-        }
-        if let date = request.date {
-            queryItems.append(URLQueryItem(name: "date", value: date))
-        }
-        if let time = request.time {
-            queryItems.append(URLQueryItem(name: "time", value: time))
-        }
-        if let duration = request.duration {
-            queryItems.append(URLQueryItem(name: "duration", value: "\(duration)"))
-        }
-
-        var urlComponents = URLComponents(string: baseUrl + "/departureBoard")
-        urlComponents?.queryItems = queryItems
-        let departureBoard: DepartureBoardResponse = try await sendDataRequest(urlComponents)
+        let urlComponents = prepareDepartureBoardUrlComponents(request)
+        let urlRequest = try prepareUrlRequest(urlComponents)
+        let departureBoard: DepartureBoardResponse = try await getData(with: urlRequest)
         return departureBoard.departures?.compactMap(Departure.init) ?? []
     }
 
@@ -142,11 +125,36 @@ final public class NetworkManager: NSObject {
             return collectedDepartures
         }
     }
+    
+    private func prepareDepartureBoardUrlComponents(_ request: DepartureBoardRequest) -> URLComponents? {
+        var queryItems: [URLQueryItem] = []
+        queryItems.append(URLQueryItem(name: "id", value: request.stopId))
+        
+        if let directionId = request.directionId {
+            queryItems.append(URLQueryItem(name: "direction", value: directionId))
+        }
+        if let lineId = request.lineId {
+            queryItems.append(URLQueryItem(name: "lines", value: lineId))
+        }
+        if let date = request.date {
+            queryItems.append(URLQueryItem(name: "date", value: date))
+        }
+        if let time = request.time {
+            queryItems.append(URLQueryItem(name: "time", value: time))
+        }
+        if let duration = request.duration {
+            queryItems.append(URLQueryItem(name: "duration", value: "\(duration)"))
+        }
+        
+        var urlComponents = URLComponents(string: baseUrl + "/departureBoard")
+        urlComponents?.queryItems = queryItems
+        
+        return urlComponents
+    }
 }
 
 extension NetworkManager {
-    
-    private func sendDataRequest<T: Decodable>(_ urlComponents: URLComponents?) async throws -> T {
+    private func prepareUrlRequest(_ urlComponents: URLComponents?) throws -> URLRequest {
         guard let apiBearer else { throw NetworkManagerError.noApiBearer }
         guard let url = urlComponents?.url else { throw NetworkManagerError.wrongUrl }
         
@@ -160,14 +168,17 @@ extension NetworkManager {
 
         request.addValue(apiKeyValue, forHTTPHeaderField: apiKeyField)
         request.addValue(acceptValue, forHTTPHeaderField: acceptField)
-
+        
+        return request
+    }
+    
+    private func getData<T: Decodable>(with request: URLRequest) async throws -> T {
         let (data, response) = try await foregroundUrlSession.data(for: request)
         logger?.info("Network response: \(response)")
         logger?.info("Response data: \(String(data: data, encoding: .utf8) ?? "No data")")
         
         return try JSONDecoder().decode(T.self, from: data)
     }
-    
 }
 
 extension NetworkManager: URLSessionDataDelegate {
@@ -181,6 +192,6 @@ extension NetworkManager: URLSessionDataDelegate {
     
     public func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
         logger?.info("Session \(session.configuration.identifier ?? "no identifier") finished background events")
-        // TODO: after this `completionHandler` of `onBackgroundURLSessionEvents` closure should be called 
+        // TODO: after this `completionHandler` of `onBackgroundURLSessionEvents` closure should be called
     }
 }

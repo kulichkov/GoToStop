@@ -31,6 +31,11 @@ struct GoToStopWidget: Widget {
                 .systemMedium,
                 .systemLarge,
             ])
+            .onBackgroundURLSessionEvents(
+                matching: NetworkManager.shared.backgroundUrlSessionIdentifier
+            ) { identifier, completion in
+                logger?.info("Some background event happened for session \(identifier)")
+            }
     }
 }
 

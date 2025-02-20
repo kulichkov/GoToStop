@@ -22,6 +22,18 @@ final public class NetworkManager: NSObject {
         return bearer
     }()
     
+    public let backgroundUrlSessionIdentifier: String = "kulichkov.GoToStop.BackgroundSession"
+    private lazy var foregroundUrlSession = URLSession.shared
+    private lazy var backgroundUrlSession: URLSession = {
+        URLSession(
+            configuration: URLSessionConfiguration.background(
+                withIdentifier: backgroundUrlSessionIdentifier
+            ),
+            delegate: self,
+            delegateQueue: nil
+        )
+    }()
+    
     private let baseUrl: String = "https://www.rmv.de/hapi"
     
     private override init() {}
@@ -149,11 +161,26 @@ extension NetworkManager {
         request.addValue(apiKeyValue, forHTTPHeaderField: apiKeyField)
         request.addValue(acceptValue, forHTTPHeaderField: acceptField)
 
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await foregroundUrlSession.data(for: request)
         logger?.info("Network response: \(response)")
         logger?.info("Response data: \(String(data: data, encoding: .utf8) ?? "No data")")
         
         return try JSONDecoder().decode(T.self, from: data)
     }
     
+}
+
+extension NetworkManager: URLSessionDataDelegate {
+    public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+        logger?.info("Session \(session.configuration.identifier ?? "no identifier") received data: \(data)")
+    }
+    
+    public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: (any Error)?) {
+        logger?.info("Session \(session.configuration.identifier ?? "no identifier") completed task: \(task), error: \(error)")
+    }
+    
+    public func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
+        logger?.info("Session \(session.configuration.identifier ?? "no identifier") finished background events")
+        // TODO: after this `completionHandler` of `onBackgroundURLSessionEvents` closure should be called 
+    }
 }

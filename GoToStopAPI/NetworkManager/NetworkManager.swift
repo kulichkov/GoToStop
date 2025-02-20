@@ -197,16 +197,76 @@ extension NetworkManager {
 }
 
 extension NetworkManager: URLSessionDataDelegate {
+    private func saveReceivedData(_ data: Data, for task: URLSessionTask) {
+        do {
+            let temporaryDirectory = FileManager.default.temporaryDirectory
+            let tempFile = temporaryDirectory.appendingPathComponent("\(task.taskIdentifier).tmp")
+            
+            if tempFile.fileExists {
+                logger?.info("Appending data \(data) to file: \(tempFile)")
+                let fileHandle = try FileHandle(forWritingTo: tempFile)
+                fileHandle.seekToEndOfFile()
+                fileHandle.write(data)
+                fileHandle.closeFile()
+            } else {
+                logger?.info("Creating file: \(tempFile)")
+                try data.write(to: tempFile)
+            }
+        } catch {
+            logger?.error("Error writing file: \(error)")
+        }
+    }
+    
+    private func handleCompletedDataTask(_ task: URLSessionTask) {
+        do {
+            let temporaryDirectory = FileManager.default.temporaryDirectory
+            let tempFile = temporaryDirectory.appendingPathComponent("\(task.taskIdentifier).tmp")
+            guard let jsonName = task.originalRequest?.hashString else {
+                logger?.error("Could not get JSON name")
+                return
+            }
+            let jsonFile = temporaryDirectory.appendingPathComponent("\(jsonName).\(task.taskIdentifier)")
+            logger?.info("Renaming \(tempFile) to \(jsonFile)")
+            try FileManager.default.moveItem(at: tempFile, to: jsonFile)
+        } catch {
+            logger?.error("Error handling completed data task \(task): \(error)")
+        }
+    }
+    
+    public func urlSession(_ session: URLSession, didCreateTask task: URLSessionTask) {
+        logger?.info("Session \(session.configuration.identifier ?? "no identifier") created task: \(task)")
+    }
+    
     public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
         logger?.info("Session \(session.configuration.identifier ?? "no identifier") received data: \(data)")
+        saveReceivedData(data, for: dataTask)
     }
     
     public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: (any Error)?) {
         logger?.info("Session \(session.configuration.identifier ?? "no identifier") completed task: \(task), error: \(error)")
+        handleCompletedDataTask(task)
     }
     
     public func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
         logger?.info("Session \(session.configuration.identifier ?? "no identifier") finished background events")
-        #warning("after this `completionHandler` of `onBackgroundURLSessionEvents` closure should be called")
+    }
+}
+
+private extension URLRequest {
+    var hashString: String? {
+        guard
+            let url,
+            let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
+            let queryItems = urlComponents.queryItems
+        else {
+            logger?.error("Failed to generate hash string for request: \(self)")
+            return nil
+        }
+        let queryItemsString = queryItems
+            .sorted(using: SortDescriptor(\.name))
+            .map { $0.name + ($0.value ?? .empty) }
+            .joined()
+        
+        return String((urlComponents.path + queryItemsString).sha256.prefix(16))
     }
 }

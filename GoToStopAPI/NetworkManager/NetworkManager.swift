@@ -13,7 +13,7 @@ public enum NetworkManagerError: Error {
     case noApiBearer
 }
 
-final public class NetworkManager {
+final public class NetworkManager: NSObject {
     public static let shared = NetworkManager()
     
     public let apiBearer: String? = {
@@ -24,7 +24,7 @@ final public class NetworkManager {
     
     private let baseUrl: String = "https://www.rmv.de/hapi"
     
-    private init() {}
+    private override init() {}
     
     /// Can be used to perform a pattern matching of a user input and to retrieve
     /// a list of possible matches in the journey planner database. Possible matches might be stops/stations.
@@ -132,9 +132,9 @@ final public class NetworkManager {
     }
 }
 
-private extension NetworkManager {
+extension NetworkManager {
     
-    func sendDataRequest<T: Decodable>(_ urlComponents: URLComponents?) async throws -> T {
+    private func sendDataRequest<T: Decodable>(_ urlComponents: URLComponents?) async throws -> T {
         guard let apiBearer else { throw NetworkManagerError.noApiBearer }
         guard let url = urlComponents?.url else { throw NetworkManagerError.wrongUrl }
         

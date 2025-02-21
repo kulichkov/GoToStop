@@ -139,8 +139,16 @@ final public class NetworkManager: NSObject {
             try requestData(with: urlRequest)
             return nil
         }
-        logger?.info("Found cache found for \(urlRequest). Returning...")
+        logger?.info("Cache found for \(urlRequest). Returning...")
         return response.departures?.compactMap(Departure.init)
+    }
+    
+    public func removeCachedDepartures(
+        for request: DepartureBoardRequest
+    ) throws {
+        let urlComponents = prepareDepartureBoardUrlComponents(request)
+        let urlRequest = try prepareUrlRequest(urlComponents)
+        try removeCacheFile(for: urlRequest)
     }
     
     private func prepareDepartureBoardUrlComponents(_ request: DepartureBoardRequest) -> URLComponents? {
@@ -202,6 +210,19 @@ extension NetworkManager {
         logger?.info("Background url request task created: \(request)")
         task.resume()
         logger?.info("Background task for url request \(request) started: \(task)")
+    }
+    
+    private func removeCacheFile(for request: URLRequest) throws {
+        logger?.info("Remove cache file for request: \(request)")
+        guard let filename = request.hashString else {
+            logger?.error("No hash string for request: \(request)")
+            return
+        }
+        let fileManager = FileManager.default
+        let temporaryDirectory = fileManager.temporaryDirectory
+        try fileManager.contentsOfDirectory(at: temporaryDirectory, includingPropertiesForKeys: nil)
+            .first { $0.deletingPathExtension().lastPathComponent == filename }
+            .map { try fileManager.removeItem(at: $0) }
     }
 }
 

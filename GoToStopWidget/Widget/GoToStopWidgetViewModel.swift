@@ -161,6 +161,15 @@ final class GoToStopWidgetViewModel: ObservableObject {
             .prefix(100)
             .compactMap(ScheduledTrip.init)
         
+        // Removing saved departures
+        for request in departureRequests {
+            do {
+                try NetworkManager.shared.removeCachedDepartures(for: request)
+            } catch {
+                logger?.error("Failed to remove cached departures for \(request.stopId), \(String(describing: request.lineId)), \(String(describing: request.directionId)) : \(error)")
+            }
+        }
+        
         return trips
     }
     

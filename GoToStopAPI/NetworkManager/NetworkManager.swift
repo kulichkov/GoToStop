@@ -128,10 +128,16 @@ final public class NetworkManager: NSObject {
     
     public func requestDepartures(
         _ request: DepartureBoardRequest
-    ) throws {
+    ) throws -> [Departure]? {
         let urlComponents = prepareDepartureBoardUrlComponents(request)
         let urlRequest = try prepareUrlRequest(urlComponents)
-        try requestData(with: urlRequest)
+        guard let response: DepartureBoardResponse = getSavedResponse(for: urlRequest) else {
+            logger?.info("No cache found for \(urlRequest). Requesting...")
+            try requestData(with: urlRequest)
+            return nil
+        }
+        logger?.info("Found cache found for \(urlRequest). Returning...")
+        return response.departures?.compactMap(Departure.init)
     }
     
     private func prepareDepartureBoardUrlComponents(_ request: DepartureBoardRequest) -> URLComponents? {

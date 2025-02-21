@@ -138,7 +138,7 @@ final public class NetworkManager: NSObject {
         let urlRequest = try prepareUrlRequest(urlComponents)
         guard let response: DepartureBoardResponse = getCachedResponse(for: urlRequest) else {
             logger?.info("No cache found for \(urlRequest). Requesting...")
-            try requestData(with: urlRequest)
+            try downloadData(with: urlRequest)
             return nil
         }
         logger?.info("Cache found for \(urlRequest). Returning...")
@@ -207,7 +207,7 @@ extension NetworkManager {
         return try JSONDecoder().decode(T.self, from: data)
     }
     
-    private func requestData(with request: URLRequest) throws {
+    private func downloadData(with request: URLRequest) throws {
         let task = backgroundUrlSession.downloadTask(with: request)
         logger?.info("Background url request task created: \(request)")
         task.resume()

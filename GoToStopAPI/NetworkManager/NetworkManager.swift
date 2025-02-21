@@ -17,7 +17,9 @@ public enum NetworkManagerError: Error {
 final public class NetworkManager: NSObject {
     public static let shared = NetworkManager()
     
-    public let dataTaskFinished = PassthroughSubject<Void, Never>()
+    public var backgroundSessionCompletion: (() -> Void)?
+    
+    public let someTaskFinished = PassthroughSubject<Void, Never>()
     
     public let apiBearer: String? = {
         let bearer = Bundle.main.infoDictionary?["API_BEARER"] as? String
@@ -134,7 +136,7 @@ final public class NetworkManager: NSObject {
     ) throws -> [Departure]? {
         let urlComponents = prepareDepartureBoardUrlComponents(request)
         let urlRequest = try prepareUrlRequest(urlComponents)
-        guard let response: DepartureBoardResponse = getSavedResponse(for: urlRequest) else {
+        guard let response: DepartureBoardResponse = getCachedResponse(for: urlRequest) else {
             logger?.info("No cache found for \(urlRequest). Requesting...")
             try requestData(with: urlRequest)
             return nil
@@ -206,7 +208,7 @@ extension NetworkManager {
     }
     
     private func requestData(with request: URLRequest) throws {
-        let task = backgroundUrlSession.dataTask(with: request)
+        let task = backgroundUrlSession.downloadTask(with: request)
         logger?.info("Background url request task created: \(request)")
         task.resume()
         logger?.info("Background task for url request \(request) started: \(task)")
@@ -224,14 +226,11 @@ extension NetworkManager {
             .first { $0.deletingPathExtension().lastPathComponent == filename }
             .map { try fileManager.removeItem(at: $0) }
     }
-}
-
-extension NetworkManager: URLSessionDataDelegate {
-    private func getSavedResponse<T: Decodable>(for request: URLRequest) -> T? {
+    
+    private func getCachedResponse<T: Decodable>(for request: URLRequest) -> T? {
         guard let filename = request.hashString else { return nil }
         let fileManager = FileManager.default
         let temporaryDirectory = fileManager.temporaryDirectory
-        
         do {
             return try fileManager.contentsOfDirectory(at: temporaryDirectory, includingPropertiesForKeys: nil)
                 .first { $0.deletingPathExtension().lastPathComponent == filename }
@@ -242,31 +241,22 @@ extension NetworkManager: URLSessionDataDelegate {
             return nil
         }
     }
-    
-    private func saveReceivedData(_ data: Data, for task: URLSessionTask) {
-        do {
-            let temporaryDirectory = FileManager.default.temporaryDirectory
-            let tempFile = temporaryDirectory.appendingPathComponent("\(task.taskIdentifier).tmp")
-            
-            if tempFile.fileExists {
-                logger?.info("Appending data \(data) to file: \(tempFile)")
-                let fileHandle = try FileHandle(forWritingTo: tempFile)
-                fileHandle.seekToEndOfFile()
-                fileHandle.write(data)
-                fileHandle.closeFile()
-            } else {
-                logger?.info("Creating file: \(tempFile)")
-                try data.write(to: tempFile)
-            }
-        } catch {
-            logger?.error("Error writing file: \(error)")
-        }
+}
+
+extension NetworkManager: URLSessionDownloadDelegate {
+    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        logger?.debug("Session download task \(downloadTask) finished downloading to location: \(location)")
+        makeResponseCache(from: location, of: downloadTask)
     }
     
-    private func handleCompletedDataTask(_ task: URLSessionTask) {
+    public func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
+        logger?.info("Background session finished events")
+        backgroundSessionCompletion?()
+    }
+    
+    private func makeResponseCache(from tempFile: URL, of task: URLSessionTask) {
         do {
             let temporaryDirectory = FileManager.default.temporaryDirectory
-            let tempFile = temporaryDirectory.appendingPathComponent("\(task.taskIdentifier).tmp")
             guard let jsonName = task.originalRequest?.hashString else {
                 logger?.error("Could not get JSON name")
                 return
@@ -274,28 +264,10 @@ extension NetworkManager: URLSessionDataDelegate {
             let jsonFile = temporaryDirectory.appendingPathComponent("\(jsonName).\(task.taskIdentifier)")
             logger?.info("Renaming \(tempFile) to \(jsonFile)")
             try FileManager.default.moveItem(at: tempFile, to: jsonFile)
-            dataTaskFinished.send(())
+            someTaskFinished.send(())
         } catch {
             logger?.error("Error handling completed data task \(task): \(error)")
         }
-    }
-    
-    public func urlSession(_ session: URLSession, didCreateTask task: URLSessionTask) {
-        logger?.info("Session \(session.configuration.identifier ?? "no identifier") created task: \(task)")
-    }
-    
-    public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-        logger?.info("Session \(session.configuration.identifier ?? "no identifier") received data: \(data)")
-        saveReceivedData(data, for: dataTask)
-    }
-    
-    public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: (any Error)?) {
-        logger?.info("Session \(session.configuration.identifier ?? "no identifier") completed task: \(task), error: \(error)")
-        handleCompletedDataTask(task)
-    }
-    
-    public func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
-        logger?.info("Session \(session.configuration.identifier ?? "no identifier") finished background events")
     }
 }
 

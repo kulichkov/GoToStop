@@ -35,6 +35,7 @@ struct GoToStopWidget: Widget {
                 matching: NetworkManager.shared.backgroundUrlSessionIdentifier
             ) { identifier, completion in
                 logger?.info("Some background event happened for session \(identifier)")
+                NetworkManager.shared.backgroundSessionCompletion = completion
             }
     }
 }

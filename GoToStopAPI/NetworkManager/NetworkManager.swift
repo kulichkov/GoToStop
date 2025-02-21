@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 public enum NetworkManagerError: Error {
     case wrongUrl
@@ -15,6 +16,8 @@ public enum NetworkManagerError: Error {
 
 final public class NetworkManager: NSObject {
     public static let shared = NetworkManager()
+    
+    public let dataTaskFinished = PassthroughSubject<Void, Never>()
     
     public let apiBearer: String? = {
         let bearer = Bundle.main.infoDictionary?["API_BEARER"] as? String
@@ -250,6 +253,7 @@ extension NetworkManager: URLSessionDataDelegate {
             let jsonFile = temporaryDirectory.appendingPathComponent("\(jsonName).\(task.taskIdentifier)")
             logger?.info("Renaming \(tempFile) to \(jsonFile)")
             try FileManager.default.moveItem(at: tempFile, to: jsonFile)
+            dataTaskFinished.send(())
         } catch {
             logger?.error("Error handling completed data task \(task): \(error)")
         }

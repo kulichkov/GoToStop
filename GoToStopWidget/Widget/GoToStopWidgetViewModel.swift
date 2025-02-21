@@ -8,6 +8,8 @@
 import Foundation
 import GoToStopAPI
 import CoreLocation
+import Combine
+import WidgetKit
 
 extension GoToStopWidgetViewModel {
     struct Constant {
@@ -24,9 +26,13 @@ enum GoToStopWidgetError: Error {
 
 final class GoToStopWidgetViewModel: ObservableObject {
     private let constant = Constant()
+    private var bindings = Set<AnyCancellable>()
     
     init() {
         CLLocationManager().requestWhenInUseAuthorization()
+        NetworkManager.shared.dataTaskFinished
+            .sink { _ in WidgetCenter.shared.reloadAllTimelines() }
+            .store(in: &bindings)
     }
     
     func getWidgetEntries(
@@ -46,7 +52,7 @@ final class GoToStopWidgetViewModel: ObservableObject {
         }
         
         logger?.info("Get scheduled items")
-        let scheduledItems = try await getTrips(
+        let scheduledItems = try getTrips(
             stopId: stopLocation.locationId,
             trips: trips
         )
@@ -69,15 +75,11 @@ final class GoToStopWidgetViewModel: ObservableObject {
     ) -> [GoToStopWidgetEntry] {
         logger?.info("Start making widget entries for stopId: \(String(describing: String(describing: stop?.locationId))), scheduledTrips: \(scheduledTrips), trips: \(trips)")
         
-        // Make the end date be a minute later then the last scheduled trip
-        // to show an empty widget instead of outdated trips
-        let endDate = scheduledTrips.last?.scheduledTime?.addingTimeInterval(2 * constant.secondsInMinute)
+        // Make the end date be an hour later
+        let endDate = Date.now.addingTimeInterval(60 * 60)
         logger?.info("End date: \(String(describing: endDate))")
         
-        let dates = makeUpdateDates(
-            endDate: endDate,
-            interval: constant.uiUpdateTimeInterval
-        )
+        let dates = makeUpdateDates()
         logger?.info("Dates made: \(dates)")
         
         var entries: [GoToStopWidgetEntry] = []
@@ -109,10 +111,7 @@ final class GoToStopWidgetViewModel: ObservableObject {
         return entries
     }
     
-    private func makeUpdateDates(
-        endDate: Date?,
-        interval: TimeInterval
-    ) -> [Date] {
+    private func makeUpdateDates() -> [Date] {
         let calendar = Calendar.current
         var components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: .now)
         components.second = .zero
@@ -120,13 +119,15 @@ final class GoToStopWidgetViewModel: ObservableObject {
         
         guard let startDate = calendar.date(from: components) else { return [] }
         
-        // If no endDate then default 10 minutes
-        let endDate = endDate ?? startDate.addingTimeInterval(constant.tenMinutes)
+        // End date is an hour later to make widget items keep appearing
+        // in case there's no timeline update
+        components.hour? += 1
+        guard let endDate = calendar.date(from: components) else { return [] }
         
         var updateDates = stride(
             from: .zero,
             to: endDate.timeIntervalSince(startDate),
-            by: interval
+            by: constant.uiUpdateTimeInterval
         )
         .map(startDate.addingTimeInterval)
         
@@ -137,18 +138,30 @@ final class GoToStopWidgetViewModel: ObservableObject {
         return updateDates
     }
     
-    private func getTrips(stopId: String, trips: [Trip]) async throws -> [ScheduledTrip] {
+    private func getTrips(stopId: String, trips: [Trip]) throws -> [ScheduledTrip] {
         let departureRequests = trips.map {
             DepartureBoardRequest(
                 stopId: stopId,
                 lineId: $0.lineId,
-                directionId: $0.directionId
+                directionId: $0.directionId,
+                duration: 60 * 16
             )
         }
-        let fetchedDepartures = try await NetworkManager.shared.getDepartures(departureRequests)
-        return fetchedDepartures
+        
+        let fetchedDepartures = try departureRequests
+            .compactMap { try NetworkManager.shared.requestDepartures($0) }
+    
+        guard departureRequests.count == fetchedDepartures.count else {
+            return []
+        }
+        
+        let trips = fetchedDepartures
+            .flatMap { $0 }
+            .sorted(using: SortDescriptor(\.scheduledTime))
+            .prefix(100)
             .compactMap(ScheduledTrip.init)
-            .sorted(using: SortDescriptor(\.time))
+        
+        return trips
     }
     
     private func getLogsIfNeeded() {

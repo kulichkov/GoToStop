@@ -8,6 +8,10 @@
 import Foundation
 import Combine
 
+enum BackgroundSessionManagerError: Error {
+    case noRequestHashString(URLRequest)
+}
+
 final class BackgroundSessionManager: NSObject {
     public var backgroundSessionCompletion: (() -> Void)?
     public let someTaskFinished = PassthroughSubject<Void, Never>()
@@ -32,7 +36,7 @@ final class BackgroundSessionManager: NSObject {
     private func makeResponseCache(from tempFile: URL, of task: URLSessionTask) {
         do {
             let temporaryDirectory = FileManager.default.temporaryDirectory
-            guard let jsonName = task.originalRequest?.hashString else {
+            guard let jsonName = try task.originalRequest?.hashString() else {
                 logger?.error("Could not get JSON name")
                 return
             }
@@ -46,10 +50,10 @@ final class BackgroundSessionManager: NSObject {
     }
     
     func getResponseCache<T: Decodable>(for request: URLRequest) -> T? {
-        guard let filename = request.hashString else { return nil }
         let fileManager = FileManager.default
         let temporaryDirectory = fileManager.temporaryDirectory
         do {
+            let filename = try request.hashString()
             return try fileManager.contentsOfDirectory(at: temporaryDirectory, includingPropertiesForKeys: nil)
                 .first { $0.deletingPathExtension().lastPathComponent == filename }
                 .map { try Data(contentsOf: $0) }
@@ -62,10 +66,7 @@ final class BackgroundSessionManager: NSObject {
     
     func removeResponseCache(for request: URLRequest) throws {
         logger?.info("Remove cache file for request: \(request)")
-        guard let filename = request.hashString else {
-            logger?.error("No hash string for request: \(request)")
-            return
-        }
+        let filename = try request.hashString()
         let fileManager = FileManager.default
         let temporaryDirectory = fileManager.temporaryDirectory
         try fileManager.contentsOfDirectory(at: temporaryDirectory, includingPropertiesForKeys: nil)
@@ -87,15 +88,16 @@ extension BackgroundSessionManager: URLSessionDownloadDelegate {
 }
 
 private extension URLRequest {
-    var hashString: String? {
+    func hashString() throws -> String {
         guard
             let url,
             let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
             let queryItems = urlComponents.queryItems
         else {
             logger?.error("Failed to generate hash string for request: \(self)")
-            return nil
+            throw BackgroundSessionManagerError.noRequestHashString(self)
         }
+        
         let queryItemsString = queryItems
             .sorted(using: SortDescriptor(\.name))
             .map { $0.name + ($0.value ?? .empty) }

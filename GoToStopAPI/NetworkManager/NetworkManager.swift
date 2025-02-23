@@ -133,22 +133,31 @@ final public class NetworkManager {
     
     public func requestDepartures(
         _ request: DepartureBoardRequest
+    ) throws {
+        let urlComponents = prepareDepartureBoardUrlComponents(request)
+        let urlRequest = try prepareUrlRequest(urlComponents)
+        try backgroundSessionManager.downloadData(with: urlRequest)
+    }
+    
+    public func getCachedDepartures(
+        for request: DepartureBoardRequest
     ) throws -> [Departure]? {
         let urlComponents = prepareDepartureBoardUrlComponents(request)
         let urlRequest = try prepareUrlRequest(urlComponents)
         guard let response: DepartureBoardResponse = backgroundSessionManager.getResponseCache(for: urlRequest) else {
-            logger?.info("No cache found for \(urlRequest). Requesting...")
-            try backgroundSessionManager.downloadData(with: urlRequest)
+            logger?.info("No cache found for \(urlRequest)")
             return nil
         }
-        logger?.info("Cache found for \(urlRequest). Returning...")
-        return response.departures?.compactMap(Departure.init)
+        logger?.info("Cache found for \(urlRequest)")
+        return response.departures?
+            .compactMap(Departure.init)
     }
     
     public func removeCachedDepartures(
         for request: DepartureBoardRequest
     ) throws {
         let urlComponents = prepareDepartureBoardUrlComponents(request)
+        logger?.info("Remove cache for \(String(describing: request))")
         let urlRequest = try prepareUrlRequest(urlComponents)
         try backgroundSessionManager.removeResponseCache(for: urlRequest)
     }

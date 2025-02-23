@@ -27,8 +27,13 @@ final class BackgroundSessionManager: NSObject {
     }()
     
     func downloadData(with request: URLRequest) throws {
+        let hashString = try request.hashString()
+        guard !Settings.shared.backgroundRequests.contains(hashString) else {
+            logger?.error("Request already in background queue: \(request)")
+            return
+        }
+        
         let task = backgroundUrlSession.downloadTask(with: request)
-        logger?.info("Background url request task created: \(request)")
         task.resume()
         logger?.info("Background task for url request \(request) started: \(task)")
     }
@@ -79,6 +84,8 @@ extension BackgroundSessionManager: URLSessionDownloadDelegate {
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         logger?.debug("Session download task \(downloadTask) finished downloading to location: \(location)")
         makeResponseCache(from: location, of: downloadTask)
+        let requestHashString = try? downloadTask.originalRequest?.hashString()
+        Settings.shared.backgroundRequests.removeAll { $0 == requestHashString }
     }
     
     func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {

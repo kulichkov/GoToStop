@@ -11,6 +11,7 @@ public class Settings {
     public enum Key: String {
         case shouldCollectWidgetLogs = "shouldCollectWidgetLogs"
         case widgetLogsUrl = "widgetLogsUrl"
+        case backgroundRequests = "backgroundRequests"
     }
     
     static public let container: UserDefaults = {
@@ -41,6 +42,9 @@ public class Settings {
     
     @Setting(key: .widgetLogsUrl, defaultValue: nil)
     public var widgetLogsUrl: URL?
+    
+    @Setting(key: .backgroundRequests, defaultValue: [])
+    public var backgroundRequests: [String]
     
     private init() {}
 }

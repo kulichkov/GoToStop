@@ -151,6 +151,14 @@ final public class NetworkManager {
             .compactMap(Departure.init)
     }
     
+    public func checkIfActive(
+        _ request: DepartureBoardRequest
+    ) throws -> Bool {
+        let urlComponents = prepareDepartureBoardUrlComponents(request)
+        let urlRequest = try prepareUrlRequest(urlComponents)
+        return try backgroundSessionManager.checkIfActive(urlRequest)
+    }
+    
     public func removeCachedDepartures(
         for request: DepartureBoardRequest
     ) throws {

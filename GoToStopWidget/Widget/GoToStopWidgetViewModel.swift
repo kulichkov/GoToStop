@@ -30,7 +30,8 @@ final class GoToStopWidgetViewModel: ObservableObject {
     
     init() {
         CLLocationManager().requestWhenInUseAuthorization()
-        NetworkManager.shared.backgroundRequestFinished
+        NetworkManager.shared.cachedFileReady
+            .throttle(for: .seconds(1), scheduler: RunLoop.main, latest: true)
             .sink { _ in WidgetCenter.shared.reloadAllTimelines() }
             .store(in: &bindings)
     }
@@ -51,9 +52,26 @@ final class GoToStopWidgetViewModel: ObservableObject {
             throw GoToStopWidgetError.noTripsSet
         }
         
-        logger?.info("Not all requested items available yet. Waiting...")
-        return makeEmptyEntries(stopLocation: stopLocation, trips: trips)
-        
+        let allCacheIsReady = try checkIfAllDeparturesCached(stopId: stopLocation.locationId, trips: trips)
+        if allCacheIsReady {
+            logger?.info("All requested items available. Returning...")
+            let departures = try getCachedDepartures(stopId: stopLocation.locationId, trips: trips)
+            let scheduledTrips = mapDeparturesToScheduledTrips(departures)
+            return makeWidgetEntries(
+                stopName: stopLocation.name,
+                items: scheduledTrips,
+                stop: stopLocation,
+                trips: trips
+            )
+        } else {
+            let requestInProgress = try checkIfRequesting(stopId: stopLocation.locationId, trips: trips)
+            if !requestInProgress {
+                logger?.info("Requesting trips...")
+                try requestDepartures(stopId: stopLocation.locationId, trips: trips)
+            }
+            logger?.info("Not all requested items available yet. Waiting...")
+            return makeEmptyEntries(stopLocation: stopLocation, trips: trips)
+        }
     }
     
     private func makeEmptyEntries(
@@ -102,7 +120,8 @@ final class GoToStopWidgetViewModel: ObservableObject {
                     updateTime: .now,
                     stop: stopName,
                     items: items
-                )
+                ),
+                widgetUrl: makeWidgetUrl(stop: stop, trips: trips)
             )
             
             entries.append(entry)
@@ -183,6 +202,27 @@ final class GoToStopWidgetViewModel: ObservableObject {
         for request in requests {
             try NetworkManager.shared.requestDepartures(request)
         }
+    }
+    
+    private func checkIfAllDeparturesCached(
+        stopId: String,
+        trips: [Trip]
+    ) throws -> Bool {
+        let departureRequests = getDepartureRequests(stopId: stopId, trips: trips)
+        return try departureRequests.allSatisfy {
+            try NetworkManager.shared.getCachedDepartures(for: $0) != nil
+        }
+    }
+    
+    private func checkIfRequesting(
+        stopId: String,
+        trips: [Trip]
+    ) throws -> Bool {
+        let departureRequests = getDepartureRequests(stopId: stopId, trips: trips)
+        let activeRequest = try departureRequests.first(where: {
+            try NetworkManager.shared.checkIfActive($0)
+        })
+        return activeRequest != nil
     }
     
     private func getCachedDepartures(

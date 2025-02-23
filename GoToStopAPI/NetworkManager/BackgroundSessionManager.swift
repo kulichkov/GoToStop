@@ -78,6 +78,13 @@ final class BackgroundSessionManager: NSObject {
             .first { $0.deletingPathExtension().lastPathComponent == filename }
             .map { try fileManager.removeItem(at: $0) }
     }
+    
+    public func checkIfActive(
+        _ request: URLRequest
+    ) throws -> Bool {
+        let hashString = try request.hashString()
+        return Settings.shared.backgroundRequests.contains(hashString)
+    }
 }
 
 extension BackgroundSessionManager: URLSessionDownloadDelegate {

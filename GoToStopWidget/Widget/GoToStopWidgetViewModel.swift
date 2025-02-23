@@ -51,35 +51,25 @@ final class GoToStopWidgetViewModel: ObservableObject {
             throw GoToStopWidgetError.noTripsSet
         }
         
-        guard
-            let scheduledItems = try getTrips(
-                stopId: stopLocation.locationId,
-                trips: trips
-            )
-        else {
-            logger?.info("Not all requested items available yet. Waiting...")
-            #warning("Implement loading mode")
-            return [.init(
-                date: .now,
-                data: .init(
-                    updateTime: .now,
-                    stop: stopLocation.name,
-                    items: []
-                ),
-                stop: stopLocation,
-                trips: trips
-            )]
-        }
+        logger?.info("Not all requested items available yet. Waiting...")
+        return makeEmptyEntries(stopLocation: stopLocation, trips: trips)
         
-        logger?.info("Successfully got scheduled items: \(scheduledItems)")
-        logger?.info("Stop name: \(stopLocation.name)")
-        
-        return makeWidgetEntries(
-            stopName: stopLocation.name,
-            items: scheduledItems,
+    }
+    
+    private func makeEmptyEntries(
+        stopLocation: StopLocation,
+        trips: [Trip]
+    ) -> [GoToStopWidgetEntry] {
+        [.init(
+            date: .now,
+            data: .init(
+                updateTime: .now,
+                stop: stopLocation.name,
+                items: []
+            ),
             stop: stopLocation,
             trips: trips
-        )
+        )]
     }
     
     private func makeWidgetEntries(
@@ -153,8 +143,11 @@ final class GoToStopWidgetViewModel: ObservableObject {
         return updateDates
     }
     
-    private func getTrips(stopId: String, trips: [Trip]) throws -> [ScheduledTrip]? {
-        let departureRequests = trips.map {
+    private func getDepartureRequests(
+        stopId: String,
+        trips: [Trip]
+    ) -> [DepartureBoardRequest] {
+        trips.map {
             DepartureBoardRequest(
                 stopId: stopId,
                 lineId: $0.lineId,
@@ -162,30 +155,47 @@ final class GoToStopWidgetViewModel: ObservableObject {
                 duration: 60 * 16
             )
         }
-        
-        let fetchedDepartures = try departureRequests
-            .compactMap { try NetworkManager.shared.requestDepartures($0) }
+    }
     
-        guard departureRequests.count == fetchedDepartures.count else {
-            return nil
+    private func requestDepartures(
+        stopId: String,
+        trips: [Trip]
+    ) throws {
+        let requests = getDepartureRequests(stopId: stopId, trips: trips)
+        for request in requests {
+            try NetworkManager.shared.requestDepartures(request)
         }
-        
-        let trips = fetchedDepartures
+    }
+    
+    private func getCachedDepartures(
+        stopId: String,
+        trips: [Trip]
+    ) throws -> [[Departure]] {
+        let departureRequests = getDepartureRequests(stopId: stopId, trips: trips)
+        let cachedDepartures = try departureRequests.compactMap {
+            try NetworkManager.shared.getCachedDepartures(for: $0)
+        }
+        return cachedDepartures
+    }
+    
+    private func removeCachedDepartures(
+        stopId: String,
+        trips: [Trip]
+    ) throws {
+        let departureRequests = getDepartureRequests(stopId: stopId, trips: trips)
+        for request in departureRequests {
+            try NetworkManager.shared.removeCachedDepartures(for: request)
+        }
+    }
+    
+    private func mapDeparturesToScheduledTrips(
+        _ departures: [[Departure]]
+    ) -> [ScheduledTrip] {
+        departures
             .flatMap { $0 }
             .sorted(using: SortDescriptor(\.scheduledTime))
             .prefix(100)
             .compactMap(ScheduledTrip.init)
-        
-        // Removing saved departures
-        for request in departureRequests {
-            do {
-                try NetworkManager.shared.removeCachedDepartures(for: request)
-            } catch {
-                logger?.error("Failed to remove cached departures for \(request.stopId), \(String(describing: request.lineId)), \(String(describing: request.directionId)) : \(error)")
-            }
-        }
-        
-        return trips
     }
     
     private func getLogsIfNeeded() {

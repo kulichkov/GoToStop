@@ -51,11 +51,26 @@ final class GoToStopWidgetViewModel: ObservableObject {
             throw GoToStopWidgetError.noTripsSet
         }
         
-        logger?.info("Get scheduled items")
-        let scheduledItems = try getTrips(
-            stopId: stopLocation.locationId,
-            trips: trips
-        )
+        guard
+            let scheduledItems = try getTrips(
+                stopId: stopLocation.locationId,
+                trips: trips
+            )
+        else {
+            logger?.info("Not all requested items available yet. Waiting...")
+            #warning("Implement loading mode")
+            return [.init(
+                date: .now,
+                data: .init(
+                    updateTime: .now,
+                    stop: stopLocation.name,
+                    items: []
+                ),
+                stop: stopLocation,
+                trips: trips
+            )]
+        }
+        
         logger?.info("Successfully got scheduled items: \(scheduledItems)")
         logger?.info("Stop name: \(stopLocation.name)")
         
@@ -138,7 +153,7 @@ final class GoToStopWidgetViewModel: ObservableObject {
         return updateDates
     }
     
-    private func getTrips(stopId: String, trips: [Trip]) throws -> [ScheduledTrip] {
+    private func getTrips(stopId: String, trips: [Trip]) throws -> [ScheduledTrip]? {
         let departureRequests = trips.map {
             DepartureBoardRequest(
                 stopId: stopId,
@@ -152,7 +167,7 @@ final class GoToStopWidgetViewModel: ObservableObject {
             .compactMap { try NetworkManager.shared.requestDepartures($0) }
     
         guard departureRequests.count == fetchedDepartures.count else {
-            return []
+            return nil
         }
         
         let trips = fetchedDepartures

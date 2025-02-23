@@ -193,8 +193,7 @@ struct GoToStopWidgetEntryView: View {
     GoToStopWidgetEntry(
         date: .now,
         data: .preview2,
-        stop: .mock(),
-        trips: [.mock()]
+        widgetUrl: URL(string: UUID().uuidString)
     )
 }
 
@@ -204,8 +203,7 @@ struct GoToStopWidgetEntryView: View {
     GoToStopWidgetEntry(
         date: .now,
         data: .preview2,
-        stop: .mock(),
-        trips: [.mock()]
+        widgetUrl: URL(string: UUID().uuidString)
     )
 }
 
@@ -215,8 +213,7 @@ struct GoToStopWidgetEntryView: View {
     GoToStopWidgetEntry(
         date: .now,
         data: .preview2,
-        stop: .mock(),
-        trips: [.mock()]
+        widgetUrl: URL(string: UUID().uuidString)
     )
 }
 
@@ -226,8 +223,7 @@ struct GoToStopWidgetEntryView: View {
     GoToStopWidgetEntry(
         date: .now,
         data: .init(updateTime: .now, stop: "Kuhwaldstraße", items: []),
-        stop: .mock(),
-        trips: [.mock()]
+        widgetUrl: URL(string: UUID().uuidString)
     )
 }
 

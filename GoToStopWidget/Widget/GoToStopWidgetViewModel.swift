@@ -67,8 +67,7 @@ final class GoToStopWidgetViewModel: ObservableObject {
                 stop: stopLocation.name,
                 items: []
             ),
-            stop: stopLocation,
-            trips: trips
+            widgetUrl: makeWidgetUrl(stop: stopLocation, trips: trips)
         )]
     }
     
@@ -103,9 +102,7 @@ final class GoToStopWidgetViewModel: ObservableObject {
                     updateTime: .now,
                     stop: stopName,
                     items: items
-                ),
-                stop: stop,
-                trips: trips
+                )
             )
             
             entries.append(entry)
@@ -114,6 +111,27 @@ final class GoToStopWidgetViewModel: ObservableObject {
         logger?.info("Entries made: \(entries)")
         
         return entries
+    }
+    
+    private func makeWidgetUrl(stop: StopLocation?, trips: [Trip]) -> URL? {
+        guard let stop, !trips.isEmpty else {
+            return nil
+        }
+        
+        var components = URLComponents()
+        components.scheme = "gotostop"
+        components.host = "widget"
+        
+        let stopQueryItem = URLQueryItem(name: "stop", value: stop.id)
+        
+        let tripsQueryItems = trips.map {
+            URLQueryItem(name: "trip", value: $0.id)
+        }
+        let optionalItems = [stopQueryItem] + tripsQueryItems
+        
+        components.queryItems = optionalItems.compactMap { $0 }
+
+        return components.url
     }
     
     private func makeUpdateDates() -> [Date] {

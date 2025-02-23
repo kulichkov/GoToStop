@@ -17,13 +17,13 @@ struct GoToStopWidget: Widget {
             kind: kind,
             intent: GoToStopIntent.self,
             provider: GoToStopWidgetProvider()) { entry in
-                if entry.stop == nil || entry.trips.isEmpty {
+                if entry.widgetUrl == nil {
                     GoToStopWidgetUsageView()
                         .containerBackground(.fill.tertiary, for: .widget)
                 } else {
                     GoToStopWidgetEntryView(entry: entry)
                         .containerBackground(.fill.tertiary, for: .widget)
-                        .widgetURL(entry.makeWidgetUrl())
+                        .widgetURL(entry.widgetUrl)
                 }
             }
             .supportedFamilies([
@@ -46,7 +46,6 @@ struct GoToStopWidget: Widget {
     GoToStopWidgetEntry(
         date: .now,
         data: .preview2,
-        stop: .mock(),
-        trips: [.mock()]
+        widgetUrl: URL(string: UUID().uuidString)
     )
 }

@@ -15,8 +15,7 @@ struct GoToStopWidgetProvider: AppIntentTimelineProvider {
         GoToStopWidgetEntry(
             date: .now,
             data: .preview2,
-            stop: .mock(),
-            trips: [.mock()]
+            widgetUrl: URL(string: UUID().uuidString)
         )
     }
     
@@ -43,8 +42,7 @@ struct GoToStopWidgetProvider: AppIntentTimelineProvider {
         .init(
             date: .now,
             data: .preview2,
-            stop: .mock(),
-            trips: [.mock()]
+            widgetUrl: URL(string: UUID().uuidString)
         )
     }
 }

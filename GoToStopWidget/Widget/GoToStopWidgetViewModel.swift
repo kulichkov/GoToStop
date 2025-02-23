@@ -30,7 +30,7 @@ final class GoToStopWidgetViewModel: ObservableObject {
     
     init() {
         CLLocationManager().requestWhenInUseAuthorization()
-        NetworkManager.shared.someTaskFinished
+        NetworkManager.shared.backgroundRequestFinished
             .sink { _ in WidgetCenter.shared.reloadAllTimelines() }
             .store(in: &bindings)
     }

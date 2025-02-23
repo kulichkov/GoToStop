@@ -14,7 +14,7 @@ enum BackgroundSessionManagerError: Error {
 
 final class BackgroundSessionManager: NSObject {
     public var backgroundSessionCompletion: (() -> Void)?
-    public let someTaskFinished = PassthroughSubject<Void, Never>()
+    public let requestFinished = PassthroughSubject<String, Never>()
     public let backgroundUrlSessionIdentifier: String = "kulichkov.GoToStop.BackgroundSession"
     private lazy var backgroundUrlSession: URLSession = {
         URLSession(
@@ -43,7 +43,7 @@ final class BackgroundSessionManager: NSObject {
             let jsonFile = temporaryDirectory.appendingPathComponent("\(jsonName).\(task.taskIdentifier)")
             logger?.info("Renaming \(tempFile) to \(jsonFile)")
             try FileManager.default.moveItem(at: tempFile, to: jsonFile)
-            someTaskFinished.send(())
+            requestFinished.send(jsonName)
         } catch {
             logger?.error("Error handling completed data task \(task): \(error)")
         }

@@ -17,10 +17,8 @@ public enum NetworkManagerError: Error {
 final public class NetworkManager {
     public static let shared = NetworkManager()
     
-    public var backgroundRequestFinished: AnyPublisher<Void, Never> {
-        backgroundSessionManager.requestFinished
-            .map { _ in () }
-            .eraseToAnyPublisher()
+    public var cachedFileReady: AnyPublisher<String, Never> {
+        backgroundSessionManager.cachedFileReady.eraseToAnyPublisher()
     }
     
     public let apiBearer: String? = {

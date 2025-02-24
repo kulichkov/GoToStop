@@ -37,6 +37,22 @@ struct GoToStopWidgetProviderHelper {
         
         return (stopLocation.locationId + tripsString).sha256
     }
+    private var widgetUrl: URL? {
+        var components = URLComponents()
+        components.scheme = "gotostop"
+        components.host = "widget"
+        
+        let stopQueryItem = URLQueryItem(name: "stop", value: stopLocation.id)
+        
+        let tripsQueryItems = trips.map {
+            URLQueryItem(name: "trip", value: $0.id)
+        }
+        let optionalItems = [stopQueryItem] + tripsQueryItems
+        
+        components.queryItems = optionalItems.compactMap { $0 }
+
+        return components.url
+    }
     
     init(
         stopLocation: StopLocation,
@@ -45,44 +61,20 @@ struct GoToStopWidgetProviderHelper {
         self.stopLocation = stopLocation
         self.trips = trips
         CLLocationManager().requestWhenInUseAuthorization()
-        NetworkManager.shared.cachedFileReady
-            .throttle(for: .seconds(1), scheduler: RunLoop.main, latest: true)
-            .sink { _ in WidgetCenter.shared.reloadAllTimelines() }
-            .store(in: &bindings)
+//        NetworkManager.shared.cachedFileReady
+//            .throttle(for: .seconds(1), scheduler: RunLoop.main, latest: true)
+//            .sink { _ in WidgetCenter.shared.reloadAllTimelines() }
+//            .store(in: &bindings)
     }
     
     func getWidgetEntries() throws -> [GoToStopWidgetEntry] {
         Task { getLogsIfNeeded() }
         
         // return empty
-        return makeEmptyEntries(stopLocation: stopLocation, trips: trips)
-        
-        let allCacheIsReady = try checkIfAllDeparturesCached(stopId: stopLocation.locationId, trips: trips)
-        if allCacheIsReady {
-            logger?.info("All requested items available. Returning...")
-            let departures = try getCachedDepartures(stopId: stopLocation.locationId, trips: trips)
-            let scheduledTrips = mapDeparturesToScheduledTrips(departures)
-            return makeWidgetEntries(
-                stopName: stopLocation.name,
-                items: scheduledTrips,
-                stop: stopLocation,
-                trips: trips
-            )
-        } else {
-            let requestInProgress = try checkIfRequesting(stopId: stopLocation.locationId, trips: trips)
-            if !requestInProgress {
-                logger?.info("Requesting trips...")
-                try requestDepartures(stopId: stopLocation.locationId, trips: trips)
-            }
-            logger?.info("Not all requested items available yet. Waiting...")
-            return makeEmptyEntries(stopLocation: stopLocation, trips: trips)
-        }
+        return makeEmptyEntries()
     }
     
-    private func makeEmptyEntries(
-        stopLocation: StopLocation,
-        trips: [Trip]
-    ) -> [GoToStopWidgetEntry] {
+    private func makeEmptyEntries() -> [GoToStopWidgetEntry] {
         [.init(
             date: .now,
             data: .init(
@@ -90,17 +82,14 @@ struct GoToStopWidgetProviderHelper {
                 stop: stopLocation.name,
                 items: []
             ),
-            widgetUrl: makeWidgetUrl(stop: stopLocation, trips: trips)
+            widgetUrl: widgetUrl
         )]
     }
     
     private func makeWidgetEntries(
-        stopName: String?,
-        items scheduledTrips: [ScheduledTrip],
-        stop: StopLocation?,
-        trips: [Trip]
+        items scheduledTrips: [ScheduledTrip]
     ) -> [GoToStopWidgetEntry] {
-        logger?.info("Start making widget entries for stopId: \(String(describing: String(describing: stop?.locationId))), scheduledTrips: \(scheduledTrips), trips: \(trips)")
+        logger?.info("Start making widget entries for stopId: \(stopLocation.locationId), scheduledTrips: \(scheduledTrips), trips: \(trips)")
         
         // Make the end date be an hour later
         let endDate = Date.now.addingTimeInterval(60 * 60)
@@ -123,10 +112,10 @@ struct GoToStopWidgetProviderHelper {
                 date: timeToUpdate,
                 data: .init(
                     updateTime: .now,
-                    stop: stopName,
+                    stop: stopLocation.name,
                     items: items
                 ),
-                widgetUrl: makeWidgetUrl(stop: stop, trips: trips)
+                widgetUrl: widgetUrl
             )
             
             entries.append(entry)
@@ -135,27 +124,6 @@ struct GoToStopWidgetProviderHelper {
         logger?.info("Entries made: \(entries)")
         
         return entries
-    }
-    
-    private func makeWidgetUrl(stop: StopLocation?, trips: [Trip]) -> URL? {
-        guard let stop, !trips.isEmpty else {
-            return nil
-        }
-        
-        var components = URLComponents()
-        components.scheme = "gotostop"
-        components.host = "widget"
-        
-        let stopQueryItem = URLQueryItem(name: "stop", value: stop.id)
-        
-        let tripsQueryItems = trips.map {
-            URLQueryItem(name: "trip", value: $0.id)
-        }
-        let optionalItems = [stopQueryItem] + tripsQueryItems
-        
-        components.queryItems = optionalItems.compactMap { $0 }
-
-        return components.url
     }
     
     private func makeUpdateDates() -> [Date] {
@@ -185,13 +153,10 @@ struct GoToStopWidgetProviderHelper {
         return updateDates
     }
     
-    private func getDepartureRequests(
-        stopId: String,
-        trips: [Trip]
-    ) -> [DepartureBoardRequest] {
+    private func getDepartureRequests() -> [DepartureBoardRequest] {
         trips.map {
             DepartureBoardRequest(
-                stopId: stopId,
+                stopId: stopLocation.locationId,
                 lineId: $0.lineId,
                 directionId: $0.directionId,
                 duration: 60 * 16
@@ -199,11 +164,8 @@ struct GoToStopWidgetProviderHelper {
         }
     }
     
-    private func requestDepartures(
-        stopId: String,
-        trips: [Trip]
-    ) throws {
-        let requests = getDepartureRequests(stopId: stopId, trips: trips)
+    private func requestDepartures() throws {
+        let requests = getDepartureRequests()
         for request in requests {
             try NetworkManager.shared.requestDepartures(request)
         }
@@ -213,28 +175,17 @@ struct GoToStopWidgetProviderHelper {
         stopId: String,
         trips: [Trip]
     ) throws -> Bool {
-        let departureRequests = getDepartureRequests(stopId: stopId, trips: trips)
+        let departureRequests = getDepartureRequests()
         return try departureRequests.allSatisfy {
             try NetworkManager.shared.getCachedDepartures(for: $0) != nil
         }
-    }
-    
-    private func checkIfRequesting(
-        stopId: String,
-        trips: [Trip]
-    ) throws -> Bool {
-        let departureRequests = getDepartureRequests(stopId: stopId, trips: trips)
-        let activeRequest = try departureRequests.first(where: {
-            try NetworkManager.shared.checkIfActive($0)
-        })
-        return activeRequest != nil
     }
     
     private func getCachedDepartures(
         stopId: String,
         trips: [Trip]
     ) throws -> [[Departure]] {
-        let departureRequests = getDepartureRequests(stopId: stopId, trips: trips)
+        let departureRequests = getDepartureRequests()
         let cachedDepartures = try departureRequests.compactMap {
             try NetworkManager.shared.getCachedDepartures(for: $0)
         }
@@ -245,7 +196,7 @@ struct GoToStopWidgetProviderHelper {
         stopId: String,
         trips: [Trip]
     ) throws {
-        let departureRequests = getDepartureRequests(stopId: stopId, trips: trips)
+        let departureRequests = getDepartureRequests()
         for request in departureRequests {
             try NetworkManager.shared.removeCachedDepartures(for: request)
         }

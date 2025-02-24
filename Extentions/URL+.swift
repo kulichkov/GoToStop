@@ -13,6 +13,14 @@ extension URL {
         FileManager.default
     }
     
+    var creationDate: Date? {
+        guard let resourceValues = try? resourceValues(forKeys: [.creationDateKey]) else {
+            logger?.error("Failed to get creation date for \(path)")
+            return nil
+        }
+        return resourceValues.creationDate
+    }
+    
     var fileExists: Bool {
         fileManager.fileExists(atPath: path)
     }

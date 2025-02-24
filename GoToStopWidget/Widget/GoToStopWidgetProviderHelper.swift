@@ -1,5 +1,5 @@
 //
-//  WidgetViewModel.swift
+//  GoToStopWidgetProviderHelper.swift
 //  GoToStop
 //
 //  Created by Mikhail Kulichkov on 14.12.24.
@@ -11,7 +11,7 @@ import CoreLocation
 import Combine
 import WidgetKit
 
-extension GoToStopWidgetViewModel {
+extension GoToStopWidgetProviderHelper {
     struct Constant {
         let secondsInMinute: TimeInterval = 60
         let uiUpdateTimeInterval: TimeInterval = 60
@@ -24,11 +24,18 @@ enum GoToStopWidgetError: Error {
     case noTripsSet
 }
 
-final class GoToStopWidgetViewModel: ObservableObject {
+struct GoToStopWidgetProviderHelper {
     private let constant = Constant()
+    private let stopLocation: StopLocation
+    private let trips: [Trip]
     private var bindings = Set<AnyCancellable>()
     
-    init() {
+    init(
+        stopLocation: StopLocation,
+        trips: [Trip]
+    ) {
+        self.stopLocation = stopLocation
+        self.trips = trips
         CLLocationManager().requestWhenInUseAuthorization()
         NetworkManager.shared.cachedFileReady
             .throttle(for: .seconds(1), scheduler: RunLoop.main, latest: true)
@@ -36,21 +43,11 @@ final class GoToStopWidgetViewModel: ObservableObject {
             .store(in: &bindings)
     }
     
-    func getWidgetEntries(
-        _ intent: GoToStopIntent
-    ) async throws -> [GoToStopWidgetEntry] {
+    func getWidgetEntries() throws -> [GoToStopWidgetEntry] {
         Task { getLogsIfNeeded() }
         
-        logger?.info("Start getting widget entries")
-        guard let stopLocation = intent.stopLocation else {
-            logger?.error("No stop set in the widget")
-            throw GoToStopWidgetError.noStopSet
-        }
-        
-        guard let trips = intent.trips else {
-            logger?.error("No trips set in the widget")
-            throw GoToStopWidgetError.noTripsSet
-        }
+        // return empty
+        return makeEmptyEntries(stopLocation: stopLocation, trips: trips)
         
         let allCacheIsReady = try checkIfAllDeparturesCached(stopId: stopLocation.locationId, trips: trips)
         if allCacheIsReady {

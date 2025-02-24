@@ -9,8 +9,6 @@ import WidgetKit
 import GoToStopAPI
 
 struct GoToStopWidgetProvider: AppIntentTimelineProvider {
-    private var viewModel = GoToStopWidgetViewModel()
-    
     func snapshot(for configuration: GoToStopIntent, in context: Context) async -> GoToStopWidgetEntry {
         GoToStopWidgetEntry(
             date: .now,
@@ -20,21 +18,28 @@ struct GoToStopWidgetProvider: AppIntentTimelineProvider {
     }
     
     func timeline(for configuration: GoToStopIntent, in context: Context) async -> Timeline<GoToStopWidgetEntry> {
+        guard
+            let stopLocation = configuration.stopLocation,
+            let trips = configuration.trips,
+            !trips.isEmpty
+        else {
+            return .usage
+        }
+        let widgetProviderHelper = GoToStopWidgetProviderHelper(
+            stopLocation: stopLocation,
+            trips: trips
+        )
+        
         do {
-            let widgetEntries = try await viewModel.getWidgetEntries(configuration)
-            
+            let widgetEntries = try widgetProviderHelper.getWidgetEntries()
             let tenMinutesLater = Date.now.addingTimeInterval(10 * 60)
-            
             return Timeline(
                 entries: widgetEntries,
                 policy: .after(tenMinutesLater)
             )
         } catch {
             debugPrint(#function, error, "Show widget usage")
-            return Timeline(
-                entries: [.init(date: .now, data: .init(updateTime: .now, stop: nil, items: []))],
-                policy: .never
-            )
+            return .usage
         }
     }
     
@@ -45,4 +50,11 @@ struct GoToStopWidgetProvider: AppIntentTimelineProvider {
             widgetUrl: URL(string: UUID().uuidString)
         )
     }
+}
+
+private extension Timeline<GoToStopWidgetEntry> {
+    static let usage = Timeline(
+        entries: [.init(date: .now, data: .preview, widgetUrl: nil)],
+        policy: .never
+    )
 }

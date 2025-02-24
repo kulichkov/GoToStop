@@ -29,6 +29,14 @@ struct GoToStopWidgetProviderHelper {
     private let stopLocation: StopLocation
     private let trips: [Trip]
     private var bindings = Set<AnyCancellable>()
+    private var widgetHash: String {
+        let tripsString = trips
+            .sorted(using: SortDescriptor(\.lineId))
+            .map { $0.lineId + $0.directionId }
+            .joined()
+        
+        return (stopLocation.locationId + tripsString).sha256
+    }
     
     init(
         stopLocation: StopLocation,

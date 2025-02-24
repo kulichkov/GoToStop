@@ -17,10 +17,6 @@ public enum NetworkManagerError: Error {
 final public class NetworkManager {
     public static let shared = NetworkManager()
     
-    public var cachedFileReady: AnyPublisher<String, Never> {
-        backgroundSessionManager.cachedFileReady.eraseToAnyPublisher()
-    }
-    
     public let apiBearer: String? = {
         let bearer = Bundle.main.infoDictionary?["API_BEARER"] as? String
         guard let bearer, !bearer.isEmpty else { return nil }
@@ -140,32 +136,29 @@ final public class NetworkManager {
     public func getCachedDepartures(
         for request: DepartureBoardRequest
     ) throws -> [Departure]? {
-        let urlComponents = prepareDepartureBoardUrlComponents(request)
-        let urlRequest = try prepareUrlRequest(urlComponents)
-        guard let response: DepartureBoardResponse = backgroundSessionManager.getResponseCache(for: urlRequest) else {
-            logger?.info("No cache found for \(urlRequest)")
+        guard
+            let hashString = prepareDepartureBoardUrlComponents(request)?.hashString
+        else {
+            logger?.info("No hash string found for \(String(describing: request))")
             return nil
         }
-        logger?.info("Cache found for \(urlRequest)")
-        return response.departures?
+        let response: DepartureBoardResponse? = try CacheFileManager.shared.getCachedData(named: hashString)
+        return response?.departures?
             .compactMap(Departure.init)
     }
     
-    public func checkIfActive(
-        _ request: DepartureBoardRequest
-    ) throws -> Bool {
-        let urlComponents = prepareDepartureBoardUrlComponents(request)
-        let urlRequest = try prepareUrlRequest(urlComponents)
-        return try backgroundSessionManager.checkIfActive(urlRequest)
-    }
     
     public func removeCachedDepartures(
         for request: DepartureBoardRequest
     ) throws {
-        let urlComponents = prepareDepartureBoardUrlComponents(request)
+        guard
+            let hashString = prepareDepartureBoardUrlComponents(request)?.hashString
+        else {
+            logger?.info("Failed to remove cache. No hash string found for \(String(describing: request))")
+            return
+        }
         logger?.info("Remove cache for \(String(describing: request))")
-        let urlRequest = try prepareUrlRequest(urlComponents)
-        try backgroundSessionManager.removeResponseCache(for: urlRequest)
+        try CacheFileManager.shared.clearCacheFile(named: hashString)
     }
     
     private func prepareDepartureBoardUrlComponents(_ request: DepartureBoardRequest) -> URLComponents? {

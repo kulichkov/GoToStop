@@ -38,7 +38,16 @@ class CacheFileManager {
         }
     }
     
-    func getCacheFile(named filename: String) throws -> Data? {
+    func renameCacheFile(named oldFilename: String, to newFilename: String) throws {
+        try serialQueue.sync {
+            let oldJsonFile = try cacheDirectoryURL().appendingPathComponent("\(oldFilename).json")
+            let newJsonFile = try cacheDirectoryURL().appendingPathComponent("\(newFilename).json")
+            try deleteFile(named: newFilename)
+            try fileManager.moveItem(at: oldJsonFile, to: newJsonFile)
+        }
+    }
+    
+    func getCachedData(named filename: String) throws -> Data? {
         try serialQueue.sync {
             let jsonFile = try cacheDirectoryURL().appendingPathComponent("\(filename).json")
             if fileManager.fileExists(atPath: jsonFile.path) {
@@ -48,6 +57,11 @@ class CacheFileManager {
                 return nil
             }
         }
+    }
+    
+    func getCachedData<T: Decodable>(named filename: String) throws -> T? {
+        try getCachedData(named: filename)
+            .map { try JSONDecoder().decode(T.self, from: $0) }
     }
     
     func getCacheDate(named filename: String) throws -> Date? {

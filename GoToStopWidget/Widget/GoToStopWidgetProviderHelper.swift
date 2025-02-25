@@ -63,7 +63,16 @@ struct GoToStopWidgetProviderHelper {
         CLLocationManager().requestWhenInUseAuthorization()
     }
     
-    func getWidgetEntries() throws -> [GoToStopWidgetEntry] {
+    func getWidgetEntries() async throws -> [GoToStopWidgetEntry] {
+        Task { getLogsIfNeeded() }
+        
+        let requests = getDepartureRequests()
+        let departures = try await NetworkManager.shared.getDepartures(requests)
+        let scheduledTrips = mapDeparturesToScheduledTrips(departures)
+        return makeWidgetEntries(items: scheduledTrips)
+    }
+    
+    func getWidgetEntriesRequesting() throws -> [GoToStopWidgetEntry] {
         Task { getLogsIfNeeded() }
         
         if Settings.shared.widgetsReadyToReload.contains(widgetHash) {
@@ -193,8 +202,7 @@ struct GoToStopWidgetProviderHelper {
             DepartureBoardRequest(
                 stopId: stopLocation.locationId,
                 lineId: $0.lineId,
-                directionId: $0.directionId,
-                duration: 60 * 16
+                directionId: $0.directionId
             )
         }
     }
@@ -245,7 +253,6 @@ struct GoToStopWidgetProviderHelper {
     ) -> [ScheduledTrip] {
         departures
             .sorted(using: SortDescriptor(\.time))
-            .prefix(100)
             .compactMap(ScheduledTrip.init)
     }
     

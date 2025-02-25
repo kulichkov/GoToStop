@@ -8,7 +8,12 @@
 import WidgetKit
 import GoToStopAPI
 
-struct GoToStopWidgetProvider: AppIntentTimelineProvider {
+final class GoToStopWidgetProvider: AppIntentTimelineProvider {
+    
+    static let shared: GoToStopWidgetProvider = .init()
+    
+    private init() {}
+    
     func snapshot(for configuration: GoToStopIntent, in context: Context) async -> GoToStopWidgetEntry {
         GoToStopWidgetEntry(
             date: .now,
@@ -31,7 +36,7 @@ struct GoToStopWidgetProvider: AppIntentTimelineProvider {
         )
         
         do {
-            let widgetEntries = try widgetProviderHelper.getWidgetEntries()
+            let widgetEntries = try await widgetProviderHelper.getWidgetEntries()
             let tenMinutesLater = Date.now.addingTimeInterval(10 * 60)
             return Timeline(
                 entries: widgetEntries,

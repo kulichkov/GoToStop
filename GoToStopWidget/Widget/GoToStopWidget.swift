@@ -16,7 +16,7 @@ struct GoToStopWidget: Widget {
         AppIntentConfiguration(
             kind: kind,
             intent: GoToStopIntent.self,
-            provider: GoToStopWidgetProvider()) { entry in
+            provider: GoToStopWidgetProvider.shared) { entry in
                 if entry.widgetUrl == nil {
                     GoToStopWidgetUsageView()
                         .containerBackground(.fill.tertiary, for: .widget)

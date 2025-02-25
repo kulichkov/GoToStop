@@ -32,6 +32,12 @@ final class BackgroundSessionManager: NSObject {
         task.resume()
         logger?.info("Background task for url request \(request) started: \(task)")
     }
+    
+    func getRunningRequests(_ requests: [URLRequest]) async -> [URLRequest] {
+        await backgroundUrlSession.allTasks
+            .compactMap(\.originalRequest)
+            .filter(requests.contains)
+    }
 
     private func saveCacheFile(from tempFile: URL, of task: URLSessionTask) {
         guard let urlRequestHashString = task.originalRequest?.hashString else {

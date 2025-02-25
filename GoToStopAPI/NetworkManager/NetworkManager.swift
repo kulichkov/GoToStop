@@ -147,6 +147,18 @@ final public class NetworkManager {
             .compactMap(Departure.init)
     }
     
+    public func checkIfDeparturesAreInProgress(
+        _ requests: [DepartureBoardRequest]
+    ) async -> Bool {
+        let urlRequests = requests
+            .map(prepareDepartureBoardUrlComponents)
+            .compactMap { try? prepareUrlRequest($0) }
+        
+        let requestsAreInProgress = await backgroundSessionManager.getRunningRequests(urlRequests).isEmpty
+        logger?.debug("Some requests from \(urlRequests) are in progress: \(requestsAreInProgress)")
+        
+        return requestsAreInProgress
+    }
     
     public func removeCachedDepartures(
         for request: DepartureBoardRequest

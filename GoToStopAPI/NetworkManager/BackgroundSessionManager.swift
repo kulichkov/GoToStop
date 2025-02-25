@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import WidgetKit
 
 enum BackgroundSessionManagerError: Error {
     case noRequestHashString(URLRequest)
@@ -26,6 +27,24 @@ final class BackgroundSessionManager: NSObject {
             delegateQueue: nil
         )
     }()
+    private var bindings = Set<AnyCancellable>()
+    private let requestFinishedSubject = PassthroughSubject<URLRequest, Never>()
+    public var requestFinished: AnyPublisher<URLRequest, Never> {
+        requestFinishedSubject.eraseToAnyPublisher()
+    }
+    
+    override init() {
+        super.init()
+        
+        requestFinished
+            .throttle(for: .seconds(2), scheduler: RunLoop.main, latest: true)
+            .sink { _ in
+                if !Settings.shared.activeWidgetRequests.isEmpty {
+                    WidgetCenter.shared.reloadAllTimelines()
+                }
+            }
+            .store(in: &bindings)
+    }
     
     func downloadData(with request: URLRequest) throws {
         let task = backgroundUrlSession.downloadTask(with: request)
@@ -46,7 +65,6 @@ final class BackgroundSessionManager: NSObject {
         }
     
         do {
-            logger?.info("Renaming \(tempFile) to \(urlRequestHashString)")
             try CacheFileManager.shared.saveCacheFile(named: urlRequestHashString, from: tempFile)
         } catch {
             logger?.error("Error handling completed data task \(task): \(error)")
@@ -58,6 +76,11 @@ extension BackgroundSessionManager: URLSessionDownloadDelegate {
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         logger?.debug("Session download task \(downloadTask) finished downloading to location: \(location)")
         saveCacheFile(from: location, of: downloadTask)
+        if let urlRequest = downloadTask.originalRequest {
+            requestFinishedSubject.send(urlRequest)
+        } else {
+            logger?.warning("No original request for download task: \(downloadTask)")
+        }
     }
     
     func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {

@@ -12,6 +12,7 @@ public class Settings {
         case shouldCollectWidgetLogs = "shouldCollectWidgetLogs"
         case widgetLogsUrl = "widgetLogsUrl"
         case activeWidgetRequests = "activeWidgetRequests"
+        case widgetsReadyToReload = "widgetsReadyToReload"
     }
     
     static public let container: UserDefaults = {
@@ -45,6 +46,9 @@ public class Settings {
     
     @Setting(key: .activeWidgetRequests, defaultValue: Set<String>([]))
     public var activeWidgetRequests: Set<String>
+    
+    @Setting(key: .widgetsReadyToReload, defaultValue: Set<String>([]))
+    public var widgetsReadyToReload: Set<String>
     
     private init() {}
 }

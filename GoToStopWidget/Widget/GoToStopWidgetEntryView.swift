@@ -10,6 +10,7 @@ import WidgetKit
 
 struct GoToStopWidgetEntryView: View {
     var entry: GoToStopWidgetProvider.Entry
+    var refreshIntent: RefreshIntent
     
     @Environment(\.widgetFamily) var widgetFamily: WidgetFamily
 
@@ -52,7 +53,7 @@ struct GoToStopWidgetEntryView: View {
                     .padding(.leading, 8)
             }
             Spacer()
-            Button(intent: RefreshIntent()) {
+            Button(intent: refreshIntent) {
                 HStack {
                     Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90")
                     if !isCompact {

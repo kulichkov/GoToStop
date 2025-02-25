@@ -43,8 +43,8 @@ public class Settings {
     @Setting(key: .widgetLogsUrl, defaultValue: nil)
     public var widgetLogsUrl: URL?
     
-    @Setting(key: .activeWidgetRequests, defaultValue: [])
-    public var activeWidgetRequests: [String]
+    @Setting(key: .activeWidgetRequests, defaultValue: Set<String>([]))
+    public var activeWidgetRequests: Set<String>
     
     private init() {}
 }

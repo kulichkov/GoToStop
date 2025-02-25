@@ -23,6 +23,11 @@ final public class NetworkManager {
         return bearer
     }()
     
+    public var backgroundRequestFinished: AnyPublisher<Void, Never> {
+        backgroundSessionManager.requestFinished
+            .map { _ in () }
+            .eraseToAnyPublisher()
+    }
     public var backgroundUrlSessionIdentifier: String {
         backgroundSessionManager.backgroundUrlSessionIdentifier
     }
@@ -154,8 +159,9 @@ final public class NetworkManager {
             .map(prepareDepartureBoardUrlComponents)
             .compactMap { try? prepareUrlRequest($0) }
         
-        let requestsAreInProgress = await backgroundSessionManager.getRunningRequests(urlRequests).isEmpty
-        logger?.debug("Some requests from \(urlRequests) are in progress: \(requestsAreInProgress)")
+        let requestsInProgress = await backgroundSessionManager.getRunningRequests(urlRequests)
+        let requestsAreInProgress = !requestsInProgress.isEmpty
+        logger?.debug("Some requests from \(urlRequests) are in progress: \(requestsInProgress)")
         
         return requestsAreInProgress
     }

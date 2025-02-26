@@ -10,7 +10,6 @@ import WidgetKit
 
 struct GoToStopWidgetEntryView: View {
     var entry: GoToStopWidgetProvider.Entry
-    var refreshIntent: RefreshIntent
     
     @Environment(\.widgetFamily) var widgetFamily: WidgetFamily
 
@@ -28,6 +27,12 @@ struct GoToStopWidgetEntryView: View {
         case .systemMedium: 2
         default: 6
         }
+    }
+    
+    private var refreshIntent: RefreshIntent {
+        let refreshIntent = RefreshIntent()
+        refreshIntent.widgetHash = entry.widgetHash
+        return refreshIntent
     }
     
     var body: some View {

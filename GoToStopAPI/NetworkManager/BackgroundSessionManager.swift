@@ -9,10 +9,6 @@ import Foundation
 import Combine
 import WidgetKit
 
-enum BackgroundSessionManagerError: Error {
-    case noRequestHashString(URLRequest)
-}
-
 final class BackgroundSessionManager: NSObject {
     public var backgroundSessionCompletion: (() -> Void)?
     public let backgroundUrlSessionIdentifier: String = "kulichkov.GoToStop.BackgroundSession"

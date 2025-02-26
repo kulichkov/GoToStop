@@ -8,6 +8,14 @@
 import AppIntents
 import Foundation
 
+struct RefreshIntent: AppIntent {
+    static var title: LocalizedStringResource = "Refresh"
+        
+    func perform() async throws -> some IntentResult {
+        return .result()
+    }
+}
+
 struct GoToStopIntent: WidgetConfigurationIntent {
     static var title: LocalizedStringResource = "Select trips parameters"
     static var description = IntentDescription("Selects parameters to display trips")
@@ -17,12 +25,4 @@ struct GoToStopIntent: WidgetConfigurationIntent {
     
     @Parameter(title: "Trips", size: 3)
     var trips: [Trip]?
-}
-
-struct RefreshIntent: AppIntent {
-    static var title: LocalizedStringResource = "Refresh"
-        
-    func perform() async throws -> some IntentResult {
-        return .result()
-    }
 }

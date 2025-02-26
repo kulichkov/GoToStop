@@ -43,9 +43,17 @@ final class BackgroundSessionManager: NSObject {
     }
     
     func downloadData(with request: URLRequest) throws {
-        let task = backgroundUrlSession.downloadTask(with: request)
-        task.resume()
-        logger?.info("Background task for url request \(request) started: \(task)")
+        Task {
+            let urlRequests = await backgroundUrlSession.allTasks.compactMap(\.originalRequest)
+            let runningRequest = urlRequests.first { $0.hashString == request.hashString }
+            if let runningRequest {
+                logger?.debug("Request \(runningRequest) is already running")
+            } else {
+                let task = backgroundUrlSession.downloadTask(with: request)
+                task.resume()
+                logger?.info("Background task for url request \(request) started: \(task)")
+            }
+        }
     }
     
     func getRunningRequests(_ requests: [URLRequest]) async -> [URLRequest] {

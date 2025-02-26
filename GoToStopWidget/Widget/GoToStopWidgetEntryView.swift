@@ -29,12 +29,6 @@ struct GoToStopWidgetEntryView: View {
         }
     }
     
-    private var refreshIntent: RefreshIntent {
-        let refreshIntent = RefreshIntent()
-        refreshIntent.widgetHash = entry.widgetHash
-        return refreshIntent
-    }
-    
     var body: some View {
         GeometryReader { geometry in
             VStack {
@@ -58,7 +52,7 @@ struct GoToStopWidgetEntryView: View {
                     .padding(.leading, 8)
             }
             Spacer()
-            Button(intent: refreshIntent) {
+            Button(intent: RefreshIntent()) {
                 HStack {
                     Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90")
                     if !isCompact {

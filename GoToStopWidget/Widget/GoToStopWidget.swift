@@ -16,14 +16,14 @@ struct GoToStopWidget: Widget {
         AppIntentConfiguration(
             kind: kind,
             intent: GoToStopIntent.self,
-            provider: GoToStopWidgetProvider()) { entry in
-                if entry.stop == nil || entry.trips.isEmpty {
+            provider: GoToStopWidgetProvider.shared) { entry in
+                if entry.widgetUrl == nil {
                     GoToStopWidgetUsageView()
                         .containerBackground(.fill.tertiary, for: .widget)
                 } else {
                     GoToStopWidgetEntryView(entry: entry)
                         .containerBackground(.fill.tertiary, for: .widget)
-                        .widgetURL(entry.makeWidgetUrl())
+                        .widgetURL(entry.widgetUrl)
                 }
             }
             .supportedFamilies([
@@ -31,6 +31,12 @@ struct GoToStopWidget: Widget {
                 .systemMedium,
                 .systemLarge,
             ])
+            .onBackgroundURLSessionEvents(
+                matching: NetworkManager.shared.backgroundUrlSessionIdentifier
+            ) { identifier, completion in
+                logger?.info("Some background event happened for session \(identifier)")
+                NetworkManager.shared.setBackgroundSessionCompletion(completion) 
+            }
     }
 }
 
@@ -40,7 +46,6 @@ struct GoToStopWidget: Widget {
     GoToStopWidgetEntry(
         date: .now,
         data: .preview2,
-        stop: .mock(),
-        trips: [.mock()]
+        widgetUrl: URL(string: UUID().uuidString)
     )
 }

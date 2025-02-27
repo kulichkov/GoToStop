@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 public enum NetworkManagerError: Error {
     case wrongUrl
@@ -22,9 +23,24 @@ final public class NetworkManager {
         return bearer
     }()
     
+    public var backgroundRequestFinished: AnyPublisher<Void, Never> {
+        backgroundSessionManager.requestFinished
+            .map { _ in () }
+            .eraseToAnyPublisher()
+    }
+    public var backgroundUrlSessionIdentifier: String {
+        backgroundSessionManager.backgroundUrlSessionIdentifier
+    }
+    private lazy var foregroundUrlSession = URLSession.shared
+    private lazy var backgroundSessionManager = BackgroundSessionManager()
+    
     private let baseUrl: String = "https://www.rmv.de/hapi"
     
     private init() {}
+    
+    public func setBackgroundSessionCompletion(_ completion: (() -> Void)?) -> Void {
+        backgroundSessionManager.backgroundSessionCompletion = completion
+    }
     
     /// Can be used to perform a pattern matching of a user input and to retrieve
     /// a list of possible matches in the journey planner database. Possible matches might be stops/stations.
@@ -41,7 +57,9 @@ final public class NetworkManager {
 
         var urlComponents = URLComponents(string: baseUrl + "/location.name")
         urlComponents?.queryItems = queryItems
-        let stopsAndCoordinates: LocationNameResponse = try await sendDataRequest(urlComponents)
+        
+        let urlRequest = try prepareUrlRequest(urlComponents)
+        let stopsAndCoordinates: LocationNameResponse = try await getData(with: urlRequest)
         return stopsAndCoordinates.locations
             .compactMap { location in
                 switch location {
@@ -87,28 +105,9 @@ final public class NetworkManager {
     public func getDepartures(
         _ request: DepartureBoardRequest
     ) async throws -> [Departure] {
-        var queryItems: [URLQueryItem] = []
-        queryItems.append(URLQueryItem(name: "id", value: request.stopId))
-        
-        if let directionId = request.directionId {
-            queryItems.append(URLQueryItem(name: "direction", value: directionId))
-        }
-        if let lineId = request.lineId {
-            queryItems.append(URLQueryItem(name: "lines", value: lineId))
-        }
-        if let date = request.date {
-            queryItems.append(URLQueryItem(name: "date", value: date))
-        }
-        if let time = request.time {
-            queryItems.append(URLQueryItem(name: "time", value: time))
-        }
-        if let duration = request.duration {
-            queryItems.append(URLQueryItem(name: "duration", value: "\(duration)"))
-        }
-
-        var urlComponents = URLComponents(string: baseUrl + "/departureBoard")
-        urlComponents?.queryItems = queryItems
-        let departureBoard: DepartureBoardResponse = try await sendDataRequest(urlComponents)
+        let urlComponents = prepareDepartureBoardUrlComponents(request)
+        let urlRequest = try prepareUrlRequest(urlComponents)
+        let departureBoard: DepartureBoardResponse = try await getData(with: urlRequest)
         return departureBoard.departures?.compactMap(Departure.init) ?? []
     }
 
@@ -130,11 +129,85 @@ final public class NetworkManager {
             return collectedDepartures
         }
     }
+    
+    public func requestDepartures(
+        _ request: DepartureBoardRequest
+    ) throws {
+        let urlComponents = prepareDepartureBoardUrlComponents(request)
+        let urlRequest = try prepareUrlRequest(urlComponents)
+        try backgroundSessionManager.downloadData(with: urlRequest)
+    }
+    
+    public func getCachedDepartures(
+        for request: DepartureBoardRequest
+    ) throws -> [Departure]? {
+        guard
+            let hashString = prepareDepartureBoardUrlComponents(request)?.hashString
+        else {
+            logger?.info("No hash string found for \(String(describing: request))")
+            return nil
+        }
+        let response: DepartureBoardResponse? = try CacheFileManager.shared.getCachedData(named: hashString)
+        return response?.departures?
+            .compactMap(Departure.init)
+    }
+    
+    public func checkIfDeparturesAreInProgress(
+        _ requests: [DepartureBoardRequest]
+    ) async -> Bool {
+        let urlRequests = requests
+            .map(prepareDepartureBoardUrlComponents)
+            .compactMap { try? prepareUrlRequest($0) }
+        
+        let requestsInProgress = await backgroundSessionManager.getRunningRequests(urlRequests)
+        let requestsAreInProgress = !requestsInProgress.isEmpty
+        logger?.debug("Some requests from \(urlRequests) are in progress: \(requestsInProgress)")
+        
+        return requestsAreInProgress
+    }
+    
+    public func removeCachedDepartures(
+        for request: DepartureBoardRequest
+    ) throws {
+        guard
+            let hashString = prepareDepartureBoardUrlComponents(request)?.hashString
+        else {
+            logger?.info("Failed to remove cache. No hash string found for \(String(describing: request))")
+            return
+        }
+        logger?.info("Remove cache for \(String(describing: request))")
+        try CacheFileManager.shared.clearCacheFile(named: hashString)
+    }
+    
+    private func prepareDepartureBoardUrlComponents(_ request: DepartureBoardRequest) -> URLComponents? {
+        var queryItems: [URLQueryItem] = []
+        queryItems.append(URLQueryItem(name: "id", value: request.stopId))
+        
+        if let directionId = request.directionId {
+            queryItems.append(URLQueryItem(name: "direction", value: directionId))
+        }
+        if let lineId = request.lineId {
+            queryItems.append(URLQueryItem(name: "lines", value: lineId))
+        }
+        if let date = request.date {
+            queryItems.append(URLQueryItem(name: "date", value: date))
+        }
+        if let time = request.time {
+            queryItems.append(URLQueryItem(name: "time", value: time))
+        }
+        if let duration = request.duration {
+            queryItems.append(URLQueryItem(name: "duration", value: "\(duration)"))
+        }
+        
+        var urlComponents = URLComponents(string: baseUrl + "/departureBoard")
+        urlComponents?.queryItems = queryItems
+        
+        return urlComponents
+    }
 }
 
-private extension NetworkManager {
-    
-    func sendDataRequest<T: Decodable>(_ urlComponents: URLComponents?) async throws -> T {
+extension NetworkManager {
+    private func prepareUrlRequest(_ urlComponents: URLComponents?) throws -> URLRequest {
         guard let apiBearer else { throw NetworkManagerError.noApiBearer }
         guard let url = urlComponents?.url else { throw NetworkManagerError.wrongUrl }
         
@@ -148,12 +221,15 @@ private extension NetworkManager {
 
         request.addValue(apiKeyValue, forHTTPHeaderField: apiKeyField)
         request.addValue(acceptValue, forHTTPHeaderField: acceptField)
-
-        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        return request
+    }
+    
+    private func getData<T: Decodable>(with request: URLRequest) async throws -> T {
+        let (data, response) = try await foregroundUrlSession.data(for: request)
         logger?.info("Network response: \(response)")
         logger?.info("Response data: \(String(data: data, encoding: .utf8) ?? "No data")")
         
         return try JSONDecoder().decode(T.self, from: data)
     }
-    
 }

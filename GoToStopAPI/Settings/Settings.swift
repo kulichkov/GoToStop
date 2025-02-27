@@ -7,10 +7,25 @@
 
 import Foundation
 
+public struct WidgetInfo: Hashable, Codable {
+    public let hashString: String
+    public let lastReloadDate: Date
+    public init(
+        hashString: String,
+        lastReloadDate: Date
+    ) {
+        self.hashString = hashString
+        self.lastReloadDate = lastReloadDate
+    }
+}
+
 public class Settings {
     public enum Key: String {
         case shouldCollectWidgetLogs = "shouldCollectWidgetLogs"
         case widgetLogsUrl = "widgetLogsUrl"
+        case activeWidgetRequests = "activeWidgetRequests"
+        case widgetsReadyToReload = "widgetsReadyToReload"
+        case widgetInfos = "widgetInfos"
     }
     
     static public let container: UserDefaults = {
@@ -41,6 +56,15 @@ public class Settings {
     
     @Setting(key: .widgetLogsUrl, defaultValue: nil)
     public var widgetLogsUrl: URL?
+    
+    @Setting(key: .activeWidgetRequests, defaultValue: Set<String>([]))
+    public var activeWidgetRequests: Set<String>
+    
+    @Setting(key: .widgetsReadyToReload, defaultValue: Set<String>([]))
+    public var widgetsReadyToReload: Set<String>
+    
+    @Setting(key: .widgetInfos, defaultValue: Set<WidgetInfo>([]))
+    public var widgetInfos: Set<WidgetInfo>
     
     private init() {}
 }

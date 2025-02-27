@@ -18,6 +18,10 @@ public struct Departure {
     public let direction: String
     public let directionId: String
     public let messages: [Message]
+    
+    public var time: Date? {
+        realTime ?? scheduledTime
+    }
 }
 
 public struct Message {

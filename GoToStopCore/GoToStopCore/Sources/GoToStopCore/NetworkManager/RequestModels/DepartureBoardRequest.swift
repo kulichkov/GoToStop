@@ -5,7 +5,7 @@
 //  Created by Mikhail Kulichkov on 02.02.25.
 //
 
-public struct DepartureBoardRequest {
+public struct DepartureBoardRequest: Sendable {
     public let stopId: String
     
     public let lineId: String?

@@ -5,7 +5,9 @@
 //  Created by Mikhail Kulichkov on 06.01.25.
 //
 
-public struct Departure {
+import Foundation
+
+public struct Departure: Sendable {
     public let name: String
     public let stop: String
     public let stopId: String
@@ -24,7 +26,7 @@ public struct Departure {
     }
 }
 
-public struct Message {
+public struct Message: Sendable {
     public let isActive: Bool
     public let header: String
     public let text: String

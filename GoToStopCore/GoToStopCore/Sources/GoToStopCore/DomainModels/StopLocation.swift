@@ -7,7 +7,7 @@
 
 import CoreLocation
 
-public struct StopLocation: Codable {
+public struct StopLocation: Codable, Sendable {
     public let locationId: String
     public let name: String
     public let latitude: Double?
@@ -50,7 +50,7 @@ extension StopLocation {
     }
 }
 
-extension [GoToStopAPI.StopLocation] {
+extension [StopLocation] {
     public func sortedByDistance(from location: CLLocation?) -> Self {
         guard let location else { return self }
         return sorted { lhs, rhs in

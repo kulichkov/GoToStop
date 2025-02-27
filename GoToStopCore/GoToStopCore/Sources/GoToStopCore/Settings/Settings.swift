@@ -28,7 +28,7 @@ public class Settings {
         case widgetInfos = "widgetInfos"
     }
     
-    static public let container: UserDefaults = {
+    static nonisolated(unsafe) public let container: UserDefaults = {
         UserDefaults(suiteName: Settings.suiteName) ?? .standard
     }()
     
@@ -48,7 +48,7 @@ public class Settings {
         }
     }
     
-    public static let shared = Settings()
+    nonisolated(unsafe) public static let shared = Settings()
     public static let suiteName = "group.kulichkov.GoToStop"
         
     @Setting(key: .shouldCollectWidgetLogs, defaultValue: false)
@@ -77,7 +77,6 @@ extension UserDefaults {
         do {
             return try JSONDecoder().decode(T.self, from: data)
         } catch {
-            logger?.error("\(error)")
             return nil
         }
     }
@@ -87,11 +86,7 @@ extension UserDefaults {
             set(nil, forKey: key)
             return
         }
-        do {
-            let data = try JSONEncoder().encode(object)
-            set(data, forKey: key)
-        } catch {
-            logger?.error("Error saving object: \(error)")
-        }
+        let data = try? JSONEncoder().encode(object)
+        set(data, forKey: key)
     }
 }

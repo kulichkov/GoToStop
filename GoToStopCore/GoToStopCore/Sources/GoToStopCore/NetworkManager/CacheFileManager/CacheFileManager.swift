@@ -12,7 +12,7 @@ enum CacheFileManagerError: Error {
 }
 
 class CacheFileManager {
-    static let shared = CacheFileManager()
+    nonisolated(unsafe) static let shared = CacheFileManager()
     
     private let serialQueue = DispatchQueue(label: "kulichkov.GoToStop.CacheFileManager")
     

@@ -14,7 +14,7 @@ public enum NetworkManagerError: Error {
     case noApiBearer
 }
 
-final public class NetworkManager {
+final public class NetworkManager: Sendable {
     public static let shared = NetworkManager()
     
     public let apiBearer: String? = {
@@ -23,24 +23,11 @@ final public class NetworkManager {
         return bearer
     }()
     
-    public var backgroundRequestFinished: AnyPublisher<Void, Never> {
-        backgroundSessionManager.requestFinished
-            .map { _ in () }
-            .eraseToAnyPublisher()
-    }
-    public var backgroundUrlSessionIdentifier: String {
-        backgroundSessionManager.backgroundUrlSessionIdentifier
-    }
-    private lazy var foregroundUrlSession = URLSession.shared
-    private lazy var backgroundSessionManager = BackgroundSessionManager()
+    private let foregroundUrlSession = URLSession.shared
     
     private let baseUrl: String = "https://www.rmv.de/hapi"
     
     private init() {}
-    
-    public func setBackgroundSessionCompletion(_ completion: (() -> Void)?) -> Void {
-        backgroundSessionManager.backgroundSessionCompletion = completion
-    }
     
     /// Can be used to perform a pattern matching of a user input and to retrieve
     /// a list of possible matches in the journey planner database. Possible matches might be stops/stations.
@@ -74,7 +61,7 @@ final public class NetworkManager {
     ) async throws -> [StopLocation] {
         try await withThrowingTaskGroup(of: [StopLocation].self) { [weak self] group -> [StopLocation] in
             for input in inputs {
-                group.addTask {
+                group.addTask { [weak self] in
                     try await self?.getStopLocations(input: input) ?? []
                 }
             }
@@ -116,7 +103,7 @@ final public class NetworkManager {
     ) async throws -> [Departure] {
         try await withThrowingTaskGroup(of: [Departure].self) { [weak self] group -> [Departure] in
             for request in requests {
-                group.addTask {
+                group.addTask { [weak self] in
                     try await self?.getDepartures(request) ?? []
                 }
             }
@@ -128,55 +115,6 @@ final public class NetworkManager {
             
             return collectedDepartures
         }
-    }
-    
-    public func requestDepartures(
-        _ request: DepartureBoardRequest
-    ) throws {
-        let urlComponents = prepareDepartureBoardUrlComponents(request)
-        let urlRequest = try prepareUrlRequest(urlComponents)
-        try backgroundSessionManager.downloadData(with: urlRequest)
-    }
-    
-    public func getCachedDepartures(
-        for request: DepartureBoardRequest
-    ) throws -> [Departure]? {
-        guard
-            let hashString = prepareDepartureBoardUrlComponents(request)?.hashString
-        else {
-            logger?.info("No hash string found for \(String(describing: request))")
-            return nil
-        }
-        let response: DepartureBoardResponse? = try CacheFileManager.shared.getCachedData(named: hashString)
-        return response?.departures?
-            .compactMap(Departure.init)
-    }
-    
-    public func checkIfDeparturesAreInProgress(
-        _ requests: [DepartureBoardRequest]
-    ) async -> Bool {
-        let urlRequests = requests
-            .map(prepareDepartureBoardUrlComponents)
-            .compactMap { try? prepareUrlRequest($0) }
-        
-        let requestsInProgress = await backgroundSessionManager.getRunningRequests(urlRequests)
-        let requestsAreInProgress = !requestsInProgress.isEmpty
-        logger?.debug("Some requests from \(urlRequests) are in progress: \(requestsInProgress)")
-        
-        return requestsAreInProgress
-    }
-    
-    public func removeCachedDepartures(
-        for request: DepartureBoardRequest
-    ) throws {
-        guard
-            let hashString = prepareDepartureBoardUrlComponents(request)?.hashString
-        else {
-            logger?.info("Failed to remove cache. No hash string found for \(String(describing: request))")
-            return
-        }
-        logger?.info("Remove cache for \(String(describing: request))")
-        try CacheFileManager.shared.clearCacheFile(named: hashString)
     }
     
     private func prepareDepartureBoardUrlComponents(_ request: DepartureBoardRequest) -> URLComponents? {

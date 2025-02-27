@@ -5,6 +5,8 @@
 //  Created by Mikhail Kulichkov on 06.01.25.
 //
 
+import Foundation
+
 public struct ServerDateFormatter {
     private static let serverDateTimeFormatter: DateFormatter = {
         var dateFormatter = DateFormatter()

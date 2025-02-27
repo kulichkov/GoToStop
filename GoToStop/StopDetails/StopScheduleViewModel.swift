@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import GoToStopAPI
+import GoToStopCore
 
 struct TripItem: Identifiable, Hashable {
     struct Trip: Hashable {

@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import GoToStopAPI
+import GoToStopCore
 
 struct ScheduleItem: Identifiable {
     let id = UUID()

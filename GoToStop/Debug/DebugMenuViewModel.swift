@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import GoToStopAPI
+import GoToStopCore
 import WidgetKit
 
 @available(iOS 18.0, *)

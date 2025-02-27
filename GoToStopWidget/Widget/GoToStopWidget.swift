@@ -7,7 +7,6 @@
 
 import WidgetKit
 import SwiftUI
-import GoToStopAPI
 
 struct GoToStopWidget: Widget {
     let kind: String = "kulichkov.GoToStop.GoToStopWidget"
@@ -31,12 +30,6 @@ struct GoToStopWidget: Widget {
                 .systemMedium,
                 .systemLarge,
             ])
-            .onBackgroundURLSessionEvents(
-                matching: NetworkManager.shared.backgroundUrlSessionIdentifier
-            ) { identifier, completion in
-                logger?.info("Some background event happened for session \(identifier)")
-                NetworkManager.shared.setBackgroundSessionCompletion(completion) 
-            }
     }
 }
 

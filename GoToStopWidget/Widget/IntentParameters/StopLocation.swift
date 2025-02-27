@@ -6,7 +6,7 @@
 //
 
 import AppIntents
-import GoToStopAPI
+import GoToStopCore
 import CoreLocation
 
 struct StopLocation: AppEntity {
@@ -55,7 +55,7 @@ extension StopLocation {
         )
     }
     
-    init(_ stopLocation: GoToStopAPI.StopLocation) {
+    init(_ stopLocation: GoToStopCore.StopLocation) {
         let id = [
             stopLocation.locationId,
             stopLocation.name,

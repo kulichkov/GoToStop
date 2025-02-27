@@ -6,7 +6,6 @@
 //
 
 import WidgetKit
-import GoToStopAPI
 
 final class GoToStopWidgetProvider: AppIntentTimelineProvider {
     

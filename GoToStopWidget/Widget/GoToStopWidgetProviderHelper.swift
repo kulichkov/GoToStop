@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import GoToStopAPI
+import GoToStopCore
 import CoreLocation
 import Combine
 import WidgetKit
@@ -70,52 +70,6 @@ struct GoToStopWidgetProviderHelper {
         let departures = try await NetworkManager.shared.getDepartures(requests)
         let scheduledTrips = mapDeparturesToScheduledTrips(departures)
         return makeWidgetEntries(items: scheduledTrips)
-    }
-    
-    func getWidgetEntriesRequesting() throws -> [GoToStopWidgetEntry] {
-        Task { getLogsIfNeeded() }
-        
-        if Settings.shared.widgetsReadyToReload.contains(widgetHash) {
-            // Data is ready. Create items and return them
-            logger?.debug("Data is ready. Create items and return them")
-            let departures = getCachedDepartures()
-            let scheduledTrips = mapDeparturesToScheduledTrips(departures)
-            let widgetEntries = makeWidgetEntries(items: scheduledTrips)
-            
-            do {
-                try removeCachedDepartures()
-            } catch {
-                logger?.warning("Failed to remove cached departures: \(error)")
-            }
-            Settings.shared.widgetsReadyToReload.remove(widgetHash)
-            return widgetEntries
-            
-        } else if Settings.shared.activeWidgetRequests.contains(widgetHash) {
-            // Data already requested. Check data availability. If the data is not available - wait.
-            logger?.debug("Data already requested. Check data availability. If the data is not available - wait.")
-            Task {
-                logger?.debug("Starting...")
-                let requestsAreInProgress = await checkIfRequestsAreInProgress()
-                logger?.debug("Ended... requestsAreInProgress: \(requestsAreInProgress)")
-                if !requestsAreInProgress {
-                    // Requests are done. All cache files should be ready.
-                    Settings.shared.activeWidgetRequests.remove(widgetHash)
-                    Settings.shared.widgetsReadyToReload.insert(widgetHash)
-                    WidgetCenter.shared.reloadAllTimelines()
-                }
-            }
-            
-            // return empty
-            return makeEmptyEntries()
-        } else {
-            // Data is not requested. Request.
-            logger?.debug("Data is not requested. Request.")
-            Settings.shared.activeWidgetRequests.insert(widgetHash)
-            requestDepartures()
-            
-            // return empty
-            return makeEmptyEntries()
-        }
     }
     
     private func makeEmptyEntries() -> [GoToStopWidgetEntry] {
@@ -204,47 +158,6 @@ struct GoToStopWidgetProviderHelper {
                 lineId: $0.lineId,
                 directionId: $0.directionId
             )
-        }
-    }
-    
-    private func requestDepartures() {
-        let requests = getDepartureRequests()
-        do {
-            for request in requests {
-                try NetworkManager.shared.requestDepartures(request)
-            }
-        } catch {
-            logger?.error("Failed to request departures: \(error)")
-        }
-    }
-    
-    private func checkIfRequestsAreInProgress() async -> Bool {
-        let requests = getDepartureRequests()
-        return await NetworkManager.shared.checkIfDeparturesAreInProgress(requests)
-    }
-    
-    private func getCachedDepartures() -> [Departure] {
-        var resultCachedDepartures: [Departure] = []
-        
-        for request in getDepartureRequests() {
-            do {
-                guard let cachedDepartures = try NetworkManager.shared.getCachedDepartures(for: request) else {
-                    logger?.warning("No cached departures found for \(String(describing: request))")
-                    continue
-                }
-                resultCachedDepartures.append(contentsOf: cachedDepartures)
-            } catch {
-                logger?.error("Failed to get cached departures for \(String(describing: request)): \(error)")
-            }
-        }
-        
-        return resultCachedDepartures
-    }
-    
-    private func removeCachedDepartures() throws {
-        let departureRequests = getDepartureRequests()
-        for request in departureRequests {
-            try NetworkManager.shared.removeCachedDepartures(for: request)
         }
     }
     

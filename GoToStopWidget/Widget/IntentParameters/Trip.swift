@@ -6,7 +6,7 @@
 //
 
 import AppIntents
-import GoToStopAPI
+import GoToStopCore
 
 struct Trip: AppEntity, Hashable {
     let id: String

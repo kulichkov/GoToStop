@@ -7,7 +7,7 @@
 
 import Foundation
 import SwiftUI
-import GoToStopAPI
+import GoToStopCore
 
 struct StopScheduleParameters {
     let stopLocation: StopLocation

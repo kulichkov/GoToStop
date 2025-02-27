@@ -8,8 +8,15 @@
 import Foundation
 
 public struct WidgetInfo: Hashable, Codable {
-    let hashString: String
-    let lastReloadDate: Date
+    public let hashString: String
+    public let lastReloadDate: Date
+    public init(
+        hashString: String,
+        lastReloadDate: Date
+    ) {
+        self.hashString = hashString
+        self.lastReloadDate = lastReloadDate
+    }
 }
 
 public class Settings {

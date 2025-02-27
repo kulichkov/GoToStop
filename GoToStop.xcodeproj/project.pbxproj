@@ -371,6 +371,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "GoToStop needs your location to find nearby stops";
 				INFOPLIST_KEY_NSSupportsLiveActivities = NO;
 				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
@@ -431,6 +432,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "GoToStop needs your location to find nearby stops";
 				INFOPLIST_KEY_NSSupportsLiveActivities = NO;
 				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
@@ -457,6 +459,10 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GoToStop/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "GoToStop needs your location to find nearby stops";
+				INFOPLIST_KEY_NSLocationTemporaryUsageDescriptionDictionary = "GoToStop needs your location to find nearby stops";
+				INFOPLIST_KEY_NSLocationUsageDescription = "GoToStop needs your location to find nearby stops";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "GoToStop needs your location to find nearby stops";
 				INFOPLIST_KEY_NSSupportsLiveActivities = NO;
 				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = NO;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -492,6 +498,10 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GoToStop/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "GoToStop needs your location to find nearby stops";
+				INFOPLIST_KEY_NSLocationTemporaryUsageDescriptionDictionary = "GoToStop needs your location to find nearby stops";
+				INFOPLIST_KEY_NSLocationUsageDescription = "GoToStop needs your location to find nearby stops";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "GoToStop needs your location to find nearby stops";
 				INFOPLIST_KEY_NSSupportsLiveActivities = NO;
 				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = NO;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -526,7 +536,10 @@
 				INFOPLIST_FILE = GoToStopWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = GoToStopWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "The widget needs your location to range stops";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "GoToStop needs your location to find nearby stops";
+				INFOPLIST_KEY_NSLocationTemporaryUsageDescriptionDictionary = "GoToStop needs your location to find nearby stops";
+				INFOPLIST_KEY_NSLocationUsageDescription = "GoToStop needs your location to find nearby stops";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "GoToStop needs your location to find nearby stops";
 				INFOPLIST_KEY_NSSupportsLiveActivities = NO;
 				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
@@ -558,7 +571,10 @@
 				INFOPLIST_FILE = GoToStopWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = GoToStopWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "The widget needs your location to range stops";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "GoToStop needs your location to find nearby stops";
+				INFOPLIST_KEY_NSLocationTemporaryUsageDescriptionDictionary = "GoToStop needs your location to find nearby stops";
+				INFOPLIST_KEY_NSLocationUsageDescription = "GoToStop needs your location to find nearby stops";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "GoToStop needs your location to find nearby stops";
 				INFOPLIST_KEY_NSSupportsLiveActivities = NO;
 				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;

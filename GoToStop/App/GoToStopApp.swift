@@ -22,7 +22,6 @@ struct GoToStopApp: App {
         }
     }
     @State var goToStopSchedule: Bool = false
-    @State var goToDebugMenu: Bool = false
     
     var body: some Scene {
         WindowGroup {
@@ -35,17 +34,6 @@ struct GoToStopApp: App {
                             .onOpenURL(perform: handleUrl)
                     }
                 }
-                .navigationDestination(isPresented: $goToDebugMenu) {
-                    if #available(iOS 18.0, *) {
-                        DebugMenuView(viewModel: DebugMenuViewModel())
-                    } else {
-                        Text("iOS 18.0 or later is required for debugging")
-                    }
-                }
-            }
-            .onTapGesture(count: 5) {
-                logger?.info("Go to debug menu")
-                goToDebugMenu = true
             }
         }
     }

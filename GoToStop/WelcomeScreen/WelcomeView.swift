@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct WelcomeView: View {
+    @State var goToDebugMenu: Bool = false
+    
     var body: some View {
         ZStack {
             Color(.systemGray6)
@@ -17,6 +19,10 @@ struct WelcomeView: View {
                     .font(.largeTitle)
                     .multilineTextAlignment(.center)
                     .fontWeight(.bold)
+                    .onTapGesture(count: 7) {
+                        logger?.info("Go to debug menu")
+                        goToDebugMenu = true
+                    }
                 
                 Text("Enhance your experience by adding GoToStop widget")
                     .font(.headline)
@@ -50,6 +56,13 @@ struct WelcomeView: View {
             }
             .padding(32)
             .padding(.horizontal, 20)
+        }
+        .navigationDestination(isPresented: $goToDebugMenu) {
+            if #available(iOS 18.0, *) {
+                DebugMenuView(viewModel: DebugMenuViewModel())
+            } else {
+                Text("iOS 18.0 or later is required for debugging")
+            }
         }
     }
 }

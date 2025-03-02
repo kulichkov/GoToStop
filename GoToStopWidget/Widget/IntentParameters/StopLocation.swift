@@ -33,14 +33,22 @@ struct StopLocation: AppEntity {
 
 struct StopLocationQuery: EntityStringQuery {
     func entities(matching string: String) async throws -> [StopLocation] {
-        let ids = try await NetworkManager.shared.getStopLocations(input: string).map(\.locationId)
-        let locations = try await NetworkManager.shared.getStopLocations(inputs: ids)
-        let recentLocation = CLLocationManager().location
-        return locations.sortedByDistance(from: recentLocation).map(StopLocation.init)
+        try await search(string)
     }
     
     func entities(for identifiers: [StopLocation.ID]) async throws -> [StopLocation] {
         identifiers.compactMap(StopLocation.init)
+    }
+    
+    func suggestedEntities() async throws -> [StopLocation] {
+        try await search("\"\"")
+    }
+    
+    private func search(_ input: String) async throws -> [StopLocation] {
+        let ids = try await NetworkManager.shared.getStopLocations(input: input).map(\.locationId)
+        let locations = try await NetworkManager.shared.getStopLocations(inputs: ids)
+        let recentLocation = CLLocationManager().location
+        return locations.sortedByDistance(from: recentLocation).map(StopLocation.init)
     }
 }
 

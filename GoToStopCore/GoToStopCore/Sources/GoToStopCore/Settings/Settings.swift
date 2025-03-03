@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct WidgetInfo: Hashable, Codable {
+public struct WidgetInfo: Hashable, Codable, Sendable {
     public let hashString: String
     public let lastReloadDate: Date
     public init(
@@ -19,7 +19,7 @@ public struct WidgetInfo: Hashable, Codable {
     }
 }
 
-public class Settings {
+public final class Settings: @unchecked Sendable {
     public enum Key: String {
         case shouldCollectWidgetLogs = "shouldCollectWidgetLogs"
         case widgetLogsUrl = "widgetLogsUrl"
@@ -48,7 +48,7 @@ public class Settings {
         }
     }
     
-    nonisolated(unsafe) public static let shared = Settings()
+    public static let shared = Settings()
     public static let suiteName = "group.kulichkov.GoToStop"
         
     @Setting(key: .shouldCollectWidgetLogs, defaultValue: false)

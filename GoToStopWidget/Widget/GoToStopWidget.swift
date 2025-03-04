@@ -29,6 +29,7 @@ struct GoToStopWidget: Widget {
                 .systemSmall,
                 .systemMedium,
                 .systemLarge,
+                .systemExtraLarge
             ])
     }
 }

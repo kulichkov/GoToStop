@@ -21,12 +21,22 @@ struct GoToStopWidgetEntryView: View {
         widgetFamily == .systemSmall
     }
     
+    private var isExtraLarge: Bool {
+        widgetFamily == .systemExtraLarge
+    }
+    
     private var numberOfItems: Int {
         switch widgetFamily {
         case .systemSmall: 2
         case .systemMedium: 2
+        case .systemLarge: 6
+        case .systemExtraLarge: 12
         default: 6
         }
+    }
+    
+    private var items: [ScheduleItem] {
+        Array(entry.data.items.prefix(numberOfItems))
     }
     
     var body: some View {
@@ -35,7 +45,11 @@ struct GoToStopWidgetEntryView: View {
                 header
                     .widgetAccentable()
                 Spacer().frame(height: 8)
-                tripList
+                if isExtraLarge {
+                    makeTripGrid(items: items)
+                } else {
+                    makeTripList(items: items)
+                }
             }
             .font(.caption2)
             .frame(height: geometry.size.height, alignment: .top)
@@ -63,9 +77,9 @@ struct GoToStopWidgetEntryView: View {
         }
     }
     
-    private var tripList: some View {
+    private func makeTripList(items: [ScheduleItem]) -> some View {
         VStack(spacing: 8) {
-            ForEach(entry.data.items.prefix(numberOfItems)) { item in
+            ForEach(items) { item in
                 if isCompact {
                     tripCompactView(item)
                 } else {
@@ -73,6 +87,20 @@ struct GoToStopWidgetEntryView: View {
                 }
             }
             Spacer()
+        }
+    }
+    
+    private func makeTripGrid(items: [ScheduleItem]) -> some View {
+        let leftItems = Array(items.prefix(numberOfItems/2))
+        let rightItems = Array(items.dropFirst(numberOfItems/2))
+        
+        return HStack(alignment: .top, spacing: 16) {
+            makeTripList(items: leftItems)
+            if rightItems.isEmpty {
+                Spacer().frame(width: .infinity)
+            } else {
+                makeTripList(items: rightItems)
+            }
         }
     }
     
@@ -208,6 +236,16 @@ struct GoToStopWidgetEntryView: View {
 }
 
 #Preview(as: .systemLarge) {
+    GoToStopWidget()
+} timeline: {
+    GoToStopWidgetEntry(
+        date: .now,
+        data: .preview2,
+        widgetUrl: URL(string: UUID().uuidString)
+    )
+}
+
+#Preview(as: .systemExtraLarge) {
     GoToStopWidget()
 } timeline: {
     GoToStopWidgetEntry(

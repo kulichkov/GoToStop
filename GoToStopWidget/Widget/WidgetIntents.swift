@@ -23,6 +23,6 @@ struct GoToStopIntent: WidgetConfigurationIntent {
     @Parameter(title: "Stop")
     var stopLocation: StopLocation?
     
-    @Parameter(title: "Trips", size: 3)
+    @Parameter(title: "Trips")
     var trips: [Trip]?
 }

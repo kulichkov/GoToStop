@@ -46,7 +46,8 @@ struct TripQuery: EntityQuery {
         
         let request = DepartureBoardRequest(
             stopId: stop.locationId,
-            time: "08:00"
+            time: "08:00",
+            duration: 2 * 60
         )
         
         let departures = try await NetworkManager.shared.getDepartures(request)

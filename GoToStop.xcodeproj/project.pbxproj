@@ -14,6 +14,7 @@
 		696846582D70CBCE00B1A979 /* GoToStopCore in Frameworks */ = {isa = PBXBuildFile; productRef = 696846572D70CBCE00B1A979 /* GoToStopCore */; };
 		69D8070D2D58DBB500E28B18 /* Configuration.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 69D8070C2D58DBB500E28B18 /* Configuration.xcconfig */; };
 		69D8070E2D58DBB500E28B18 /* Configuration.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 69D8070C2D58DBB500E28B18 /* Configuration.xcconfig */; };
+		69F8CD4A2D7B28EA00E38B5B /* GoToStopLite Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 69F8CD3D2D7B28E800E38B5B /* GoToStopLite Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,6 +24,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 696689A62D0E0A3D00B0F045;
 			remoteInfo = GoToStopWidgetExtension;
+		};
+		69F8CD482D7B28EA00E38B5B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 696689362D0DE91700B0F045 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 69F8CD3C2D7B28E800E38B5B;
+			remoteInfo = "GoToStopLite Watch App";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -48,6 +56,17 @@
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		69F8CD4B2D7B28EA00E38B5B /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				69F8CD4A2D7B28EA00E38B5B /* GoToStopLite Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -58,6 +77,7 @@
 		696689E72D0E126500B0F045 /* GoToStopWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GoToStopWidgetExtension.entitlements; sourceTree = "<group>"; };
 		696846522D70B7CC00B1A979 /* GoToStopCore */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = GoToStopCore; path = GoToStopCore/GoToStopCore; sourceTree = "<group>"; };
 		69D8070C2D58DBB500E28B18 /* Configuration.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Configuration.xcconfig; sourceTree = "<group>"; };
+		69F8CD3D2D7B28E800E38B5B /* GoToStopLite Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "GoToStopLite Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -122,6 +142,11 @@
 			path = GoToStopWidget;
 			sourceTree = "<group>";
 		};
+		69F8CD3E2D7B28E800E38B5B /* GoToStopLite Watch App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "GoToStopLite Watch App";
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -143,6 +168,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		69F8CD3A2D7B28E800E38B5B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -156,6 +188,7 @@
 				696689E72D0E126500B0F045 /* GoToStopWidgetExtension.entitlements */,
 				696689402D0DE91700B0F045 /* GoToStop */,
 				696689AD2D0E0A3E00B0F045 /* GoToStopWidget */,
+				69F8CD3E2D7B28E800E38B5B /* GoToStopLite Watch App */,
 				696689A82D0E0A3D00B0F045 /* Frameworks */,
 				6966893F2D0DE91700B0F045 /* Products */,
 			);
@@ -166,6 +199,7 @@
 			children = (
 				6966893E2D0DE91700B0F045 /* GoToStop.app */,
 				696689A72D0E0A3D00B0F045 /* GoToStopWidgetExtension.appex */,
+				69F8CD3D2D7B28E800E38B5B /* GoToStopLite Watch App.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -191,11 +225,13 @@
 				6966893C2D0DE91700B0F045 /* Resources */,
 				696689732D0DEF5C00B0F045 /* Embed Frameworks */,
 				696689BE2D0E0A3F00B0F045 /* Embed Foundation Extensions */,
+				69F8CD4B2D7B28EA00E38B5B /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				696689BC2D0E0A3F00B0F045 /* PBXTargetDependency */,
+				69F8CD492D7B28EA00E38B5B /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				692C5B622D5DFE7300CF5357 /* Extentions */,
@@ -235,6 +271,28 @@
 			productReference = 696689A72D0E0A3D00B0F045 /* GoToStopWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		69F8CD3C2D7B28E800E38B5B /* GoToStopLite Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 69F8CD4E2D7B28EA00E38B5B /* Build configuration list for PBXNativeTarget "GoToStopLite Watch App" */;
+			buildPhases = (
+				69F8CD392D7B28E800E38B5B /* Sources */,
+				69F8CD3A2D7B28E800E38B5B /* Frameworks */,
+				69F8CD3B2D7B28E800E38B5B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				69F8CD3E2D7B28E800E38B5B /* GoToStopLite Watch App */,
+			);
+			name = "GoToStopLite Watch App";
+			packageProductDependencies = (
+			);
+			productName = "GoToStopLite Watch App";
+			productReference = 69F8CD3D2D7B28E800E38B5B /* GoToStopLite Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -249,6 +307,9 @@
 						CreatedOnToolsVersion = 16.2;
 					};
 					696689A62D0E0A3D00B0F045 = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					69F8CD3C2D7B28E800E38B5B = {
 						CreatedOnToolsVersion = 16.2;
 					};
 				};
@@ -269,6 +330,7 @@
 			targets = (
 				6966893D2D0DE91700B0F045 /* GoToStop */,
 				696689A62D0E0A3D00B0F045 /* GoToStopWidgetExtension */,
+				69F8CD3C2D7B28E800E38B5B /* GoToStopLite Watch App */,
 			);
 		};
 /* End PBXProject section */
@@ -290,6 +352,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		69F8CD3B2D7B28E800E38B5B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -307,6 +376,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		69F8CD392D7B28E800E38B5B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -314,6 +390,11 @@
 			isa = PBXTargetDependency;
 			target = 696689A62D0E0A3D00B0F045 /* GoToStopWidgetExtension */;
 			targetProxy = 696689BB2D0E0A3F00B0F045 /* PBXContainerItemProxy */;
+		};
+		69F8CD492D7B28EA00E38B5B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 69F8CD3C2D7B28E800E38B5B /* GoToStopLite Watch App */;
+			targetProxy = 69F8CD482D7B28EA00E38B5B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -593,6 +674,74 @@
 			};
 			name = Release;
 		};
+		69F8CD4C2D7B28EA00E38B5B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"GoToStopLite Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = PY3Q8L7FLF;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = GoToStopLite;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "GoToStop needs your location to find nearby stops";
+				INFOPLIST_KEY_NSSupportsLiveActivities = NO;
+				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = NO;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = kulichkov.GoToStop;
+				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = kulichkov.GoToStop.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.2;
+			};
+			name = Debug;
+		};
+		69F8CD4D2D7B28EA00E38B5B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"GoToStopLite Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = PY3Q8L7FLF;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = GoToStopLite;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "GoToStop needs your location to find nearby stops";
+				INFOPLIST_KEY_NSSupportsLiveActivities = NO;
+				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = NO;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = kulichkov.GoToStop;
+				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = kulichkov.GoToStop.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.2;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -619,6 +768,15 @@
 			buildConfigurations = (
 				696689BF2D0E0A3F00B0F045 /* Debug */,
 				696689C02D0E0A3F00B0F045 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		69F8CD4E2D7B28EA00E38B5B /* Build configuration list for PBXNativeTarget "GoToStopLite Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				69F8CD4C2D7B28EA00E38B5B /* Debug */,
+				69F8CD4D2D7B28EA00E38B5B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

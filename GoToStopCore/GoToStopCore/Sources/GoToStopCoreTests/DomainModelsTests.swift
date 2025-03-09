@@ -37,43 +37,31 @@ private extension ProductResponse {
 }
 
 private extension DepartureResponse {
-    static let mock = DepartureResponse(
-        journeyDetailRef: .init(ref: "TO#3000529#"),
-        product: [.mock],
-        name: UUID().uuidString,
-        type: nil,
-        stop: UUID().uuidString,
-        stopid: UUID().uuidString,
-        stopExtId: nil,
-        lon: .zero,
-        lat: .zero,
-        prognosisType: nil,
-        time: nil,
-        date: nil,
-        rtTime: "13:21:00",
-        rtDate: "2025-03-03",
-        reachable: nil,
-        cancelled: nil,
-        direction: UUID().uuidString,
-        messages: .init(message: [.init(
-            id: nil,
-            channel: [.init(
-                name: nil,
-                url: [.init(
-                    name: "Some channel name",
-                    url: "https://some-channel-url.com"
-                )],
-                validFromTime: nil,
-                validFromDate: nil,
-                validToTime: nil,
-                validToDate: nil
-            )],
-            act: true,
-            head: "Mocked message head",
-            lead: nil,
-            text: "Mocked message text"
-        )])
-    )
+    static func mock(
+        product: [ProductResponse] = [.mock],
+        messageResponse: MessagesResponse? = nil
+    ) -> DepartureResponse {
+        DepartureResponse(
+            journeyDetailRef: .init(ref: "TO#3000529#"),
+            product: product,
+            name: UUID().uuidString,
+            type: nil,
+            stop: UUID().uuidString,
+            stopid: UUID().uuidString,
+            stopExtId: nil,
+            lon: nil,
+            lat: nil,
+            prognosisType: nil,
+            time: nil,
+            date: nil,
+            rtTime: "13:21:00",
+            rtDate: "2025-03-03",
+            reachable: nil,
+            cancelled: nil,
+            direction: UUID().uuidString,
+            messages: messageResponse
+        )
+    }
 }
 
 struct DomainModelsTests {
@@ -114,7 +102,26 @@ struct DomainModelsTests {
     
     @Test
     func testDepartureInitFromResponse() throws {
-        let departureResponse = DepartureResponse.mock
+        let departureResponse = DepartureResponse.mock(
+            messageResponse: .init(message: [.init(
+                id: nil,
+                channel: [.init(
+                    name: nil,
+                    url: [.init(
+                        name: "Some channel name",
+                        url: "https://some-channel-url.com"
+                    )],
+                    validFromTime: nil,
+                    validFromDate: nil,
+                    validToTime: nil,
+                    validToDate: nil
+                )],
+                act: true,
+                head: "Mocked message head",
+                lead: nil,
+                text: "Mocked message text"
+            )])
+        )
         let departure = try #require(Departure(departureResponse))
         
         let currentZoneGMTOffset = TimeInterval(TimeZone.current.secondsFromGMT())
@@ -139,5 +146,82 @@ struct DomainModelsTests {
         #expect(message.urlDescription == "Some channel name")
         #expect(message.url == URL(string: "https://some-channel-url.com"))
     }
+    
+    @Test
+    func testDepartureInitFromResponseNil() {
+        let departureResponse = DepartureResponse.mock(product: [])
+        let departure = Departure(departureResponse)
+        
+        #expect(departure == nil)
+    }
 
+    @Test
+    func testDepartureInitFromResponseNoMessages() throws {
+        let departureResponse = DepartureResponse.mock()
+        let departure = try #require(Departure(departureResponse))
+        
+        #expect(departure.messages.isEmpty)
+    }
+    
+    @Test
+    func testDepartureInitFromResponseDefaultMessageValues() throws {
+        let departureResponse = DepartureResponse.mock(
+            messageResponse: .init(message: [.init(
+                id: nil,
+                channel: [.init(
+                    name: nil,
+                    url: [.init(
+                        name: nil,
+                        url: nil
+                    )],
+                    validFromTime: nil,
+                    validFromDate: nil,
+                    validToTime: nil,
+                    validToDate: nil
+                )],
+                act: nil,
+                head: nil,
+                lead: nil,
+                text: nil
+            )])
+        )
+        
+        let departure = try #require(Departure(departureResponse))
+        let message = try #require(departure.messages.first)
+        #expect(message.isActive == false)
+        #expect(message.header.isEmpty)
+        #expect(message.text.isEmpty)
+        #expect(message.urlDescription == nil)
+        #expect(message.url == nil)
+    }
+    
+    @Test
+    func testDepartureInitFromResponseMessageValuesNoUrl() throws {
+        let departureResponse = DepartureResponse.mock(
+            messageResponse: .init(message: [.init(
+                id: nil,
+                channel: [.init(
+                    name: nil,
+                    url: nil,
+                    validFromTime: nil,
+                    validFromDate: nil,
+                    validToTime: nil,
+                    validToDate: nil
+                )],
+                act: nil,
+                head: nil,
+                lead: nil,
+                text: nil
+            )])
+        )
+        
+        let departure = try #require(Departure(departureResponse))
+        let message = try #require(departure.messages.first)
+        #expect(message.isActive == false)
+        #expect(message.header.isEmpty)
+        #expect(message.text.isEmpty)
+        #expect(message.urlDescription == nil)
+        #expect(message.url == nil)
+    }
+    
 }

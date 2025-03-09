@@ -77,7 +77,7 @@ struct DepartureDomainModelTests {
         TimeArgument(scheduledTime: nil, realTime: .mock),
         TimeArgument(scheduledTime: nil, realTime: nil),
     ])
-    func testDepartureInit(_ time: TimeArgument) {
+    func departureInit(_ time: TimeArgument) {
         let departure = Departure(
             name: UUID().uuidString,
             stop: UUID().uuidString,
@@ -101,7 +101,7 @@ struct DepartureDomainModelTests {
     }
     
     @Test
-    func testDepartureInitFromResponse() throws {
+    func departureInitFromResponse() throws {
         let departureResponse = DepartureResponse.mock(
             messageResponse: .init(message: [.init(
                 id: nil,
@@ -148,7 +148,7 @@ struct DepartureDomainModelTests {
     }
     
     @Test
-    func testDepartureInitFromResponseNil() {
+    func departureInitFromResponseNil() {
         let departureResponse = DepartureResponse.mock(product: [])
         let departure = Departure(departureResponse)
         
@@ -156,7 +156,7 @@ struct DepartureDomainModelTests {
     }
 
     @Test
-    func testDepartureInitFromResponseNoMessages() throws {
+    func departureInitFromResponseNoMessages() throws {
         let departureResponse = DepartureResponse.mock()
         let departure = try #require(Departure(departureResponse))
         
@@ -164,7 +164,7 @@ struct DepartureDomainModelTests {
     }
     
     @Test
-    func testDepartureInitFromResponseDefaultMessageValues() throws {
+    func departureInitFromResponseDefaultMessageValues() throws {
         let departureResponse = DepartureResponse.mock(
             messageResponse: .init(message: [.init(
                 id: nil,
@@ -196,7 +196,7 @@ struct DepartureDomainModelTests {
     }
     
     @Test
-    func testDepartureInitFromResponseMessageValuesNoUrl() throws {
+    func departureInitFromResponseMessageValuesNoUrl() throws {
         let departureResponse = DepartureResponse.mock(
             messageResponse: .init(message: [.init(
                 id: nil,

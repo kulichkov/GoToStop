@@ -36,14 +36,14 @@ private extension DepartureResponse {
 struct ResponseModelsTests {
     
     @Test
-    func testDepartureResponseTitle() {
+    func departureResponseTitle() {
         let departureResponse = DepartureResponse.mock
         
         #expect(departureResponse.title == "Bus M32")
     }
 
     @Test
-    func testDepartureResponseDirectionId() {
+    func departureResponseDirectionId() {
         let departureResponse = DepartureResponse.mock
         
         #expect(departureResponse.directionId == "3000529")

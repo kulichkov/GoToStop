@@ -15,7 +15,7 @@ struct DepartureBoardResponse: Decodable {
     }
 }
 
-public struct DepartureResponse: Decodable {
+public struct DepartureResponse: Decodable, Sendable {
     let journeyDetailRef: JourneyDetailRefResponse? // "JourneyDetailRef": {"ref": "2|#VN#1#ST#1734717291#PI#0#ZI#54529#TA#1#DA#251224#1S#3001204#1T#1331#LS#3000529#LT#1402#PU#80#RT#1#CA#1aE#ZE#M32#ZB#Bus M32 #PC#6#FR#3001204#FT#1331#TO#3000529#TT#1402#"}
     let product: [ProductResponse]? // "Product": [{...}]
     let name: String? // "Tram 17"

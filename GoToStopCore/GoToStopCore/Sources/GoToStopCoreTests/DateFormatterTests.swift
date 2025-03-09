@@ -7,12 +7,13 @@
 
 import Testing
 import Foundation
+@testable
 import GoToStopCore
 
 struct DateFormatterTests {
 
     @Test
-    func testServerDateFormatter() async throws {
+    func testServerDateFormatter() {
         let date0 = ServerDateFormatter.date(date: "2025-03-03", time: "13:21:00")
         let currentZoneGMTOffset = TimeInterval(TimeZone.current.secondsFromGMT())
         

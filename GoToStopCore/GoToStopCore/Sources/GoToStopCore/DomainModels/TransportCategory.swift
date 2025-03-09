@@ -17,12 +17,6 @@ public enum TransportCategory: String, Codable, Equatable, Sendable {
     case unknown
 }
 
-extension TransportCategory: Comparable {
-    public static func < (lhs: TransportCategory, rhs: TransportCategory) -> Bool {
-        lhs.rawValue < rhs.rawValue
-    }
-}
-
 extension TransportCategory {
     public var emoji: String {
         switch self {

@@ -55,7 +55,7 @@ struct TripQuery: EntityQuery {
         
         let trips: [Trip] = stopDepartures.map(Trip.init)
         let sortDescriptors: [SortDescriptor<Trip>] = [
-            SortDescriptor(\.category),
+            SortDescriptor(\.category.rawValue),
             SortDescriptor(\.name, order: .forward),
             SortDescriptor(\.direction, order: .forward)
         ]

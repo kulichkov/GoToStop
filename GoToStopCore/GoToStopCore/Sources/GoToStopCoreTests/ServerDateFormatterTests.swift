@@ -1,5 +1,5 @@
 //
-//  DateFormatterTests.swift
+//  ServerDateFormatter.swift
 //  GoToStopCore
 //
 //  Created by Mikhail Kulichkov on 08.03.25.
@@ -10,7 +10,8 @@ import Foundation
 @testable
 import GoToStopCore
 
-struct DateFormatterTests {
+@Suite("ServerDateFormatter tests", .tags(.helpers))
+struct ServerDateFormatterTests {
 
     @Test
     func serverDateFormatter() {

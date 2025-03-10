@@ -1,5 +1,5 @@
 //
-//  Untitled.swift
+//  DepartureResponseTests.swift
 //  GoToStopCore
 //
 //  Created by Mikhail Kulichkov on 08.03.25.
@@ -33,7 +33,8 @@ private extension DepartureResponse {
     )
 }
 
-struct ResponseModelsTests {
+@Suite("DepartureResponse tests", .tags(.responseModels))
+struct DepartureResponseTests {
     
     @Test
     func departureResponseTitle() {

@@ -64,6 +64,7 @@ private extension DepartureResponse {
     }
 }
 
+@Suite("Departure tests", .tags(.domainModels))
 struct DepartureDomainModelTests {
     
     struct TimeArgument {

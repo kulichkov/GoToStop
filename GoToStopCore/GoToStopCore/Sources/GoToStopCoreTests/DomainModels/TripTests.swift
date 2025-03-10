@@ -11,6 +11,7 @@ import Foundation
 import GoToStopCore
 import CoreLocation
 
+@Suite("Trip tests", .tags(.domainModels))
 struct TripTests {
     
     @Test

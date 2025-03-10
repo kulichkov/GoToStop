@@ -11,6 +11,7 @@ import Foundation
 import GoToStopCore
 import CoreLocation
 
+@Suite("StopLocation tests", .tags(.domainModels))
 struct StopLocationDomainModelTests {
     
     @Test

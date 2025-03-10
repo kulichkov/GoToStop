@@ -11,6 +11,7 @@ import Foundation
 import GoToStopCore
 import CoreLocation
 
+@Suite("TransportCategory tests", .tags(.domainModels))
 struct TransportCategoryTests {
     
     @Test

@@ -16,8 +16,8 @@ struct Trip: AppEntity, Hashable {
     let lineId: String
     let directionId: String
     
-    static var typeDisplayRepresentation: TypeDisplayRepresentation = "Trip"
-    static var defaultQuery = TripQuery()
+    static let typeDisplayRepresentation: TypeDisplayRepresentation = "Trip"
+    static let defaultQuery = TripQuery()
             
     var displayRepresentation: DisplayRepresentation {
         DisplayRepresentation(title: "\(name)\n\(direction)")

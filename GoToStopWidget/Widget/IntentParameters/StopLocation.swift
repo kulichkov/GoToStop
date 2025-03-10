@@ -14,8 +14,8 @@ struct StopLocation: AppEntity {
     let locationId: String
     let name: String
     
-    static var typeDisplayRepresentation: TypeDisplayRepresentation = "StopLocation"
-    static var defaultQuery = StopLocationQuery()
+    static let typeDisplayRepresentation: TypeDisplayRepresentation = "StopLocation"
+    static let defaultQuery = StopLocationQuery()
     static let idSeparator = "#"
             
     var displayRepresentation: DisplayRepresentation {

@@ -18,16 +18,25 @@ final public class NetworkManager: Sendable {
     public static let shared = NetworkManager()
     
     public let apiBearer: String? = {
+        // In case of test environment return test bearer
+        // In case of dev/prod return real bearer from xcconfig file
+        guard ProcessInfo.processInfo.environment["MODE"] != "TEST"
+        else { return ProcessInfo.processInfo.environment["API_BEARER"] }
+        
         let bearer = Bundle.main.infoDictionary?["API_BEARER"] as? String
         guard let bearer, !bearer.isEmpty else { return nil }
         return bearer
     }()
     
-    private let foregroundUrlSession = URLSession.shared
+    private let foregroundUrlSession: ForegroundSession
     
     private let baseUrl: String = "https://www.rmv.de/hapi"
     
-    private init() {}
+    init(
+        foregroundUrlSession: ForegroundSession = URLSession.shared
+    ) {
+        self.foregroundUrlSession = foregroundUrlSession
+    }
     
     /// Can be used to perform a pattern matching of a user input and to retrieve
     /// a list of possible matches in the journey planner database. Possible matches might be stops/stations.

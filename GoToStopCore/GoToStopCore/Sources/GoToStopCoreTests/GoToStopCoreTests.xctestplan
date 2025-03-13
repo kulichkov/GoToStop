@@ -1,0 +1,43 @@
+{
+  "configurations" : [
+    {
+      "id" : "1489BDB3-A9D6-4BEA-B44B-15A5D8682875",
+      "name" : "Test Scheme Action",
+      "options" : {
+        "environmentVariableEntries" : [
+          {
+            "key" : "MODE",
+            "value" : "TEST"
+          },
+          {
+            "key" : "API_BEARER",
+            "value" : "MOCKED_API_BEARER"
+          }
+        ]
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "environmentVariableEntries" : [
+      {
+        "key" : "MODE",
+        "value" : "TEST"
+      }
+    ],
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:",
+      "identifier" : "GoToStopCore",
+      "name" : "GoToStopCore"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "GoToStopCoreTests",
+        "name" : "GoToStopCoreTests"
+      }
+    }
+  ],
+  "version" : 1
+}

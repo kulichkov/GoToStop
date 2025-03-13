@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		690ED04E2D7F467C00F37FE6 /* Configuration.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 69D8070C2D58DBB500E28B18 /* Configuration.xcconfig */; };
 		696689AA2D0E0A3E00B0F045 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 696689A92D0E0A3D00B0F045 /* WidgetKit.framework */; };
 		696689AC2D0E0A3E00B0F045 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 696689AB2D0E0A3E00B0F045 /* SwiftUI.framework */; };
 		696689BD2D0E0A3F00B0F045 /* GoToStopWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 696689A72D0E0A3D00B0F045 /* GoToStopWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -70,6 +71,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		690ED04D2D7F443B00F37FE6 /* GoToStopCoreTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = GoToStopCoreTests.xctestplan; path = GoToStopCore/GoToStopCore/Sources/GoToStopCoreTests/GoToStopCoreTests.xctestplan; sourceTree = "<group>"; };
 		6966893E2D0DE91700B0F045 /* GoToStop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GoToStop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		696689A72D0E0A3D00B0F045 /* GoToStopWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = GoToStopWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		696689A92D0E0A3D00B0F045 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
@@ -181,6 +183,7 @@
 		696689352D0DE91700B0F045 = {
 			isa = PBXGroup;
 			children = (
+				690ED04D2D7F443B00F37FE6 /* GoToStopCoreTests.xctestplan */,
 				696846522D70B7CC00B1A979 /* GoToStopCore */,
 				692C5B622D5DFE7300CF5357 /* Extentions */,
 				69D8070C2D58DBB500E28B18 /* Configuration.xcconfig */,
@@ -356,6 +359,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				690ED04E2D7F467C00F37FE6 /* Configuration.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
